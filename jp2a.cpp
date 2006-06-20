@@ -16,13 +16,16 @@
 #include <jpeglib.h>
 
 bool verbose = false;
+bool color = false;
 int width = 80;
 int height = 25;
 
 const char* license = "Copyright (C) 2006 Christian Stigen Larsen.\nDistributed under the BSD license";
 
 // Printable ASCII characters, sorted least intensive to most intensive
-const char* origascii = "   ........oooOOOOOOO";
+//const char* origascii = "   ........oooOOOOOOO";
+const char* origascii = "  .',;:coxdO0KXNWM";
+//abcdefghijklmnopqrstuvwxyz*#%$&123456789ACDEFGHIJKLOPRSTUVYZX@0QNBWM";
 
 char ascii[1024];
 
@@ -78,8 +81,9 @@ void parse_options(int argc, char** argv) {
 
 void print(double* accum, int width, int sizeAscii) {
 	for ( int n=0; n < width; ++n ) {
-		int pos = static_cast<int>( sizeAscii * (1.0f - accum[n]) );
+		int pos = static_cast<int>(sizeAscii * accum[n]);
 
+		// the following should never happen
 		if ( pos < 0 ) pos = 0;
 		if ( pos > sizeAscii ) pos = sizeAscii;
 
@@ -87,6 +91,11 @@ void print(double* accum, int width, int sizeAscii) {
 	}
 
 	putc('\n', stdout);
+}
+
+void invert(double* accum, int width) {
+	for ( int n=0; n<width; ++n )
+		accum[n] = 1.0f - accum[n];
 }
 
 void clear(double* accum, int width) {
@@ -192,6 +201,7 @@ int test_decompress(const char* file) {
 
 		if ( linesAdded > linesToAdd ) {
 			normalize(accum, width, pixelsAdded * linesAdded);
+			invert(accum, width);
 			print(accum, width, sizeAscii);
 			clear(accum, width);
 			linesAdded = 0;
@@ -199,6 +209,7 @@ int test_decompress(const char* file) {
 			// last line? print it
 			if ( (1 + cinfo.output_scanline) == cinfo.output_height ) {
 				normalize(accum, width, pixelsAdded * linesAdded);
+				invert(accum, width);
 				print(accum, width, sizeAscii);
 				clear(accum, width);
 			}
