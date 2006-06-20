@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <memory.h>
+#include <math.h>
 #include <jpeglib.h>
 
 bool verbose = false;
@@ -22,6 +23,7 @@ const char* license = "Copyright (C) 2006 Christian Stigen Larsen.\nDistributed 
 
 // Printable ASCII characters, sorted least intensive to most intensive
 const char* origascii = "   ........oooOOOOOOO";
+
 char ascii[1024];
 
 int test_decompress(const char* file);
@@ -74,6 +76,21 @@ void parse_options(int argc, char** argv) {
 	if ( height <= 1 ) height = 1;
 }
 
+void print(double* accum, int width, int sizeAscii) {
+	for ( int n=0; n < width; ++n ) {
+		int pos = static_cast<int>( sizeAscii * (1.0f - accum[n]) );
+		putc(ascii[pos], stdout);
+	}
+
+	putc('\n', stdout);
+}
+
+void clear(double* accum, int width) {
+	for ( int n=0; n<width; ++n )
+		accum[n] = 0.0f;
+}
+
+
 int main(int argc, char** argv) {
 	if ( argc<2 )
 		help();
@@ -86,6 +103,11 @@ int main(int argc, char** argv) {
 	}
 
 	return 0;
+}
+
+void normalize(double* accum, int width, double factor) {
+	for ( int n=0; n<width; ++n )
+		accum[n] /= factor;
 }
 
 int test_decompress(const char* file) {
@@ -113,7 +135,8 @@ int test_decompress(const char* file) {
 	double accum[width];
 
 	int sizeAscii = strlen(ascii) - 1;
-	int pixelsPerChar = (row_stride/3) / width;
+	int comps = cinfo.out_color_components;
+	int pixelsPerChar = row_stride / (comps * width);
 	if ( pixelsPerChar <= 0 ) pixelsPerChar = 1;
 
 	int linesToAdd = cinfo.output_height / height;
@@ -135,24 +158,25 @@ int test_decompress(const char* file) {
 	}
 
 	int linesAdded = 0;
+	clear(accum, width);
 
 	while ( cinfo.output_scanline < cinfo.output_height ) {
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
 		int currChar = 0;
 		int pixelsAdded = 0;
-		for ( int pixel=0; pixel < row_stride; pixel += 3) {
-			int r = buffer[0][pixel];
-			int g = buffer[0][pixel + 1];
-			int b = buffer[0][pixel + 2];
 
-			accum[currChar] += static_cast<double>( (r + g + b) / (3.0f * 255.0f) );
+		for ( int pixel=0; pixel < row_stride; pixel += comps) {
+
+			for ( int addit=0; addit<comps; ++addit )
+				accum[currChar] += static_cast<double>( buffer[0][pixel + addit] / (comps * 255.0f) );
+
 			++pixelsAdded;
 
 			if ( pixelsAdded >= pixelsPerChar ) {
-				if ( currChar>=width ) break;
-				// normalize
-				accum[currChar] /= static_cast<double>(pixelsAdded);
+				if ( currChar>=width )
+					break;
+
 				pixelsAdded = 0;
 				++currChar;
 			}
@@ -161,47 +185,16 @@ int test_decompress(const char* file) {
 		++linesAdded;
 
 		if ( linesAdded > linesToAdd ) {
-			printf("|");
-
-			for ( int n=0; n < width; ++n ) {
-//				accum[n] /= linesAdded;
-
-				int pos = static_cast<int>( (double)( (1.0f - accum[n]) * sizeAscii) );
-
-				if ( pos < 0 ) pos = 0;
-				if ( pos > sizeAscii ) pos = sizeAscii;
-
-				printf("%c", ascii[pos]);
-
-				// clear at the same time
-				accum[n] = 0.0f;
-			}
-
-			printf("|\n");
-			fflush(stdout);
-
+			normalize(accum, width, pixelsAdded * linesAdded);
+			print(accum, width, sizeAscii);
+			clear(accum, width);
 			linesAdded = 0;
 		} else {
+			// last line? print it
 			if ( (1 + cinfo.output_scanline) == cinfo.output_height ) {
-				// print what we have so far
-				printf("|");
-
-				for ( int n=0; n < width; ++n ) {
-	//				accum[n] /= linesAdded;
-
-					int pos = static_cast<int>( (double)( (1.0f - accum[n]) * sizeAscii) );
-
-					if ( pos < 0 ) pos = 0;
-					if ( pos > sizeAscii ) pos = sizeAscii;
-
-					printf("%c", ascii[pos]);
-
-					// clear at the same time
-					accum[n] = 0.0f;
-				}
-
-				printf("|\n");
-				fflush(stdout);
+				normalize(accum, width, pixelsAdded * linesAdded);
+				print(accum, width, sizeAscii);
+				clear(accum, width);
 			}
 		}
 
