@@ -79,6 +79,10 @@ void parse_options(int argc, char** argv) {
 void print(double* accum, int width, int sizeAscii) {
 	for ( int n=0; n < width; ++n ) {
 		int pos = static_cast<int>( sizeAscii * (1.0f - accum[n]) );
+
+		if ( pos < 0 ) pos = 0;
+		if ( pos > sizeAscii ) pos = sizeAscii;
+
 		putc(ascii[pos], stdout);
 	}
 
@@ -136,6 +140,7 @@ int test_decompress(const char* file) {
 
 	int sizeAscii = strlen(ascii) - 1;
 	int comps = cinfo.out_color_components;
+
 	int pixelsPerChar = row_stride / (comps * width);
 	if ( pixelsPerChar <= 0 ) pixelsPerChar = 1;
 
@@ -154,6 +159,7 @@ int test_decompress(const char* file) {
 		printf("ASCII characters used for printing: %d\n", 1 + sizeAscii);
 		printf("Pixels per character: %d\n", pixelsPerChar);
 		printf("Lines per character : %d\n", linesToAdd);
+		printf("Color components    : %d\n", comps);
 		printf("\n");
 	}
 
@@ -166,7 +172,7 @@ int test_decompress(const char* file) {
 		int currChar = 0;
 		int pixelsAdded = 0;
 
-		for ( int pixel=0; pixel < row_stride; pixel += comps) {
+		for ( int pixel=0; pixel < (row_stride - comps); pixel += comps) {
 
 			for ( int addit=0; addit<comps; ++addit )
 				accum[currChar] += static_cast<double>( buffer[0][pixel + addit] / (comps * 255.0f) );
