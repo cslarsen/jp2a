@@ -93,12 +93,12 @@ void print(double* accum, int width, int sizeAscii) {
 
 void invert(double* accum, int width) {
 	for ( int n=0; n<width; ++n )
-		accum[n] = 1.0f - accum[n];
+		accum[n] = 1.0 - accum[n];
 }
 
 void clear(double* accum, int width) {
 	for ( int n=0; n<width; ++n )
-		accum[n] = 0.0f;
+		accum[n] = 0.0;
 }
 
 
@@ -182,7 +182,7 @@ int test_decompress(const char* file) {
 		for ( int pixel=0; pixel < (row_stride - comps); pixel += comps) {
 
 			for ( int addit=0; addit<comps; ++addit )
-				accum[currChar] += static_cast<double>( buffer[0][pixel + addit] / (comps * 255.0f) );
+				accum[currChar] += static_cast<double>( buffer[0][pixel + addit] / (comps * 255.0) );
 
 			++pixelsAdded;
 
