@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <memory.h>
 #include <math.h>
 #include <jpeglib.h>
 
@@ -19,15 +18,12 @@ int verbose = 0;
 int color = 0;
 int width = 80;
 int height = 25;
+char ascii[257];
 
 const char* license = "Copyright (C) 2006 Christian Stigen Larsen.\nDistributed under the BSD license";
 
 // Printable ASCII characters, sorted least intensive to most intensive
 const char* origascii = "   ...',;:clodxkO0KXNWM";
-
-char ascii[1024];
-
-int test_decompress(const char* file);
 
 void help() {
 	fprintf(stderr, "Usage: jp2afilename[s].jpg\n\n");
@@ -62,7 +58,7 @@ void parse_options(int argc, char** argv) {
 		}
 
 		hits += sscanf(argv[n], "--size=%dx%d", &width, &height);
-		hits += sscanf(argv[n], "--chars=%1000s", ascii);
+		hits += sscanf(argv[n], "--chars=%256s", ascii);
 
 		if ( hits == 0 ) {
 			fprintf(stderr, "Unknown option %s\n\n", argv[n]);
@@ -80,6 +76,8 @@ void parse_options(int argc, char** argv) {
 
 void print(double* accum, int width, int sizeAscii) {
 	int n;
+	char buf[width+1];
+
 	for ( n=0; n < width; ++n ) {
 		int pos = (int) round(sizeAscii * accum[n]);
 
@@ -87,10 +85,11 @@ void print(double* accum, int width, int sizeAscii) {
 		if ( pos < 0 ) pos = 0;
 		if ( pos > sizeAscii ) pos = sizeAscii;
 
-		putc(ascii[pos], stdout);
+		buf[n] = ascii[pos];
 	}
 
-	putc('\n', stdout);
+	buf[width] = 0;
+	puts(buf);
 }
 
 void invert(double* accum, int width) {
@@ -103,22 +102,6 @@ void clear(double* accum, int width) {
 	int n;
 	for ( n=0; n<width; ++n )
 		accum[n] = 0.0;
-}
-
-
-int main(int argc, char** argv) {
-	if ( argc<2 )
-		help();
-
-	parse_options(argc, argv);
-
-	int n;
-	for ( n=1; n<argc; ++n ) {
-		if ( argv[n][0] != '-')
-			test_decompress(argv[n]);
-	}
-
-	return 0;
 }
 
 void normalize(double* accum, int width, double factor) {
@@ -211,21 +194,28 @@ int test_decompress(const char* file) {
 			print(accum, width, sizeAscii);
 			clear(accum, width);
 			linesAdded = 0;
-		} else {
-			// last line? print it
-			if ( (1 + cinfo.output_scanline) == cinfo.output_height ) {
-				normalize(accum, width, pixelsAdded * linesAdded);
-				invert(accum, width);
-				print(accum, width, sizeAscii);
-				clear(accum, width);
-			}
 		}
-
 	}
 
 	jpeg_finish_decompress(&cinfo);
 	jpeg_destroy_decompress(&cinfo);
 	fclose(infile);
+	return 0;
+}
+
+int main(int argc, char** argv) {
+	if ( argc<2 )
+		help();
+
+	parse_options(argc, argv);
+
+	int n;
+	for ( n=1; n<argc; ++n ) {
+		if ( argv[n][0] != '-')
+			test_decompress(argv[n]);
+	}
 
 	return 0;
 }
+
+
