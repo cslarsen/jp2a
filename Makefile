@@ -4,6 +4,7 @@
 INCLUDE = /sw/include
 LIBDIR = /sw/lib
 
+CFLAGS = -g -O3 -W -Wall -I$(INCLUDE)
 CXXFLAGS = -g -O3 -W -Wall -I$(INCLUDE)
 LDFLAGS = -L$(LIBDIR) -ljpeg
 
