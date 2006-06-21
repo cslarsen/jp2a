@@ -15,8 +15,8 @@
 #include <math.h>
 #include <jpeglib.h>
 
-bool verbose = false;
-bool color = false;
+int verbose = 0;
+int color = 0;
 int width = 80;
 int height = 25;
 
@@ -48,7 +48,8 @@ void help() {
 void parse_options(int argc, char** argv) {
 	strcpy(ascii, origascii);
 
-	for ( int n=1; n<argc; ++n ) {
+	int n;
+	for ( n=1; n<argc; ++n ) {
 		if ( argv[n][0] != '-')
 			continue;
 
@@ -57,7 +58,7 @@ void parse_options(int argc, char** argv) {
 		if ( !strcmp(argv[n], "-h") || !strcmp(argv[n], "--help") ) help();
 		if ( !strcmp(argv[n], "-v") || !strcmp(argv[n], "--verbose") ) {
 			++hits;
-			verbose = true;
+			verbose = 1;
 		}
 
 		hits += sscanf(argv[n], "--size=%dx%d", &width, &height);
@@ -78,8 +79,9 @@ void parse_options(int argc, char** argv) {
 }
 
 void print(double* accum, int width, int sizeAscii) {
-	for ( int n=0; n < width; ++n ) {
-		int pos = static_cast<int>(sizeAscii * accum[n]);
+	int n;
+	for ( n=0; n < width; ++n ) {
+		int pos = (int) round(sizeAscii * accum[n]);
 
 		// the following should never happen
 		if ( pos < 0 ) pos = 0;
@@ -92,12 +94,14 @@ void print(double* accum, int width, int sizeAscii) {
 }
 
 void invert(double* accum, int width) {
-	for ( int n=0; n<width; ++n )
+	int n;
+	for ( n=0; n<width; ++n )
 		accum[n] = 1.0 - accum[n];
 }
 
 void clear(double* accum, int width) {
-	for ( int n=0; n<width; ++n )
+	int n;
+	for ( n=0; n<width; ++n )
 		accum[n] = 0.0;
 }
 
@@ -108,7 +112,8 @@ int main(int argc, char** argv) {
 
 	parse_options(argc, argv);
 
-	for ( int n=1; n<argc; ++n ) {
+	int n;
+	for ( n=1; n<argc; ++n ) {
 		if ( argv[n][0] != '-')
 			test_decompress(argv[n]);
 	}
@@ -117,7 +122,8 @@ int main(int argc, char** argv) {
 }
 
 void normalize(double* accum, int width, double factor) {
-	for ( int n=0; n<width; ++n )
+	int n;
+	for ( n=0; n<width; ++n )
 		accum[n] /= factor;
 }
 
@@ -179,10 +185,12 @@ int test_decompress(const char* file) {
 		int currChar = 0;
 		int pixelsAdded = 0;
 
-		for ( int pixel=0; pixel < (row_stride - comps); pixel += comps) {
+		int pixel;
+		for ( pixel=0; pixel < (row_stride - comps); pixel += comps) {
 
-			for ( int addit=0; addit<comps; ++addit )
-				accum[currChar] += static_cast<double>( buffer[0][pixel + addit] / (comps * 255.0) );
+			int addit;
+			for ( addit=0; addit<comps; ++addit )
+				accum[currChar] += (double) buffer[0][pixel + addit] / (comps * 255.0);
 
 			++pixelsAdded;
 
