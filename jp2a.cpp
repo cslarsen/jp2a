@@ -23,9 +23,7 @@ int height = 25;
 const char* license = "Copyright (C) 2006 Christian Stigen Larsen.\nDistributed under the BSD license";
 
 // Printable ASCII characters, sorted least intensive to most intensive
-//const char* origascii = "   ........oooOOOOOOO";
 const char* origascii = "   ...',;:clodxkO0KXNWM";
-//abcdefghijklmnopqrstuvwxyz*#%$&123456789ACDEFGHIJKLOPRSTUVYZX@0QNBWM";
 
 char ascii[1024];
 
