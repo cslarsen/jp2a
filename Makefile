@@ -7,7 +7,7 @@ LIBDIR = /sw/lib
 CXXFLAGS = -g -O3 -W -Wall -I$(INCLUDE)
 LDFLAGS = -L$(LIBDIR) -ljpeg
 
-TARGETS = jp2a
+TARGETS = jp2a jp2a-more
 
 all: $(TARGETS)
 
