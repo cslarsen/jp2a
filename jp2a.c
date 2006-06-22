@@ -43,7 +43,7 @@ const char* default_palette = "   ...',;:clodxkO0KXNWM";
 typedef struct Image_ {
 	int width;
 	int height;
-	double *p;
+	float *p;
 } Image;
 
 // Options
@@ -151,7 +151,7 @@ void invert(Image* i) {
 
 void clear(Image* i) {
 #ifdef HAVE_MEMSET
-	memset(i->p, 0, i->width * sizeof(double) );
+	memset(i->p, 0, i->width * sizeof(float) );
 #else
 	int n;
 	for ( n=0; n < i->width; ++n )
@@ -161,18 +161,18 @@ void clear(Image* i) {
 
 void normalize(Image* i) {
 	int n;
-	double min = 10000000.0;
-	double max = -1000000.0;
+	float min = 10000000.0;
+	float max = -1000000.0;
 
 	// find min and max values
 	for ( n=0; n < i->width; ++n ) {
-		double v = i->p[n];
+		float v = i->p[n];
 		if ( v < min ) min = v;
 		if ( v > max ) max = v;
 	}
 
 	// normalize to [0..1] range
-	double range = max - min;
+	float range = max - min;
 	for ( n=0; n < i->width; ++n )
 		i->p[n] = (i->p[n] - min) / range;
 }
@@ -194,8 +194,8 @@ int decompress(FILE *fp) {
 	image.width = width;
 	image.height = height;
 
-	if ( (image.p = malloc( width * sizeof(double) )) == NULL ) {
-		fprintf(stderr, "Could not allocate %ld bytes for output image", width * sizeof(double) );
+	if ( (image.p = malloc( width * sizeof(float) )) == NULL ) {
+		fprintf(stderr, "Could not allocate %ld bytes for output image", width * sizeof(float) );
 		exit(1);
 	}
 
