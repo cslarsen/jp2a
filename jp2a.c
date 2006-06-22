@@ -168,11 +168,9 @@ int decompress(FILE *fp) {
 	struct jpeg_decompress_struct cinfo;
 
         cinfo.err = jpeg_std_error(&jerr);
-
         jpeg_create_decompress(&cinfo);
         jpeg_stdio_src(&cinfo, fp);
 	jpeg_read_header(&cinfo, TRUE);
-
 	jpeg_start_decompress(&cinfo);
 
 	int row_stride = cinfo.output_width * cinfo.output_components;
@@ -181,21 +179,24 @@ int decompress(FILE *fp) {
 	Image image;
 	image.width = width;
 	image.height = height;
-	image.p = malloc( width * sizeof(double) );
 
-	if ( image.p == NULL ) {
+	if ( (image.p = malloc( width * sizeof(double) )) == NULL ) {
 		fprintf(stderr, "Could not allocate %ld bytes for output image", width * sizeof(double) );
 		exit(1);
 	}
 
-	int sizeAscii = strlen(ascii_palette) - 1;
-	int comps = cinfo.out_color_components;
+	clear(&image);
 
-	int pixelsPerChar = row_stride / (comps * width);
+	int sizeAscii = strlen(ascii_palette) - 1;
+	int components = cinfo.out_color_components;
+
+	int pixelsPerChar = row_stride / (components * width);
 	if ( pixelsPerChar <= 0 ) pixelsPerChar = 1;
 
 	int linesToAdd = cinfo.output_height / height;
 	if ( linesToAdd <= 0 ) linesToAdd = 1;
+	
+	int linesAdded = 0;
 
 	if ( verbose ) {
 		fprintf(stderr, "Output width : %d\n", width);
@@ -205,12 +206,9 @@ int decompress(FILE *fp) {
 		fprintf(stderr, "ASCII characters used for printing: %d\n", 1 + sizeAscii);
 		fprintf(stderr, "Pixels per character: %d\n", pixelsPerChar);
 		fprintf(stderr, "Lines per character : %d\n", linesToAdd);
-		fprintf(stderr, "Color components    : %d\n", comps);
+		fprintf(stderr, "Color components    : %d\n", components);
 		fprintf(stderr, "\n");
 	}
-
-	int linesAdded = 0;
-	clear(&image);
 
 	while ( cinfo.output_scanline < cinfo.output_height ) {
 		jpeg_read_scanlines(&cinfo, buffer, 1);
@@ -219,12 +217,12 @@ int decompress(FILE *fp) {
 		int pixelsAdded = 0;
 
 		int pixel;
-		for ( pixel=0; pixel < (row_stride - comps); pixel += comps) {
+		for ( pixel=0; pixel < (row_stride - components); pixel += components) {
 
-			int addit;
-			for ( addit=0; addit<comps; ++addit )
-				image.p[currChar] += (double) buffer[0][pixel + addit] / (comps * 255.0);
-				//accum[currChar] += (double) buffer[0][pixel + addit] / (comps * 255.0);
+			// calculate intensity
+			int a;
+			for ( a=0; a<components; ++a )
+				image.p[currChar] += (double) buffer[0][pixel + a] / (components * 255.0);
 
 			++pixelsAdded;
 
@@ -240,13 +238,9 @@ int decompress(FILE *fp) {
 		++linesAdded;
 
 		if ( linesAdded > linesToAdd ) {
-			///normalize(accum, width, pixelsAdded * linesAdded);
 			normalize(&image, pixelsAdded * linesAdded);
-			//invert(accum, width);
 			invert(&image);
-			//print(accum, width, sizeAscii);
 			print(&image, sizeAscii);
-			//clear(accum, width);
 			clear(&image);
 			linesAdded = 0;
 		}
