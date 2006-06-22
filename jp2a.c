@@ -80,7 +80,9 @@ void help() {
 }
 
 void parse_options(int argc, char** argv) {
-	if ( argc<2 ) help();
+	if ( argc<2 )
+		help();
+
 	int n;
 
 	for ( n=1; n<argc; ++n ) {
@@ -123,12 +125,12 @@ void parse_options(int argc, char** argv) {
 }
 
 void print(Image* i, int sizeAscii) {
-	#define ROUND(x) ( 0.5 + x )
+	#define ROUND(x) (int) ( 0.5 + x )
 	char buf[width+1];
 	int n;
 
 	for ( n=0; n < i->width; ++n ) {
-		int pos = (int) ROUND( sizeAscii * i->p[n] );
+		int pos = ROUND( sizeAscii * i->p[n] );
 
 		// The following should never happen
 		if ( pos < 0 ) pos = 0;
@@ -226,7 +228,7 @@ int decompress(FILE *fp) {
 				image.p[currChar] += (double) buffer[0][pixel + a] / (components * 255.0);
 
 			if ( ++pixelsAdded >= pixelsPerChar ) {
-				if ( currChar>=width ) break;
+				if ( currChar >= width ) break;
 				pixelsAdded = 0;
 				++currChar;
 			}
