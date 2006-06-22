@@ -150,9 +150,9 @@ void print(Image* i, int chars) {
 	int n;
 
 	for ( n=0; n < i->width; ++n ) {
-		int pos = ROUND( chars * i->p[n] );
+		int pos = ROUND(chars * i->p[n]);
 
-		// The following should never happen
+		// Should never happen, but check anyway
 		if ( pos < 0 ) pos = 0;
 		if ( pos > chars ) pos = chars;
 
