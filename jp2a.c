@@ -51,6 +51,8 @@ int verbose = 0;
 int color = 0; // unsupported
 int width = 80;
 int height = 25;
+int auto_height = 0;
+int auto_width = 0;
 
 char ascii_palette[257] = "";
 
@@ -61,20 +63,27 @@ void help() {
 
 	fprintf(stderr, "OPTIONS\n");
 	fprintf(stderr, "    -                Decompress from standard input\n");
-	fprintf(stderr, "    -h, --help       Print program help\n");
-	fprintf(stderr, "    --size=WxH       Set output ASCII width and height, default is %dx%d\n", width, height);
 	fprintf(stderr, "    --chars=...      Select character palette used to paint the image.  Leftmost character\n");
 	fprintf(stderr, "                     corresponds to black pixel, rightmost to white pixel.\n");
+	fprintf(stderr, "    -h, --help       Print program help\n");
+	fprintf(stderr, "\n");
+	fprintf(stderr, "    --height=H       Set output height calculate width by JPEG aspect ratio\n");
+	fprintf(stderr, "    --width=W        Set output width, calculate height by JPEG aspect ratio\n");
+	fprintf(stderr, "    --size=WxH       Set exact output dimension, default is %dx%d\n", width, height);
+	fprintf(stderr, "\n");
 	fprintf(stderr, "    -v, --verbose    Verbose output\n");
 	fprintf(stderr, "    -V, --version    Show program version\n");
 	fprintf(stderr, "\n");
 
 	fprintf(stderr, "EXAMPLES\n");
-	fprintf(stderr, "    jp2a --size=80x25 --chars='...oooxx@@' somefile.jpg\n");
-	fprintf(stderr, "    cat picture.jpg | jp2a - --size=100x100\n\n");
+	fprintf(stderr, "    jp2a --size=80x25 --chars='...oooxx@@' picture.jpg\n");
+	fprintf(stderr, "    cat picture.jpg | jp2a - --size=100x100\n");
+	fprintf(stderr, "    jp2a picture.jpg --width=76\n");
+	fprintf(stderr, "\n");
 
 	fprintf(stderr, "%s\n", copyright);
 	fprintf(stderr, "%s\n", license);
+	fprintf(stderr, "\n");
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
 	exit(1);
 }
@@ -101,7 +110,7 @@ void parse_options(int argc, char** argv) {
 		}
 
 		if ( !strcmp(s, "-V") || !strcmp(s, "--version") ) {
-			fprintf(stderr, "%s\n\n", version);
+			fprintf(stderr, "%s\n", version);
 			fprintf(stderr, "%s\n", copyright);
 			fprintf(stderr, "%s\n", license);
 			exit(0);
@@ -109,6 +118,16 @@ void parse_options(int argc, char** argv) {
 
 		hits += sscanf(s, "--size=%dx%d", &width, &height);
 		hits += sscanf(s, "--chars=%256s", ascii_palette);
+
+		if ( sscanf(s, "--width=%d", &width) == 1 ) {
+			auto_height = 1;
+			++hits;
+		}
+
+		if ( sscanf(s, "--height=%d", &height) == 1 ) {
+			auto_width = 1;
+			++hits;
+		}
 
 		if ( !hits ) {
 			fprintf(stderr, "Unknown option %s\n\n", s);
@@ -119,9 +138,9 @@ void parse_options(int argc, char** argv) {
 	// Palette must be at least two characters
 	if ( ascii_palette[0] == 0 ) strcpy(ascii_palette, default_palette);
 	if ( ascii_palette[1] == 0 ) strcpy(ascii_palette, default_palette);
-
-	if ( width <= 1 ) width = 1;
-	if ( height <= 1 ) height = 1;
+	
+	if ( width < 1 ) width = 1;
+	if ( height < 1 ) height = 1;
 }
 
 void print(Image* i, int chars) {
@@ -189,6 +208,10 @@ int decompress(FILE *fp) {
 
 	int row_stride = cinfo.output_width * cinfo.output_components;
 	JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray) ((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
+
+	// calculate width or height if set by params
+	if ( auto_width && !auto_height ) width = 2 * height * cinfo.output_width / cinfo.output_height;
+	if ( !auto_width && auto_height ) height = width * cinfo.output_height / cinfo.output_width / 2;
 
 	Image image;
 	image.width = width;
