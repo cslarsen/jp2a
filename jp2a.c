@@ -209,7 +209,6 @@ int decompress(FILE *fp) {
 		fprintf(stderr, "Pixels per character: %d\n", pixelsPerChar);
 		fprintf(stderr, "Lines per character : %d\n", linesToAdd);
 		fprintf(stderr, "Color components    : %d\n", components);
-		fprintf(stderr, "\n");
 	}
 
 	while ( cinfo.output_scanline < cinfo.output_height ) {
@@ -225,7 +224,7 @@ int decompress(FILE *fp) {
 			// calculate intensity
 			int a;
 			for ( a=0; a<components; ++a )
-				image.p[currChar] += (double) buffer[0][pixel + a] / (components * 255.0);
+				image.p[currChar] += buffer[0][pixel + a] / 255.0;
 
 			if ( ++pixelsAdded >= pixelsPerChar ) {
 				if ( currChar >= width ) break;
@@ -237,7 +236,7 @@ int decompress(FILE *fp) {
 		if ( ++linesAdded > linesToAdd                          /* time to print */
 		|| (cinfo.output_scanline + 1 == cinfo.output_height) ) /* last scanline */
 		{
-			normalize(&image, pixelsAdded * linesAdded);
+			normalize(&image, components * pixelsAdded * linesAdded);
 			invert(&image);
 			print(&image, sizeAscii);
 			clear(&image);
