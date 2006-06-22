@@ -30,6 +30,7 @@
 #endif
 
 #ifdef HAVE_JPEGLIB_H
+  #undef HAVE_STDLIB_H
   #include <jpeglib.h>
 #endif
 
@@ -56,10 +57,10 @@ char ascii_palette[257] = "";
 void help() {
 	fprintf(stderr, "%s\n", version);
 	fprintf(stderr, "Usage: jp2a file.jpg [file2.jpg [...]]\n\n");
-	fprintf(stderr, "Simple JPEG to ASCII converter\n\n");
+	fprintf(stderr, "jp2a is  a simple JPEG-to-ASCII converter.\n\n");
 
 	fprintf(stderr, "OPTIONS\n");
-	fprintf(stderr, "    -                Decompress JPG from stdin\n");
+	fprintf(stderr, "    -                Decompress from standard input\n");
 	fprintf(stderr, "    -h, --help       Print program help\n");
 	fprintf(stderr, "    --size=WxH       Set output ASCII width and height, default is %dx%d\n", width, height);
 	fprintf(stderr, "    --chars=...      Select character palette used to paint the image.  Leftmost character\n");
@@ -74,6 +75,7 @@ void help() {
 
 	fprintf(stderr, "%s\n", copyright);
 	fprintf(stderr, "%s\n", license);
+	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
 	exit(1);
 }
 
