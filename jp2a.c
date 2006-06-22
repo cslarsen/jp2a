@@ -235,9 +235,9 @@ int decompress(FILE *fp) {
 			}
 		}
 
-		++linesAdded;
-
-		if ( linesAdded > linesToAdd ) {
+		if ( linesAdded++ > linesToAdd				/* time to print */
+		|| (cinfo.output_scanline + 1 == cinfo.output_height) ) /* last scanline */
+		{
 			normalize(&image, pixelsAdded * linesAdded);
 			invert(&image);
 			print(&image, sizeAscii);
