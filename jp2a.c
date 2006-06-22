@@ -227,21 +227,20 @@ int decompress(FILE *fp) {
 
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
-		int currChar = 0;
+		int x = 0;
 		int pixelsAdded = 0;
 		int pixel;
 
-		for ( pixel=0; pixel < (row_stride - components); pixel += components) {
+		for ( pixel=0; pixel < (row_stride - components); ++pixel ) {
 
 			// calculate intensity
-			int a;
-			for ( a=0; a < components; ++a )
-				image.p[currChar] += buffer[0][pixel + a] / 255.0;
+			image.p[x] += buffer[0][pixel] / 255.0;
 
+			if ( pixel % components == 0 )
 			if ( ++pixelsAdded >= pixelsPerChar ) {
-				if ( currChar >= width ) break;
+				if ( x >= width ) break;
 				pixelsAdded = 0;
-				++currChar;
+				++x;
 			}
 		}
 
