@@ -210,8 +210,6 @@ int decompress(FILE *fp) {
 	int linesToAdd = cinfo.output_height / height;
 	if ( linesToAdd <= 0 ) linesToAdd = 1;
 	
-	int linesAdded = 0;
-
 	if ( verbose ) {
 		fprintf(stderr, "Output width : %d\n", width);
 		fprintf(stderr, "Output height: %d\n", height);
@@ -223,25 +221,26 @@ int decompress(FILE *fp) {
 		fprintf(stderr, "Color components    : %d\n", components);
 	}
 
+	int linesAdded = 0;
+
 	while ( cinfo.output_scanline < cinfo.output_height ) {
 
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
 		int x = 0;
 		int pixelsAdded = 0;
-		int pixel;
+		int n;
 
-		for ( pixel=0; pixel < (row_stride - components); ++pixel ) {
+		for ( n=0; n < row_stride; ++n ) {
 
-			// calculate intensity
-			image.p[x] += buffer[0][pixel] / 255.0;
+			image.p[x] += buffer[0][n] / 255.0;
 
-			if ( pixel % components == 0 )
-			if ( ++pixelsAdded >= pixelsPerChar ) {
-				if ( x >= width ) break;
-				pixelsAdded = 0;
-				++x;
-			}
+			if ( n % components == 0 )
+				if ( ++pixelsAdded >= pixelsPerChar ) {
+					if ( x >= width ) break;
+					pixelsAdded = 0;
+					++x;
+				}
 		}
 
 		if ( ++linesAdded > linesToAdd                          /* time to print */
