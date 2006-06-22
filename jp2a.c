@@ -52,8 +52,8 @@ void help() {
 	fprintf(stderr, "\n");
 
 	fprintf(stderr, "EXAMPLES\n");
-	fprintf(stderr, "   jp2a --size=80x25 --chars='...oooxx@@' somefile.jpg\n");
-	fprintf(stderr, "   cat picture.jpg | jp2a - --size=100x100\n\n");
+	fprintf(stderr, "    jp2a --size=80x25 --chars='...oooxx@@' somefile.jpg\n");
+	fprintf(stderr, "    cat picture.jpg | jp2a - --size=100x100\n\n");
 
 	fprintf(stderr, "%s\n", copyright);
 	fprintf(stderr, "%s\n", license);
