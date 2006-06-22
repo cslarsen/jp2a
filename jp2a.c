@@ -210,7 +210,7 @@ int decompress(FILE *fp) {
 	int row_stride = cinfo.output_width * cinfo.output_components;
 	JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray) ((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
-	// calculate width or height if set by params
+	// Calculate width or height, but not both
 	if ( auto_width && !auto_height ) width = 2 * height * cinfo.output_width / cinfo.output_height;
 	if ( !auto_width && auto_height ) height = width * cinfo.output_height / cinfo.output_width / 2;
 
@@ -225,21 +225,18 @@ int decompress(FILE *fp) {
 
 	clear(&image);
 
-	int chars = strlen(ascii_palette) - 1;
+	int num_chars = strlen(ascii_palette) - 1;
 	int components = cinfo.out_color_components;
 
-	int pixelsPerChar = row_stride / (components * width);
-	if ( pixelsPerChar <= 0 ) pixelsPerChar = 1;
-
+	int pixelsPerChar = cinfo.output_width / width;
 	int linesToAdd = cinfo.output_height / height;
-	if ( linesToAdd <= 0 ) linesToAdd = 1;
 	
 	if ( verbose ) {
 		fprintf(stderr, "Output width : %d\n", width);
 		fprintf(stderr, "Output height: %d\n", height);
 		fprintf(stderr, "Source width : %d\n", cinfo.output_width);
 		fprintf(stderr, "Source height: %d\n", cinfo.output_height);
-		fprintf(stderr, "ASCII characters used for printing: %d\n", 1 + chars);
+		fprintf(stderr, "ASCII characters used for printing: %d\n", 1 + num_chars);
 		fprintf(stderr, "Pixels per character: %d\n", pixelsPerChar);
 		fprintf(stderr, "Lines per character : %d\n", linesToAdd);
 		fprintf(stderr, "Color components    : %d\n", components);
@@ -271,7 +268,7 @@ int decompress(FILE *fp) {
 		{
 			normalize(&image);
 			invert(&image);
-			print(&image, chars);
+			print(&image, num_chars);
 			clear(&image);
 			linesAdded = 0;
 		}
