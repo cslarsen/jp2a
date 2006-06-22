@@ -2,8 +2,10 @@
  * Copyright (C) 2006 Christian Stigen Larsen <http://csl.sublevel3.org>
  * Distributed under the BSD license.
  *
- * Compilation hint:
- * cc test.cpp -I/sw/include -L/sw/lib -ljpeg
+ * Will print JPEG-files using ASCII characters.
+ *
+ * Compilation example:
+ * cc -g -O2 jp2a.c -I/sw/include -L/sw/lib -ljpeg
  *
  * $Id$
  *
@@ -28,7 +30,7 @@ typedef struct Image_ {
 
 // Options
 int verbose = 0;
-int color = 0;
+int color = 0; // unsupported
 int width = 80;
 int height = 25;
 
