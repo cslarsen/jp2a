@@ -159,10 +159,22 @@ void clear(Image* i) {
 #endif
 }
 
-void normalize(Image* i, double factor) {
+void normalize(Image* i) {
 	int n;
+	double min = 10000000.0;
+	double max = -1000000.0;
+
+	// find min and max values
+	for ( n=0; n < i->width; ++n ) {
+		double v = i->p[n];
+		if ( v < min ) min = v;
+		if ( v > max ) max = v;
+	}
+
+	// normalize to [0..1] range
+	double range = max - min;
 	for ( n=0; n < i->width; ++n )
-		i->p[n] /= factor;
+		i->p[n] = (i->p[n] - min) / range;
 }
 
 int decompress(FILE *fp) {
@@ -223,7 +235,7 @@ int decompress(FILE *fp) {
 
 			// calculate intensity
 			int a;
-			for ( a=0; a<components; ++a )
+			for ( a=0; a < components; ++a )
 				image.p[currChar] += buffer[0][pixel + a] / 255.0;
 
 			if ( ++pixelsAdded >= pixelsPerChar ) {
@@ -236,7 +248,7 @@ int decompress(FILE *fp) {
 		if ( ++linesAdded > linesToAdd                          /* time to print */
 		|| (cinfo.output_scanline + 1 == cinfo.output_height) ) /* last scanline */
 		{
-			normalize(&image, components * pixelsAdded * linesAdded);
+			normalize(&image);
 			invert(&image);
 			print(&image, sizeAscii);
 			clear(&image);
