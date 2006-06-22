@@ -34,6 +34,8 @@
   #include <jpeglib.h>
 #endif
 
+#define ROUND(x) (int) ( 0.5 + x )
+
 const char* version   = PACKAGE_STRING;
 const char* copyright = "Copyright (C) 2006 Christian Stigen Larsen";
 const char* license   = "Distributed under the GNU General Public License (GPL) v2 or later.";
@@ -144,7 +146,6 @@ void parse_options(int argc, char** argv) {
 }
 
 void print(Image* i, int chars) {
-	#define ROUND(x) (int) ( 0.5 + x )
 	char buf[width+1];
 	int n;
 
