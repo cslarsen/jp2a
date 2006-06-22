@@ -198,12 +198,12 @@ void normalize(Image* i) {
 }
 
 int decompress(FILE *fp) {
-        struct jpeg_error_mgr jerr;
+	struct jpeg_error_mgr jerr;
 	struct jpeg_decompress_struct cinfo;
 
-        cinfo.err = jpeg_std_error(&jerr);
-        jpeg_create_decompress(&cinfo);
-        jpeg_stdio_src(&cinfo, fp);
+	cinfo.err = jpeg_std_error(&jerr);
+	jpeg_create_decompress(&cinfo);
+	jpeg_stdio_src(&cinfo, fp);
 	jpeg_read_header(&cinfo, TRUE);
 	jpeg_start_decompress(&cinfo);
 
