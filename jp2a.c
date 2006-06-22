@@ -211,12 +211,13 @@ int decompress(FILE *fp) {
 	}
 
 	while ( cinfo.output_scanline < cinfo.output_height ) {
+
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
 		int currChar = 0;
 		int pixelsAdded = 0;
-
 		int pixel;
+
 		for ( pixel=0; pixel < (row_stride - components); pixel += components) {
 
 			// calculate intensity
@@ -224,18 +225,14 @@ int decompress(FILE *fp) {
 			for ( a=0; a<components; ++a )
 				image.p[currChar] += (double) buffer[0][pixel + a] / (components * 255.0);
 
-			++pixelsAdded;
-
-			if ( pixelsAdded >= pixelsPerChar ) {
-				if ( currChar>=width )
-					break;
-
+			if ( ++pixelsAdded >= pixelsPerChar ) {
+				if ( currChar>=width ) break;
 				pixelsAdded = 0;
 				++currChar;
 			}
 		}
 
-		if ( linesAdded++ > linesToAdd				/* time to print */
+		if ( ++linesAdded > linesToAdd                          /* time to print */
 		|| (cinfo.output_scanline + 1 == cinfo.output_height) ) /* last scanline */
 		{
 			normalize(&image, pixelsAdded * linesAdded);
