@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2006 Christian Stigen Larsen <http://csl.sublevel3.org>
- * Distributed under the BSD license.
+ * Distributed under the GNU General Public License (GPL) v2 or later.
  *
  * Will print JPEG-files using ASCII characters.
  *
@@ -15,14 +15,27 @@
   #include "config.h"
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <jpeglib.h>
+#ifdef HAVE_STDLIB_H
+  #include <stdlib.h>
+#endif
 
-const char* version   = "jp2a 1.0.0";
+#include <stdio.h>
+
+#ifdef HAVE_STRING_H
+  #include <string.h>
+#endif
+
+#ifdef HAVE_STRINGS_H
+  #include <strings.h>
+#endif
+
+#ifdef HAVE_JPEGLIB_H
+  #include <jpeglib.h>
+#endif
+
+const char* version   = PACKAGE_STRING;
 const char* copyright = "Copyright (C) 2006 Christian Stigen Larsen";
-const char* license   = "Distributed under the BSD license";
+const char* license   = "Distributed under the GNU General Public License (GPL) v2 or later.";
 
 const char* default_palette = "   ...',;:clodxkO0KXNWM";
 
@@ -133,7 +146,13 @@ void invert(Image* i) {
 }
 
 void clear(Image* i) {
+#ifdef HAVE_MEMSET
 	memset(i->p, 0, i->width * sizeof(double) );
+#else
+	int n;
+	for ( n=0; n < i->width; ++n )
+		i->p[n] = 0.0;
+#endif
 }
 
 void normalize(Image* i, double factor) {
