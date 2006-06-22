@@ -232,10 +232,9 @@ int decompress(FILE *fp) {
 		int n;
 
 		for ( n=0; n < row_stride; ++n ) {
-
 			image.p[x] += buffer[0][n] / 255.0;
 
-			if ( n % components == 0 )
+			if ( n % components == (components-1) )
 				if ( ++pixelsAdded >= pixelsPerChar ) {
 					if ( x >= width ) break;
 					pixelsAdded = 0;
