@@ -124,17 +124,17 @@ void parse_options(int argc, char** argv) {
 	if ( height <= 1 ) height = 1;
 }
 
-void print(Image* i, int sizeAscii) {
+void print(Image* i, int chars) {
 	#define ROUND(x) (int) ( 0.5 + x )
 	char buf[width+1];
 	int n;
 
 	for ( n=0; n < i->width; ++n ) {
-		int pos = ROUND( sizeAscii * i->p[n] );
+		int pos = ROUND( chars * i->p[n] );
 
 		// The following should never happen
 		if ( pos < 0 ) pos = 0;
-		if ( pos > sizeAscii ) pos = sizeAscii;
+		if ( pos > chars ) pos = chars;
 
 		buf[n] = ascii_palette[pos];
 	}
@@ -201,7 +201,7 @@ int decompress(FILE *fp) {
 
 	clear(&image);
 
-	int sizeAscii = strlen(ascii_palette) - 1;
+	int chars = strlen(ascii_palette) - 1;
 	int components = cinfo.out_color_components;
 
 	int pixelsPerChar = row_stride / (components * width);
@@ -217,7 +217,7 @@ int decompress(FILE *fp) {
 		fprintf(stderr, "Output height: %d\n", height);
 		fprintf(stderr, "Source width : %d\n", cinfo.output_width);
 		fprintf(stderr, "Source height: %d\n", cinfo.output_height);
-		fprintf(stderr, "ASCII characters used for printing: %d\n", 1 + sizeAscii);
+		fprintf(stderr, "ASCII characters used for printing: %d\n", 1 + chars);
 		fprintf(stderr, "Pixels per character: %d\n", pixelsPerChar);
 		fprintf(stderr, "Lines per character : %d\n", linesToAdd);
 		fprintf(stderr, "Color components    : %d\n", components);
@@ -250,7 +250,7 @@ int decompress(FILE *fp) {
 		{
 			normalize(&image);
 			invert(&image);
-			print(&image, sizeAscii);
+			print(&image, chars);
 			clear(&image);
 			linesAdded = 0;
 		}
