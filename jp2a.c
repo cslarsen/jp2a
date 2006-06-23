@@ -156,17 +156,11 @@ void print(Image* i, int chars) {
 		if ( pos < 0 ) pos = 0;
 		if ( pos > chars ) pos = chars;
 
-		buf[n] = ascii_palette[pos];
+		buf[n] = ascii_palette[chars - pos];
 	}
 
 	buf[width] = 0;
 	puts(buf);
-}
-
-void invert(Image* i) {
-	int n;
-	for ( n=0; n < i->width; ++n )
-		i->p[n] = 1.0 - i->p[n];
 }
 
 void clear(Image* i) {
@@ -270,7 +264,6 @@ int decompress(FILE *fp) {
 		|| (cinfo.output_scanline + 1 == cinfo.output_height) ) /* last scanline */
 		{
 			normalize(&image);
-			invert(&image);
 			print(&image, num_chars);
 			clear(&image);
 			linesAdded = 0;
