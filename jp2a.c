@@ -50,7 +50,6 @@ typedef struct Image_ {
 
 // Options
 int verbose = 0;
-int color = 0; // unsupported
 int width = 80;
 int height = 25;
 int auto_height = 0;
@@ -61,7 +60,7 @@ char ascii_palette[257] = "";
 void help() {
 	fprintf(stderr, "%s\n", version);
 	fprintf(stderr, "Usage: jp2a file.jpg [file2.jpg [...]]\n\n");
-	fprintf(stderr, "jp2a is  a simple JPEG-to-ASCII converter.\n\n");
+	fprintf(stderr, "jp2a is  a simple JPEG to ASCII viewer.\n\n");
 
 	fprintf(stderr, "OPTIONS\n");
 	fprintf(stderr, "    -                Decompress from standard input\n");
@@ -146,40 +145,33 @@ void parse_options(int argc, char** argv) {
 }
 
 void print(Image* i, int chars) {
-	char buf[width+1];
-	int n;
+	int x, y;
 
-	for ( n=0; n < i->width; ++n ) {
-		int pos = ROUND(chars * i->p[n]);
+	for ( y=0; y < i->height; ++y ) {
 
-		// Should never happen, but check anyway
-		if ( pos < 0 ) pos = 0;
-		if ( pos > chars ) pos = chars;
+		for ( x=0; x < i->width; ++x ) {
+			int pos = ROUND( (float) chars * i->p[y*i->width + x] );
+			printf("%c", ascii_palette[chars - pos]);
+		}
 
-		buf[n] = ascii_palette[chars - pos];
+		printf("\n");
 	}
-
-	buf[width] = 0;
-	puts(buf);
 }
 
 void clear(Image* i) {
-#ifdef HAVE_MEMSET
-	memset(i->p, 0, i->width * sizeof(float) );
-#else
-	int n;
-	for ( n=0; n < i->width; ++n )
-		i->p[n] = 0.0;
-#endif
+	int n = 0;
+	while ( n < (i->height * i->width) )
+		i->p[n++] = 0.0f;
 }
 
+// This exaggerates the differences in the picture, good for ASCII output
 void normalize(Image* i) {
 	int n;
 	float min = 10000000.0;
 	float max = -1000000.0;
 
 	// find min and max values
-	for ( n=0; n < i->width; ++n ) {
+	for ( n=0; n < (i->height * i->width); ++n ) {
 		float v = i->p[n];
 		if ( v < min ) min = v;
 		if ( v > max ) max = v;
@@ -187,7 +179,7 @@ void normalize(Image* i) {
 
 	// normalize to [0..1] range
 	float range = max - min;
-	for ( n=0; n < i->width; ++n )
+	for ( n=0; n < (i->height * i->width); ++n )
 		i->p[n] = (i->p[n] - min) / range;
 }
 
@@ -212,8 +204,10 @@ int decompress(FILE *fp) {
 	image.width = width;
 	image.height = height;
 
-	if ( (image.p = malloc( width * sizeof(float) )) == NULL ) {
-		fprintf(stderr, "Could not allocate %ld bytes for output image", width * sizeof(float) );
+	int bytes = width * height * sizeof(float);
+
+	if ( (image.p = malloc(bytes)) == NULL ) {
+		fprintf(stderr, "Could not allocate %d bytes for output image", bytes);
 		exit(1);
 	}
 
@@ -222,55 +216,43 @@ int decompress(FILE *fp) {
 	int num_chars = strlen(ascii_palette) - 1;
 	int components = cinfo.out_color_components;
 
-	int pixelsPerChar = cinfo.output_width / width;
-	int linesToAdd = cinfo.output_height / height;
+	float to_dst_y = (float) height / (float) cinfo.output_height;
+	float to_dst_x = (float) width / (float) cinfo.output_width;
 	
 	if ( verbose ) {
-		fprintf(stderr, "Output width : %d\n", width);
+		fprintf(stderr, "Output width: %d\n", width);
 		fprintf(stderr, "Output height: %d\n", height);
-		fprintf(stderr, "Source width : %d\n", cinfo.output_width);
+		fprintf(stderr, "Source width: %d\n", cinfo.output_width);
 		fprintf(stderr, "Source height: %d\n", cinfo.output_height);
-		fprintf(stderr, "ASCII characters used for printing: %d\n", 1 + num_chars);
-		fprintf(stderr, "Pixels per character: %d\n", pixelsPerChar);
-		fprintf(stderr, "Lines per character : %d\n", linesToAdd);
-		fprintf(stderr, "Color components    : %d\n", components);
+		fprintf(stderr, "Source color components: %d\n", components);
+		fprintf(stderr, "ASCII palette (%d chars): '%s'\n", 1 + num_chars, ascii_palette);
 	}
 
-	int linesAdded = 0;
-
 	while ( cinfo.output_scanline < cinfo.output_height ) {
-
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
-		int src_x = 0;
-		float to_dst_x = (float) width / (float) cinfo.output_width;
+		unsigned int src_x = 0;
+		unsigned int dst_x = 0;
+		unsigned int dst_y = ROUND( to_dst_y * (float) cinfo.output_scanline );
 
 		while ( src_x < cinfo.output_width ) {
+			dst_x = ROUND( to_dst_x * (float) src_x );
 
-			int dst_x = src_x * to_dst_x;
-			int c = 0;
-
-			while ( c < components ) {
-				image.p[dst_x] += (float) buffer[0][src_x*components + c] / ( (float) 255.0 * (float) components );
-				++c;
-			}
+			// calculate intensity
+			int c;
+			for ( c = 0; c < components; ++c )
+				image.p[dst_y*width + dst_x] += (float) buffer[0][src_x*components + c] / (255.0f * (float) components );
 
 			++src_x;
 		}
-
-		if ( ++linesAdded > linesToAdd                          /* time to print */
-		|| (cinfo.output_scanline + 1 == cinfo.output_height) ) /* last scanline */
-		{
-			normalize(&image);
-			print(&image, num_chars);
-			clear(&image);
-			linesAdded = 0;
-		}
 	}
+
+	normalize(&image);
+	print(&image, num_chars);
+	free(image.p);
 
 	jpeg_finish_decompress(&cinfo);
 	jpeg_destroy_decompress(&cinfo);
-	free(image.p);
 	return 0;
 }
 

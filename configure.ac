@@ -12,6 +12,8 @@ AC_CONFIG_FILES([Makefile])
 # Checks for programs.
 AC_PROG_CC
 
+CPPFLAGS="$CPPFLAGS -Wall -W"
+
 # Checks for libraries.
 AC_ARG_WITH([jpeg-include],
 	[  --with-jpeg-include=PATH to directory containing jpeglib.h],
@@ -25,7 +27,7 @@ AC_CHECK_LIB([jpeg],
 	[jpeg_start_decompress],
 	[LIBS="$LIBS -ljpeg"],
 	[
-	  AC_MSG_ERROR([You must have a working jpeglib.h environment, see configure --help])
+	  AC_MSG_ERROR([I need jpeglib, please specify --with-jpeg-include=PATH and --with-jpeg-lib=PATH])
 	])
 
 # Checks for header files.
