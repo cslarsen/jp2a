@@ -1,0 +1,16 @@
+QUICK INSTALL
+
+./configure
+make
+make install
+
+IF YOU HAVE jpeglib.h IN A NON-SEARCHED DIRECTORY:
+
+./configure --with-jpeg-include=/sw/include --with-jpeg-lib=/sw/lib
+make
+make install
+
+MAC OS X
+You need to install jpeglib, e.g. use
+
+fink install jpeglib
