@@ -249,23 +249,20 @@ int decompress(FILE *fp) {
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
 		int pixelsAdded = 0;
-		int dst_x = 0;
 		int src_x = 0;
+		float to_dst_x = (float) width / (float) cinfo.output_width;
 
 		while ( src_x < cinfo.output_width ) {
 
+			int dst_x = src_x * to_dst_x;
 			int c = 0;
+
 			while ( c < components ) {
 				image.p[dst_x] += (float) buffer[0][src_x*components + c] / ( (float) 255.0 * (float) components );
 				++c;
 			}
 
-			if ( ++pixelsAdded >= pixelsPerChar ) {
-				if ( dst_x >= width ) break;
-				pixelsAdded = 0;
-				++dst_x;
-			}
-
+			++pixelsAdded;
 			++src_x;
 		}
 
