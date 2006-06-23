@@ -188,17 +188,24 @@ int decompress(FILE *fp) {
 	struct jpeg_decompress_struct cinfo;
 
 	cinfo.err = jpeg_std_error(&jerr);
+
 	jpeg_create_decompress(&cinfo);
 	jpeg_stdio_src(&cinfo, fp);
 	jpeg_read_header(&cinfo, TRUE);
 	jpeg_start_decompress(&cinfo);
 
 	int row_stride = cinfo.output_width * cinfo.output_components;
-	JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray) ((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
+
+	JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray)
+		((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
 	// Calculate width or height, but not both
-	if ( auto_width && !auto_height ) width = 2 * height * cinfo.output_width / cinfo.output_height;
-	if ( !auto_width && auto_height ) height = width * cinfo.output_height / cinfo.output_width / 2;
+
+	if ( auto_width && !auto_height )
+		width = 2 * height * cinfo.output_width / cinfo.output_height;
+
+	if ( !auto_width && auto_height )
+		height = width * cinfo.output_height / cinfo.output_width / 2;
 
 	Image image;
 	image.width = width;
@@ -220,28 +227,30 @@ int decompress(FILE *fp) {
 	float to_dst_x = (float) width / (float) cinfo.output_width;
 	
 	if ( verbose ) {
-		fprintf(stderr, "Output width: %d\n", width);
-		fprintf(stderr, "Output height: %d\n", height);
 		fprintf(stderr, "Source width: %d\n", cinfo.output_width);
 		fprintf(stderr, "Source height: %d\n", cinfo.output_height);
 		fprintf(stderr, "Source color components: %d\n", components);
-		fprintf(stderr, "ASCII palette (%d chars): '%s'\n", 1 + num_chars, ascii_palette);
+		fprintf(stderr, "Output width: %d\n", width);
+		fprintf(stderr, "Output height: %d\n", height);
+		fprintf(stderr, "Output palette (%d chars): '%s'\n", 1 + num_chars, ascii_palette);
 	}
 
 	while ( cinfo.output_scanline < cinfo.output_height ) {
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
+		unsigned int dst_y = ROUND(to_dst_y * (float) cinfo.output_scanline);
 		unsigned int src_x = 0;
-		unsigned int dst_x = 0;
-		unsigned int dst_y = ROUND( to_dst_y * (float) cinfo.output_scanline );
 
 		while ( src_x < cinfo.output_width ) {
-			dst_x = ROUND( to_dst_x * (float) src_x );
+			unsigned dst_x = ROUND(to_dst_x * (float) src_x);
 
 			// calculate intensity
-			int c;
-			for ( c = 0; c < components; ++c )
-				image.p[dst_y*width + dst_x] += (float) buffer[0][src_x*components + c] / (255.0f * (float) components );
+			int c = 0;
+			while ( c < components ) {
+				image.p[dst_y*width + dst_x] +=
+					(float) buffer[0][src_x*components + c++]
+					 / (255.0f * (float) components );
+			}
 
 			++src_x;
 		}
