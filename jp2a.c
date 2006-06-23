@@ -242,7 +242,6 @@ int decompress(FILE *fp) {
 
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
-		int pixelsAdded = 0;
 		int src_x = 0;
 		float to_dst_x = (float) width / (float) cinfo.output_width;
 
@@ -256,7 +255,6 @@ int decompress(FILE *fp) {
 				++c;
 			}
 
-			++pixelsAdded;
 			++src_x;
 		}
 
