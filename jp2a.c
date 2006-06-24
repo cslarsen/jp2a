@@ -216,6 +216,23 @@ void normalize(Image* i) {
 		i->p[n] = (i->p[n] - min) / range;
 }
 
+void print_progress(float progress_0_to_1) {
+	char prog[progress_barlength + 2];
+
+	int m;
+	for ( m=0; m<progress_barlength; ++m )
+		prog[m] = '.';
+
+	prog[progress_barlength] = 0;
+
+	int tenth = ROUND( (float) progress_barlength * progress_0_to_1 );
+
+	while ( tenth > 0 )
+		prog[--tenth] = '#';
+
+	fprintf(stderr, "Reading file [%s]\r", prog);
+}
+
 int decompress(FILE *fp) {
 	struct jpeg_error_mgr jerr;
 	struct jpeg_decompress_struct cinfo;
@@ -289,12 +306,7 @@ int decompress(FILE *fp) {
 		}
 
 		if ( verbose ) {
-			char prog[progress_barlength + 2];
-			int m; for ( m=0; m<progress_barlength; ++m ) prog[m] = '.';
-			prog[progress_barlength] = 0;
-			int tenth = ROUND( (float)progress_barlength * (float)(cinfo.output_scanline + 1.0f) / (float)cinfo.output_height );
-			while ( tenth > 0 ) prog[--tenth] = '#';
-			fprintf(stderr, "Reading file [%s]\r", prog);
+			print_progress( (float) (cinfo.output_scanline + 1.0f) / (float) cinfo.output_height );
 		}
 
 	}
