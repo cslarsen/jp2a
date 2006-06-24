@@ -1,35 +1,59 @@
-ABOUT JP2A
+                                                                               
+      .oo.                                 ..oooo..                            
+     .OOOOo                            .oOOOOOOOOOOOo                          
+     .OOOO.                            OOOOOOOOOOOOOOO.                        
+     ......     ......  ......         OOo.....OOOOOOOo          .......       
+     OOOOOO.   .OOOOOOoOOOOOOOOo.      o        OOOOOOo     .oOOOOOOOOOOOOo    
+     OOOOOO.   .OOOOOOOOOOOOOOOOOO              oOOOOOo     OOOOOooooOOOOOOo   
+     OOOOOO.   .OOOOOOo.  .oOOOOOOO            .OOOOOo      Oo.      .OOOOOO.  
+     OOOOOO.   .OOOOOO      oOOOOOO.          .OOOOOo            ..ooOOOOOOO.  
+     OOOOOO.   .OOOOOO      .OOOOOO.         oOOOOO.         .oOOOOOooOOOOOO.  
+     OOOOOO.   .OOOOOO      oOOOOOO        oOOOOOo         .OOOOOO.  .OOOOOO.  
+     OOOOOO.   .OOOOOOoo..oOOOOOOO.      .OOOOOOOOOOOOOOo  oOOOOOo   .OOOOOO. .
+     OOOOOO.   .OOOOOOOOOOOOOOOOO.     .oOOOOOOOOOOOOOOOo  .OOOOOOOoOOOOOOOOOOo
+     OOOOOO.   .OOOOOO.oOOOOOoo.      .oooooooooooooooooo   .oOOOOOoo..oOOOOoo.
+    .OOOOOO.   .OOOOOO                                                         
+  .oOOOOOOO    .OOOOOO                                                         
+   oOOOOOO.    .OOOOOO                                                         
+    oOoo.      .OOOOOo                                                         
 
-jp2a is a simple JPEG to ASCII viewer.
 
-It is written by Christian Stigen Larsen, and released under the GNU General Public License.
+    ABOUT JP2A
 
-The latest version is available from http://jp2a.sf.net
-
-
-QUICK INSTALL
-
-./configure
-make
-make install
-
-If configure doesn't find jpeglib.h and you know where
-it is, you specify with
-
-./configure --with-jpeg-include=PATH --with-jpeg-lib=PATH
+    jp2a is a simple JPEG to ASCII viewer.
 
 
-BUILDING ON MAC OS X
+    COPYRIGHT
 
-Install jpeglib.h using fink or port:
+    jp2a is Copyright (c) 2006 Christian Stigen Larsen
+    Distributed under the GNU General Public License v2 or later.
 
-fink install jpeglib
-sudo port install jpeg
+    The latest version is available from http://jp2a.sf.net
 
-Then configure with proper directory:
 
-./configure --with-jpeg-include=/sw/include --with-jpeg-lib=/sw/lib  # fink
-./configure --with-jpeg-include=/opt/local/include --with-jpeg-lib=/opt/local/lib  # port
+    QUICK INSTALL
+
+    ./configure
+    make
+    make install
+
+    If configure doesn't find jpeglib.h and you know where
+    it is, you specify with
+
+    ./configure --with-jpeg-include=PATH --with-jpeg-lib=PATH
+
+
+    BUILDING ON MAC OS X
+
+    Install jpeglib.h using fink or port:
+
+    fink install jpeglib
+    sudo port install jpeg
+
+    Then configure with proper directory:
+
+    ./configure --with-jpeg-prefix=/sw           # fink
+    ./configure --with-jpeg-prefix=/opt/local    # port
 
 
 $Id$
