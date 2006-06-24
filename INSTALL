@@ -1,1 +1,7 @@
-See README.
+See the README file for installation instructions.
+
+To quickly build, just do:
+
+./configure
+make
+make install
