@@ -246,12 +246,8 @@ int decompress(FILE *fp) {
 
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
-
 		unsigned int dst_y = ROUND(to_dst_y * (float) cinfo.output_scanline) - 1;
 		unsigned int src_x = 0;
-		
-		fprintf(stderr, "dst_y = %d\n", dst_y);
-
 		int dst_x;
 
 		for ( dst_x=0; dst_x < image.width; ++dst_x ) {
