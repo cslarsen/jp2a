@@ -280,8 +280,8 @@ int decompress(FILE *fp) {
 	int num_chars = strlen(ascii_palette) - 1;
 	int components = cinfo.out_color_components;
 
-	float to_dst_y = (float)height / (float)cinfo.output_height;
-	float to_dst_x = (float)width / (float)cinfo.output_width;
+	float to_dst_y = (float) height / (float) cinfo.output_height;
+	float to_dst_x = (float) cinfo.output_width / (float) width;
 	
 	if ( verbose ) {
 		fprintf(stderr, "Source width: %d\n", cinfo.output_width);
@@ -296,11 +296,11 @@ int decompress(FILE *fp) {
 
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
-		unsigned int dst_y = ROUND( to_dst_y * (float) cinfo.output_scanline );
+		unsigned int dst_y = to_dst_y * (float) cinfo.output_scanline;
 		int dst_x;
 
 		for ( dst_x=0; dst_x < image.width; ++dst_x ) {
-			unsigned int src_x = ROUND( (float) dst_x / to_dst_x );
+			unsigned int src_x = (float) dst_x * to_dst_x;
 			calc_intensity(&buffer[0][src_x*components], &image.p[dst_y*width + dst_x], components);
 		}
 
