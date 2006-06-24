@@ -268,7 +268,7 @@ int decompress(FILE *fp) {
 	image.width = width;
 	image.height = height;
 
-	unsigned int bytes = width * height * sizeof(float);
+	unsigned int bytes = (width+1) * (height+1) * sizeof(float);
 
 	if ( (image.p = malloc(bytes)) == NULL ) {
 		fprintf(stderr, "Could not allocate %d bytes for output image", bytes);
