@@ -63,7 +63,8 @@ void help() {
 	fprintf(stderr, "OPTIONS\n");
 	fprintf(stderr, "    -                Decompress from standard input\n");
 	fprintf(stderr, "    --chars=...      Select character palette used to paint the image.  Leftmost character\n");
-	fprintf(stderr, "                     corresponds to black pixel, rightmost to white pixel.\n");
+	fprintf(stderr, "                     corresponds to black pixel, rightmost to white pixel.  Minium two characters\n");
+	fprintf(stderr, "                     must be specified.\n");
 	fprintf(stderr, "    -h, --help       Print program help\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, "    --height=H       Set output height calculate width by JPEG aspect ratio\n");
@@ -75,9 +76,10 @@ void help() {
 	fprintf(stderr, "\n");
 
 	fprintf(stderr, "EXAMPLES\n");
-	fprintf(stderr, "    jp2a --size=80x25 --chars='...oooxx@@' picture.jpg\n");
-	fprintf(stderr, "    cat picture.jpg | jp2a - --size=100x100\n");
+	fprintf(stderr, "    jp2a --size=80x25 --chars=' ...ooxx@@' picture.jpg\n");
 	fprintf(stderr, "    jp2a picture.jpg --width=76\n");
+	fprintf(stderr, "    jp2a picture.jpg --size=140x40\n");
+	fprintf(stderr, "    cat picture.jpg | jp2a - --size=100x100\n");
 	fprintf(stderr, "\n");
 
 	fprintf(stderr, "%s\n", copyright);
@@ -118,7 +120,12 @@ void parse_options(int argc, char** argv) {
 		}
 
 		hits += sscanf(s, "--size=%dx%d", &width, &height);
-		hits += sscanf(s, "--chars=%256s", ascii_palette);
+
+		if ( !strncmp(s, "--chars=", 8) ) {
+			// don't use sscanf, we need to read spaces as well
+			strcpy(ascii_palette, s+8);
+			++hits;
+		}
 
 		if ( sscanf(s, "--width=%d", &width) == 1 ) {
 			auto_height = 1;
