@@ -1,2 +1,3 @@
 Changes since 0.9.0
-	- Not available (0.9.0 was first release)
+	- Added --border option
+	- Fixed buffer overrun bug when using big output dimensions

@@ -53,12 +53,13 @@ int auto_width = 0;
 int width = 80;
 int height = 25;
 int progress_barlength = 40;
+int border = 0;
 
 char ascii_palette[257] = "";
 
 void help() {
 	fprintf(stderr, "%s\n", version);
-	fprintf(stderr, "Usage: jp2a file.jpg [file2.jpg [...]]\n\n");
+	fprintf(stderr, "Usage: jp2a [ options ] [ file(s) ]\n\n");
 	fprintf(stderr, "jp2a is  a simple JPEG to ASCII viewer.\n\n");
 
 	fprintf(stderr, "OPTIONS\n");
@@ -66,6 +67,7 @@ void help() {
 	fprintf(stderr, "    --chars=...      Select character palette used to paint the image.  Leftmost character\n");
 	fprintf(stderr, "                     corresponds to black pixel, rightmost to white pixel.  Minium two characters\n");
 	fprintf(stderr, "                     must be specified.\n");
+	fprintf(stderr, "    --border         Print a border around the output image\n");
 	fprintf(stderr, "    -h, --help       Print program help\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, "    --height=H       Set output height calculate width by JPEG aspect ratio\n");
@@ -120,6 +122,11 @@ void parse_options(int argc, char** argv) {
 			exit(0);
 		}
 
+		if ( !strcmp(s, "--border") ) {
+			border = 1;
+			++hits;
+		}
+
 		hits += sscanf(s, "--size=%dx%d", &width, &height);
 
 		if ( !strncmp(s, "--chars=", 8) ) {
@@ -155,15 +162,34 @@ void parse_options(int argc, char** argv) {
 void print(Image* i, int chars) {
 	int x, y;
 
+	if ( border ) {
+		printf("+");
+		for ( x=0; x < i->width; ++x )
+			printf("-");
+		printf("+\n");
+	}
+			
 	for ( y=0; y < i->height; ++y ) {
+
+		if ( border ) printf("|");
 
 		for ( x=0; x < i->width; ++x ) {
 			int pos = ROUND( (float) chars * i->p[y*i->width + x] );
 			printf("%c", ascii_palette[chars - pos]);
 		}
 
+		if ( border ) printf("|");
+
 		printf("\n");
 	}
+
+	if ( border ) {
+		printf("+");
+		for ( x=0; x < i->width; ++x )
+			printf("-");
+		printf("+\n");
+	}
+	
 }
 
 void clear(Image* i) {
@@ -219,7 +245,7 @@ int decompress(FILE *fp) {
 	image.width = width;
 	image.height = height;
 
-	int bytes = width * height * sizeof(float);
+	unsigned int bytes = width * height * sizeof(float);
 
 	if ( (image.p = malloc(bytes)) == NULL ) {
 		fprintf(stderr, "Could not allocate %d bytes for output image", bytes);
@@ -231,8 +257,8 @@ int decompress(FILE *fp) {
 	int num_chars = strlen(ascii_palette) - 1;
 	int components = cinfo.out_color_components;
 
-	float to_dst_y = (float) height / (float) cinfo.output_height;
-	float to_dst_x = (float) width / (float) cinfo.output_width;
+	float to_dst_y = (float)height / (float)cinfo.output_height;
+	float to_dst_x = (float)width / (float)cinfo.output_width;
 	
 	if ( verbose ) {
 		fprintf(stderr, "Source width: %d\n", cinfo.output_width);
@@ -247,12 +273,12 @@ int decompress(FILE *fp) {
 
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
-		unsigned int dst_y = ROUND(to_dst_y * (float) cinfo.output_scanline) - 1;
+		unsigned int dst_y = to_dst_y * (float) cinfo.output_scanline;
 		unsigned int src_x = 0;
 		int dst_x;
 
 		for ( dst_x=0; dst_x < image.width; ++dst_x ) {
-			src_x = ROUND( (float)dst_x / (float)to_dst_x );
+			src_x = (float)dst_x / (float)to_dst_x;
 
 			// calculate intensity
 			int c = 0;
