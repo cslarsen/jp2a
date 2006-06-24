@@ -27,8 +27,9 @@
 
 #ifdef HAVE_JPEGLIB_H
   #undef HAVE_STDLIB_H
-  #include <jpeglib.h>
 #endif
+
+#include <jpeglib.h>
 
 #define ROUND(x) (int) ( 0.5 + x )
 
