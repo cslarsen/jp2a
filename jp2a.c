@@ -233,6 +233,13 @@ void print_progress(float progress_0_to_1) {
 	fprintf(stderr, "Reading file [%s]\r", prog);
 }
 
+void calc_intensity(JSAMPLE* source, float* dest, int components) {
+	int c = 0;
+	while ( c < components ) {
+		*dest += (float) *(source + c++) / (255.0f * (float) components);
+	}
+}
+
 int decompress(FILE *fp) {
 	struct jpeg_error_mgr jerr;
 	struct jpeg_decompress_struct cinfo;
@@ -289,29 +296,20 @@ int decompress(FILE *fp) {
 
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
-		unsigned int dst_y = to_dst_y * (float) cinfo.output_scanline;
-		unsigned int src_x = 0;
+		unsigned int dst_y = ROUND( to_dst_y * (float) cinfo.output_scanline );
 		int dst_x;
 
 		for ( dst_x=0; dst_x < image.width; ++dst_x ) {
-			src_x = (float)dst_x / (float)to_dst_x;
-
-			// calculate intensity
-			int c = 0;
-			while ( c < components ) {
-				image.p[dst_y*width + dst_x] +=
-					(float) buffer[0][src_x*components + c++]
-					 / (255.0f * (float) components );
-			}
+			unsigned int src_x = ROUND( (float) dst_x / to_dst_x );
+			calc_intensity(&buffer[0][src_x*components], &image.p[dst_y*width + dst_x], components);
 		}
 
-		if ( verbose ) {
+		if ( verbose )
 			print_progress( (float) (cinfo.output_scanline + 1.0f) / (float) cinfo.output_height );
-		}
-
 	}
 
-	if ( verbose ) fprintf(stderr, "\n");
+	if ( verbose )
+		fprintf(stderr, "\n");
 
 	normalize(&image);
 	print(&image, num_chars);
