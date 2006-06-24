@@ -164,32 +164,31 @@ void print(Image* i, int chars) {
 
 	if ( border ) {
 		printf("+");
-		for ( x=0; x < i->width; ++x )
-			printf("-");
+		for ( x=0; x < i->width; ++x ) printf("-");
 		printf("+\n");
 	}
-			
-	for ( y=0; y < i->height; ++y ) {
 
-		if ( border ) printf("|");
+	char line[i->width + 1];
+	line[i->width] = 0;
+
+	for ( y=0; y < i->height; ++y ) {
 
 		for ( x=0; x < i->width; ++x ) {
 			int pos = ROUND( (float) chars * i->p[y*i->width + x] );
-			printf("%c", ascii_palette[chars - pos]);
+			line[x] = ascii_palette[chars - pos];
 		}
 
-		if ( border ) printf("|");
-
-		printf("\n");
+		if ( !border )
+			printf("%s\n", line);
+		else
+			printf("|%s|\n", line);
 	}
 
 	if ( border ) {
 		printf("+");
-		for ( x=0; x < i->width; ++x )
-			printf("-");
+		for ( x=0; x < i->width; ++x ) printf("-");
 		printf("+\n");
 	}
-	
 }
 
 void clear(Image* i) {
