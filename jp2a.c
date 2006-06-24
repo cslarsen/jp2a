@@ -25,10 +25,6 @@
   #include <string.h>
 #endif
 
-#ifdef HAVE_STRINGS_H
-  #include <strings.h>
-#endif
-
 #ifdef HAVE_JPEGLIB_H
   #undef HAVE_STDLIB_H
   #include <jpeglib.h>
@@ -39,6 +35,7 @@
 const char* version   = PACKAGE_STRING;
 const char* copyright = "Copyright (C) 2006 Christian Stigen Larsen";
 const char* license   = "Distributed under the GNU General Public License (GPL) v2 or later.";
+const char* url       = "http://jp2a.sf.net";
 
 const char* default_palette = "   ...',;:clodxkO0KXNWM";
 
@@ -86,6 +83,7 @@ void help() {
 	fprintf(stderr, "%s\n", license);
 	fprintf(stderr, "\n");
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
+	fprintf(stderr, "News and updates on %s\n", url);
 	exit(1);
 }
 
@@ -114,6 +112,7 @@ void parse_options(int argc, char** argv) {
 			fprintf(stderr, "%s\n", version);
 			fprintf(stderr, "%s\n", copyright);
 			fprintf(stderr, "%s\n", license);
+			fprintf(stderr, "News and updates on %s\n", url);
 			exit(0);
 		}
 

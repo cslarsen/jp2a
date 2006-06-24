@@ -13,6 +13,7 @@ AC_CONFIG_FILES([Makefile])
 AC_PROG_CC
 
 CPPFLAGS="$CPPFLAGS -Wall -W"
+LDFLAGS="$LDFLAGS -Wall -W"
 
 # Checks for libraries.
 AC_ARG_WITH([jpeg-include],
@@ -22,6 +23,10 @@ AC_ARG_WITH([jpeg-include],
 AC_ARG_WITH([jpeg-lib],
 	[  --with-jpeg-lib=PATH to directory containing jpeglib lib file],
 	[LDFLAGS="$LDFLAGS -L$withval"])
+
+AC_ARG_WITH([jpeg-prefix],
+	[  --with-jpeg-prefix=PATH is same as --with-jpeg-include=PATH/include and --with-jpeg-lib=PATH/lib],
+	[CPPFLAGS="$CPPFLAGS -I$withval/include" LDFLAGS="$LDFLAGS -L$withval/lib"])
 
 AC_CHECK_LIB([jpeg],
 	[jpeg_start_decompress],
