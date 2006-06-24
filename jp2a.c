@@ -45,12 +45,13 @@ typedef struct Image_ {
 	float *p;
 } Image;
 
-// Options
+// Options with defaults
 int verbose = 0;
-int width = 80;
-int height = 25;
 int auto_height = 0;
 int auto_width = 0;
+int width = 80;
+int height = 25;
+int progress_barlength = 20;
 
 char ascii_palette[257] = "";
 
@@ -235,13 +236,16 @@ int decompress(FILE *fp) {
 	}
 
 	while ( cinfo.output_scanline < cinfo.output_height ) {
+
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
 		unsigned int dst_y = ROUND(to_dst_y * (float) cinfo.output_scanline);
 		unsigned int src_x = 0;
 
-		while ( src_x < cinfo.output_width ) {
-			unsigned dst_x = ROUND(to_dst_x * (float) src_x);
+		int dst_x;
+
+		for ( dst_x=0; dst_x < image.width; ++dst_x ) {
+			src_x = ROUND( (float)dst_x / (float)to_dst_x );
 
 			// calculate intensity
 			int c = 0;
@@ -250,10 +254,20 @@ int decompress(FILE *fp) {
 					(float) buffer[0][src_x*components + c++]
 					 / (255.0f * (float) components );
 			}
-
-			++src_x;
 		}
+
+		if ( verbose ) {
+			char prog[progress_barlength + 2];
+			memset(prog, '.', progress_barlength);
+			prog[progress_barlength] = 0;
+			int tenth = ROUND( (float)progress_barlength * (float)(cinfo.output_scanline + 1.0f) / (float)cinfo.output_height );
+			while ( tenth > 0 ) prog[--tenth] = '#';
+			fprintf(stderr, "Reading file [%s]\r", prog);
+		}
+
 	}
+
+	if ( verbose ) fprintf(stderr, "\n");
 
 	normalize(&image);
 	print(&image, num_chars);
