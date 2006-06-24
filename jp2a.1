@@ -1,0 +1,76 @@
+.TH jp2a 1  "June 24, 2006" "version 0.9.0" "USER COMMANDS"
+.SH NAME
+jp2a \- convert JPEG images to ASCII characters
+.SH SYNOPSIS
+.B jp2a
+[
+.I options
+] [
+.I filename
+]
+.LP
+.SH DESCRIPTION
+.B jp2a
+will convert JPEG image to ASCII characters.  You can specify
+many files on the command line, or use dash to read from standard
+input.
+.PP
+The program doesn't use any fancy interpolation when resizing the
+image, so for specific combinations of source and destination
+resolutions you might get artifacts.  This may be corrected in
+future versions though.
+.SH OPTIONS
+.TP
+.B \-h \-\-help
+display a short help text
+.TP
+.BI \-
+read JPEG image from standard input
+.TP
+.BI \-\-chars= ....
+use the given characters when producing the output ASCII image
+.TP
+.BI \-\-height= N
+set output height.  If only --height is specified, then output width will
+be calculated according to the source images aspect ratio.
+.TP
+.BI \-\-width= N
+set output width.  If you only specify the width, the height will be
+calculated automatically
+.TP
+.BI \-\-size= WIDTHxHEIGHT
+set output dimension.  Default is --size=80x25.
+.TP
+.B \-v \-\-verbose
+print some verbose information to standard error when reading each JPEG image.
+.TP
+.B \-V \-\-version
+print program version.
+.SH EXAMPLES
+.TP
+Pring imagefile.jpg using ASCII characters in 40 columns and 20 rows:
+
+.B jp2a
+\-\-size=40x20 imagefile.jpg
+.TP
+Output picture.jpg and picture2.jpg, each 80x25 characters, using the characters " ...ooxx@@" for output:
+
+.B jp2a
+\-\-size=80x25 --chars=" ...ooxx@@" picture.jpg picture2.jpg
+.TP
+Output image.jpg using 76 columns, height is automatically calculated from aspect ratio of image.jpg
+
+cat image.jpg |
+.B jp2a
+\-\-width=76 \-
+.PP
+.SH EXIT STATUS
+jp2a returns zero for normal operations, 1 when errors are encountered.
+.SH AUTHOR
+Christian Stigen Larsen <csl@sublevel3.org>
+.SH BUGS
+Some artifacts may occur when input and output resolutions differ a bit.
+This is because the program does not use any interpolation, but may be
+fixed in the future.
+.SH SEE ALSO
+cjpeg(1), djpeg(1), jpegtran(1)
