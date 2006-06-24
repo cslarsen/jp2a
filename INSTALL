@@ -5,3 +5,14 @@ To quickly build, just do:
 ./configure
 make
 make install
+
+If jpeglib.h is not in the search-path, then do e.g.:
+
+./configure --with-jpeg-include=/opt/local/include --with-jpeg-lib=/opt/local/lib
+
+or
+
+./configure --with-jpeg-prefix=/opt/local
+
+
+$Id$
