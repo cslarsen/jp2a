@@ -52,7 +52,7 @@ int auto_height = 0;
 int auto_width = 0;
 int width = 80;
 int height = 25;
-int progress_barlength = 20;
+int progress_barlength = 40;
 
 char ascii_palette[257] = "";
 
@@ -265,7 +265,7 @@ int decompress(FILE *fp) {
 
 		if ( verbose ) {
 			char prog[progress_barlength + 2];
-			memset(prog, '.', progress_barlength);
+			int m; for ( m=0; m<progress_barlength; ++m ) prog[m] = '.';
 			prog[progress_barlength] = 0;
 			int tenth = ROUND( (float)progress_barlength * (float)(cinfo.output_scanline + 1.0f) / (float)cinfo.output_height );
 			while ( tenth > 0 ) prog[--tenth] = '#';
