@@ -1,2 +1,4 @@
 - Try logo-40x25-gray.jpg --size=100x500, you get so many divides you will get a NaN (not a number),
   this must be fixed.
+
+  The NaNs are due to divide by zero, which is fixed

@@ -199,6 +199,8 @@ void print(Image* i, int chars) {
 
 		for ( x=0; x < i->width; ++x ) {
 			int pos = ROUND( (float) chars * i->p[y*i->width + x] );
+//			if ( pos < 0 ) pos = 0;
+//			if ( pos > chars ) pos = chars; // we will occasionally get NaN from i->p[]
 			line[x] = ascii_palette[chars - pos];
 		}
 
@@ -226,8 +228,10 @@ void normalize(Image* i) {
 	int x, y;
 
 	for ( y=0; y < i->height; ++y )
-	for ( x=0; x < i->width; ++x )
-		i->p[y*i->width + x] /= (float) i->yadds[y];
+		for ( x=0; x < i->width; ++x ) {
+			if ( i->yadds[y] > 0 )
+				i->p[y*i->width + x] /= (float) (i->yadds[y] );
+		}
 }
 
 void print_progress(float progress_0_to_1) {
