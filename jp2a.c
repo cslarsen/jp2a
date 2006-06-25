@@ -304,6 +304,7 @@ int decompress(FILE *fp) {
 	}
 
 	// cinfo.output_scanline range: 1..cinfo.output_height
+unsigned int last_dsty = 0;
 	while ( cinfo.output_scanline < cinfo.output_height ) {
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
@@ -317,6 +318,11 @@ int decompress(FILE *fp) {
 
 		if ( verbose )
 			print_progress( (float) (cinfo.output_scanline + 1.0f) / (float) cinfo.output_height );
+
+		if ( dst_y - last_dsty > 1 ) {
+			printf("missed %d y lines\n", dst_y - last_dsty);
+		}
+		last_dsty = dst_y;
 	}
 
 	if ( verbose )
