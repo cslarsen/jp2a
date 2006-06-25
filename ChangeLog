@@ -1,13 +1,10 @@
 CHANGES SINCE 0.9.1
-- Entire image is now correctly read, though with gaps, which
-  show up as artifacts in output picture.  (For example when
-  magnifying small JPEG pictures).  The source gaps are only in
-  x-direction, all JPEG y-lines are used in calculation.
-- Configure will not check for memset, as it is not used.
 - Default output size is now --width=70 with aspect-calculated
   height.  This is because portrait-oriented JPEGs would look
   like landscape pictures with --size=80x25, and was confusing
   with default viewing.
+- Writing pixels into intensity buffer is now (more) correct.
+- Configure will not check for memset, as it is not used.
 
 CHANGES SINCE 0.9.0
 - Added --border option

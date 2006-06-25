@@ -133,7 +133,10 @@ void parse_options(int argc, char** argv) {
 			++hits;
 		}
 
-		hits += sscanf(s, "--size=%dx%d", &width, &height);
+		if ( sscanf(s, "--size=%dx%d", &width, &height) == 2 ) {
+			auto_width = auto_height = 0;
+			++hits;
+		}
 
 		if ( !strncmp(s, "--chars=", 8) ) {
 			// don't use sscanf, we need to read spaces as well

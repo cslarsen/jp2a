@@ -1,0 +1,3 @@
+- Take logo-40x25-gray.jpg, as long as you use --sixe=Nx25 you will get perfect results for all widths,
+  but when you change y-direction, you get errors... this means y-scaling is imperfect and has to be
+  corrected.  Same with jp2a logo-80x50-gray.jpg --size=Nx50
