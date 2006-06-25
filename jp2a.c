@@ -15,6 +15,7 @@
   #include "config.h"
 #endif
 
+
 #ifdef HAVE_STDLIB_H
   #include <stdlib.h>
 #endif
@@ -268,7 +269,7 @@ int decompress(FILE *fp) {
 	image.width = width;
 	image.height = height;
 
-	unsigned int bytes = (width+1) * (height+1) * sizeof(float);
+	unsigned int bytes = width * height * sizeof(float);
 
 	if ( (image.p = malloc(bytes)) == NULL ) {
 		fprintf(stderr, "Could not allocate %d bytes for output image", bytes);
@@ -280,7 +281,7 @@ int decompress(FILE *fp) {
 	int num_chars = strlen(ascii_palette) - 1;
 	int components = cinfo.out_color_components;
 
-	float to_dst_y = (float) height / (float) cinfo.output_height;
+	float to_dst_y = (float) (height-1) / (float) (cinfo.output_height-1);
 	float to_dst_x = (float) cinfo.output_width / (float) width;
 	
 	if ( verbose ) {
@@ -292,11 +293,11 @@ int decompress(FILE *fp) {
 		fprintf(stderr, "Output palette (%d chars): '%s'\n", 1 + num_chars, ascii_palette);
 	}
 
+	// cinfo.output_scanline range: 1..cinfo.output_height
 	while ( cinfo.output_scanline < cinfo.output_height ) {
-
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
-		unsigned int dst_y = to_dst_y * (float) cinfo.output_scanline;
+		unsigned int dst_y = to_dst_y * (float) (cinfo.output_scanline-1);
 		int dst_x;
 
 		for ( dst_x=0; dst_x < image.width; ++dst_x ) {

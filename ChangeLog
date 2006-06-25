@@ -1,5 +1,8 @@
 CHANGES SINCE 0.9.1
-- None yet.
+- Entire image is now correctly read, though with gaps, which
+  show up as artifacts in output picture.  (For example when
+  magnifying small JPEG pictures).  The source gaps are only in
+  x-direction, all JPEG y-lines are used in calculation.
 
 CHANGES SINCE 0.9.0
 - Added --border option

@@ -44,5 +44,5 @@ AC_C_CONST
 
 # Checks for library functions.
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([memset])
+#AC_CHECK_FUNCS([memset])
 AC_OUTPUT
