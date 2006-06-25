@@ -43,5 +43,6 @@ AC_CHECK_HEADERS([jpeglib.h],,AC_MSG_ERROR([required header file missing]))
 AC_C_CONST
 
 # Checks for library functions.
-AC_FUNC_MALLOC
+#AC_FUNC_MALLOC
+AC_FUNC_ALLOCA
 AC_OUTPUT
