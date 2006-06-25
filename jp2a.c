@@ -99,12 +99,13 @@ void help() {
 	fprintf(stderr, "\n");
 	fprintf(stderr, "Project homepage on %s\n", url);
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
-	exit(1);
 }
 
-void parse_options(int argc, char** argv) {
-	if ( argc<2 )
+int parse_options(int argc, char** argv) {
+	if ( argc<2 ) {
 		help();
+		return 1;
+	}
 
 	int n;
 
@@ -112,11 +113,14 @@ void parse_options(int argc, char** argv) {
 		char *s = argv[n];
 
 		if ( *s != '-' ) continue;
+		if ( *s=='-' && *(s+1)==0 ) continue; // stdin
 
 		int hits = 0;
 
-		if ( !strcmp(s, "-h") || !strcmp(s, "--help") )
+		if ( !strcmp(s, "-h") || !strcmp(s, "--help") ) {
 			help();
+			return 0;
+		}
 
 		if ( !strcmp(s, "-v") || !strcmp(s, "--verbose") ) {
 			verbose = 1;
@@ -128,7 +132,7 @@ void parse_options(int argc, char** argv) {
 			fprintf(stderr, "%s\n", copyright);
 			fprintf(stderr, "%s\n", license);
 			fprintf(stderr, "News and updates on %s\n", url);
-			exit(0);
+			return 0;
 		}
 
 		if ( !strcmp(s, "--border") ) {
@@ -160,6 +164,7 @@ void parse_options(int argc, char** argv) {
 		if ( !hits ) {
 			fprintf(stderr, "Unknown option %s\n\n", s);
 			help();
+			return 1;
 		}
 	}
 
@@ -169,6 +174,8 @@ void parse_options(int argc, char** argv) {
 	
 	if ( width < 1 ) width = 1;
 	if ( height < 1 ) height = 1;
+
+	return -1;
 }
 
 void calc_aspect_ratio(int jpeg_width, int jpeg_height) {
@@ -213,8 +220,6 @@ void print(Image* i, int chars) {
 
 		for ( x=0; x < i->width; ++x ) {
 			int pos = ROUND( (float) chars * i->p[y*i->width + x] );
-//			if ( pos < 0 ) pos = 0;
-//			if ( pos > chars ) pos = chars; // we will occasionally get NaN from i->p[]
 			line[x] = ascii_palette[chars - pos];
 		}
 
@@ -255,7 +260,6 @@ void print_progress(float progress_0_to_1) {
 	for ( m=0; m <= progress_barlength; ++m )
 		prog[m] = '.';
 
-
 	int tenth = ROUND( (float) progress_barlength * progress_0_to_1 );
 
 	while ( tenth > 0 ) prog[--tenth] = '#';
@@ -272,6 +276,15 @@ void calc_intensity(JSAMPLE* source, float* dest, int components) {
 		*dest += (float) *(source + c++)
 			/ (255.0f * (float) components);
 	}
+}
+
+void print_info(const struct jpeg_decompress_struct* cinfo) {
+	fprintf(stderr, "Source width: %d\n", cinfo->output_width);
+	fprintf(stderr, "Source height: %d\n", cinfo->output_height);
+	fprintf(stderr, "Source color components: %d\n", cinfo->output_components);
+	fprintf(stderr, "Output width: %d\n", width);
+	fprintf(stderr, "Output height: %d\n", height);
+	fprintf(stderr, "Output palette (%ld chars): '%s'\n", strlen(ascii_palette), ascii_palette);
 }
 
 int decompress(FILE *fp) {
@@ -296,14 +309,14 @@ int decompress(FILE *fp) {
 	image.width = width;
 	image.height = height;
 
-	if ( (image.p = malloc(width * height * sizeof(float))) == NULL ) {
+	if ( (image.p = alloca(width * height * sizeof(float))) == NULL ) {
 		fprintf(stderr, "Not enough memory for given output dimension (image.p)\n");
-		exit(1);
+		return 1;
 	}
 
-	if ( (image.yadds = malloc(width * sizeof(int))) == NULL ) {
+	if ( (image.yadds = alloca(width * sizeof(int))) == NULL ) {
 		fprintf(stderr, "Not enough memory for given output dimension (iimage.yadds)\n");
-		exit(1);
+		return 1;
 	}
 
 	clear(&image);
@@ -314,14 +327,8 @@ int decompress(FILE *fp) {
 	float to_dst_y = (float) (height-1) / (float) (cinfo.output_height-1);
 	float to_dst_x = (float) cinfo.output_width / (float) width;
 	
-	if ( verbose ) {
-		fprintf(stderr, "Source width: %d\n", cinfo.output_width);
-		fprintf(stderr, "Source height: %d\n", cinfo.output_height);
-		fprintf(stderr, "Source color components: %d\n", components);
-		fprintf(stderr, "Output width: %d\n", width);
-		fprintf(stderr, "Output height: %d\n", height);
-		fprintf(stderr, "Output palette (%d chars): '%s'\n", 1 + num_chars, ascii_palette);
-	}
+	if ( verbose )
+		print_info(&cinfo);
 
 	unsigned int last_dsty = 0;
 
@@ -341,10 +348,12 @@ int decompress(FILE *fp) {
 		// fill up any scanlines we missed since last iteration
 		while ( dst_y - last_dsty > 1 ) {
 			++last_dsty;
+
 			for ( dst_x=0; dst_x < image.width; ++dst_x ) {
 				unsigned int src_x = (float) dst_x * to_dst_x;
 				calc_intensity(&buffer[0][src_x*components], &image.p[(last_dsty)*width + dst_x], components);
 			}
+
 			++image.yadds[last_dsty];
 		}
 
@@ -359,15 +368,16 @@ int decompress(FILE *fp) {
 
 	normalize(&image);
 	print(&image, num_chars);
-	free(image.p);
 
 	jpeg_finish_decompress(&cinfo);
 	jpeg_destroy_decompress(&cinfo);
+
 	return 0;
 }
 
 int main(int argc, char** argv) {
-	parse_options(argc, argv);
+	int r = parse_options(argc, argv);
+	if ( r >= 0 ) return r;
 
 	int n;
 	for ( n=1; n<argc; ++n ) {
@@ -378,15 +388,22 @@ int main(int argc, char** argv) {
 
 		// Read from stdin
 		if ( argv[n][0]=='-' && argv[n][1]==0 ) {
-			decompress(stdin);
-			continue;
+			int r = decompress(stdin);
+			if ( r == 0 )
+				continue;
 		}
 
 		FILE *fp;
 		if ( (fp = fopen(argv[n], "rb")) != NULL ) {
-			if ( verbose ) fprintf(stderr, "File: %s\n", argv[n]);
-			decompress(fp);
+
+			if ( verbose )
+				fprintf(stderr, "File: %s\n", argv[n]);
+
+			int r = decompress(fp);
 			fclose(fp);
+
+			if ( r != 0 )
+				return r;
 		} else {
 			fprintf(stderr, "Can't open %s\n", argv[n]);
 			return 1;

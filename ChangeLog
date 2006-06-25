@@ -1,3 +1,15 @@
+CHANGES SINCE 0.9.2
+
+- When reading multiple files, malloc complained when freeing memory.  Using
+  alloca now instead, which does not complain (although it may seem a buffer
+  overrun is lurking somewhere).
+
+- Not using exit(), using return codes.  If error occurs, we always stop.
+
+- Using `cat file.jpg | jp2a -' now does not print help message along with
+  image.
+
+
 CHANGES SINCE 0.9.1
 
 - Much better output results, due to more accurate normalization and removal of
