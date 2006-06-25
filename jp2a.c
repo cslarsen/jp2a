@@ -49,10 +49,10 @@ typedef struct Image_ {
 
 // Options with defaults
 int verbose = 0;
-int auto_height = 0;
+int auto_height = 1;
 int auto_width = 0;
-int width = 80;
-int height = 25;
+int width = 70;
+int height = 0;
 int progress_barlength = 40;
 int border = 0;
 
@@ -72,11 +72,16 @@ void help() {
 	fprintf(stderr, "    -h, --help       Print program help\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, "    --height=H       Set output height calculate width by JPEG aspect ratio\n");
-	fprintf(stderr, "    --width=W        Set output width, calculate height by JPEG aspect ratio\n");
-	fprintf(stderr, "    --size=WxH       Set exact output dimension, default is %dx%d\n", width, height);
+	fprintf(stderr, "    --width=W        Set output width, calculate height by JPEG aspect ratio, default is %d\n", width);
+	fprintf(stderr, "    --size=WxH       Set exact output dimension, regardless of JPEG aspect ratio\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, "    -v, --verbose    Verbose output\n");
 	fprintf(stderr, "    -V, --version    Show program version\n");
+	fprintf(stderr, "\n");
+
+	fprintf(stderr, "DEFAULT\n");
+	fprintf(stderr,"     The default running mode is ``jp2a --width=70 [ filename ]'', so that aspect\n");
+	fprintf(stderr, "    is correct for output mode.\n");
 	fprintf(stderr, "\n");
 
 	fprintf(stderr, "EXAMPLES\n");
@@ -194,8 +199,10 @@ void print(Image* i, int chars) {
 
 void clear(Image* i) {
 	int n = 0;
-	while ( n < (i->height * i->width) )
-		i->p[n++] = 0.0f;
+	while ( n < (i->height * i->width) ) {
+		i->p[n] = 0.0f;
+		++n;
+	}
 }
 
 // This exaggerates the differences in the picture, good for ASCII output
