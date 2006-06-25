@@ -1,14 +1,17 @@
 /*
- * Copyright (C) 2006 Christian Stigen Larsen <http://csl.sublevel3.org>
+ * Copyright (C) 2006 Christian Stigen Larsen
  * Distributed under the GNU General Public License (GPL) v2 or later.
  *
- * Will print JPEG-files using ASCII characters.
+ * jp2a converts JPEG to ASCII.
  *
- * Compilation example:
- * cc -g -O2 jp2a.c -I/sw/include -L/sw/lib -ljpeg
+ * Project homepage on http://jp2a.sf.net
+ * Author's homepage on http://csl.sublevel3.org
+ *
+ * Compilation hint:
+ *
+ *   cc -g -O2 jp2a.c -I/sw/include -L/sw/lib -ljpeg
  *
  * $Id$
- *
  */
 
 #ifdef HAVE_CONFIG_H
@@ -39,12 +42,11 @@ const char* copyright = "Copyright (C) 2006 Christian Stigen Larsen";
 const char* license   = "Distributed under the GNU General Public License (GPL) v2 or later.";
 const char* url       = "http://jp2a.sf.net";
 
-const char* default_palette = "   ...',;:clodxkO0KXNWM";
-
 typedef struct Image_ {
 	int width;
 	int height;
 	float *p;
+	int *yadds;
 } Image;
 
 // Options with defaults
@@ -57,6 +59,7 @@ int progress_barlength = 40;
 int border = 0;
 
 char ascii_palette[257] = "";
+const char* default_palette = "   ...',;:clodxkO0KXNWM";
 
 void help() {
 	fprintf(stderr, "%s\n", version);
@@ -94,8 +97,8 @@ void help() {
 	fprintf(stderr, "%s\n", copyright);
 	fprintf(stderr, "%s\n", license);
 	fprintf(stderr, "\n");
+	fprintf(stderr, "Project homepage on %s\n", url);
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
-	fprintf(stderr, "News and updates on %s\n", url);
 	exit(1);
 }
 
@@ -168,6 +171,18 @@ void parse_options(int argc, char** argv) {
 	if ( height < 1 ) height = 1;
 }
 
+void calc_aspect_ratio(int jpeg_width, int jpeg_height) {
+	// Calculate width or height, but not both
+
+	if ( auto_width && !auto_height )
+		width = 2 * height * jpeg_width / jpeg_height;
+
+	if ( !auto_width && auto_height )
+		height = width * jpeg_height / jpeg_width / 2;
+		// (above) divide by two, because most unix chars
+		// in the terminal twice as tall as they are wide
+}
+
 void print(Image* i, int chars) {
 	int x, y;
 
@@ -187,10 +202,7 @@ void print(Image* i, int chars) {
 			line[x] = ascii_palette[chars - pos];
 		}
 
-		if ( !border )
-			printf("%s\n", line);
-		else
-			printf("|%s|\n", line);
+		printf( border==0 ? "%s\n" : "|%s|\n" , line);
 	}
 
 	if ( border ) {
@@ -204,50 +216,43 @@ void clear(Image* i) {
 	int n = 0;
 	while ( n < (i->height * i->width) ) {
 		i->p[n] = 0.0f;
+		i->yadds[n] = 0;
 		++n;
 	}
 }
 
 // This exaggerates the differences in the picture, good for ASCII output
 void normalize(Image* i) {
-	int n;
-	float min = 10000000.0;
-	float max = -1000000.0;
+	int x, y;
 
-	// find min and max values
-	for ( n=0; n < (i->height * i->width); ++n ) {
-		float v = i->p[n];
-		if ( v < min ) min = v;
-		if ( v > max ) max = v;
-	}
-
-	// normalize to [0..1] range
-	float range = max - min;
-	for ( n=0; n < (i->height * i->width); ++n )
-		i->p[n] = (i->p[n] - min) / range;
+	for ( y=0; y < i->height; ++y )
+	for ( x=0; x < i->width; ++x )
+		i->p[y*i->width + x] /= (float) i->yadds[y];
 }
 
 void print_progress(float progress_0_to_1) {
 	char prog[progress_barlength + 2];
 
 	int m;
-	for ( m=0; m<progress_barlength; ++m )
+	for ( m=0; m <= progress_barlength; ++m )
 		prog[m] = '.';
 
-	prog[progress_barlength] = 0;
 
 	int tenth = ROUND( (float) progress_barlength * progress_0_to_1 );
 
-	while ( tenth > 0 )
-		prog[--tenth] = '#';
+	while ( tenth > 0 ) prog[--tenth] = '#';
+
+	prog[progress_barlength] = 0;
 
 	fprintf(stderr, "Reading file [%s]\r", prog);
 }
 
 void calc_intensity(JSAMPLE* source, float* dest, int components) {
 	int c = 0;
+
 	while ( c < components ) {
-		*dest += (float) *(source + c++) / (255.0f * (float) components);
+		*dest += (float) *(source + c++)
+			/ (255.0f * (float) components);
 	}
 }
 
@@ -267,22 +272,19 @@ int decompress(FILE *fp) {
 	JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray)
 		((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
-	// Calculate width or height, but not both
-
-	if ( auto_width && !auto_height )
-		width = 2 * height * cinfo.output_width / cinfo.output_height;
-
-	if ( !auto_width && auto_height )
-		height = width * cinfo.output_height / cinfo.output_width / 2;
+	calc_aspect_ratio(cinfo.output_width, cinfo.output_height);
 
 	Image image;
 	image.width = width;
 	image.height = height;
 
-	unsigned int bytes = width * height * sizeof(float);
+	if ( (image.p = malloc(width * height * sizeof(float))) == NULL ) {
+		fprintf(stderr, "Not enough memory for given output dimension (image.p)\n");
+		exit(1);
+	}
 
-	if ( (image.p = malloc(bytes)) == NULL ) {
-		fprintf(stderr, "Could not allocate %d bytes for output image", bytes);
+	if ( (image.yadds = malloc(width * sizeof(int))) == NULL ) {
+		fprintf(stderr, "Not enough memory for given output dimension (iimage.yadds)\n");
 		exit(1);
 	}
 
@@ -303,8 +305,6 @@ int decompress(FILE *fp) {
 		fprintf(stderr, "Output palette (%d chars): '%s'\n", 1 + num_chars, ascii_palette);
 	}
 
-	// cinfo.output_scanline range: 1..cinfo.output_height
-unsigned int last_dsty = 0;
 	while ( cinfo.output_scanline < cinfo.output_height ) {
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
@@ -316,13 +316,10 @@ unsigned int last_dsty = 0;
 			calc_intensity(&buffer[0][src_x*components], &image.p[dst_y*width + dst_x], components);
 		}
 
+		++image.yadds[dst_y];
+
 		if ( verbose )
 			print_progress( (float) (cinfo.output_scanline + 1.0f) / (float) cinfo.output_height );
-
-		if ( dst_y - last_dsty > 1 ) {
-			printf("missed %d y lines\n", dst_y - last_dsty);
-		}
-		last_dsty = dst_y;
 	}
 
 	if ( verbose )
@@ -347,6 +344,7 @@ int main(int argc, char** argv) {
 		if ( argv[n][0]=='-' && argv[n][1]!=0 )
 			continue;
 
+		// Read from stdin
 		if ( argv[n][0]=='-' && argv[n][1]==0 ) {
 			decompress(stdin);
 			continue;

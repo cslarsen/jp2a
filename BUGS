@@ -1,10 +1,2 @@
-- Take logo-40x25-gray.jpg, as long as you use --sixe=Nx25 you will get perfect results for all widths,
-  but when you change y-direction, you get errors... this means y-scaling is imperfect and has to be
-  corrected.  Same with jp2a logo-80x50-gray.jpg --size=Nx50
-
-  This may be due to the fact that when traversing JPEG in y-direction, some destination scanlines
-  will be written to MANY times, so the normalization function will normalize entire image, while
-  in fact some dst-lines have been added to many times..
-
-  Solution: make added_to_y buffer that contains number of times youve added to y-dir...
-  When normalize, divide each scanline by corresponding value.
+- Try logo-40x25-gray.jpg --size=100x500, you get so many divides you will get a NaN (not a number),
+  this must be fixed.
