@@ -1,6 +1,7 @@
 CHANGES SINCE 0.9.1
 
-- Much better output results, due to a better (and simpler) normalization function
+- Much better output results, due to more accurate normalization and removal of
+  missing scanlines in output image.
 
 - Default mode is now "--width=70" instead of "--size=80x25", as this preserves
   JPEG aspect ratio in output.

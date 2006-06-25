@@ -39,10 +39,10 @@ be calculated according to the source images aspect ratio.
 .TP
 .BI \-\-width= N
 set output width.  If you only specify the width, the height will be
-calculated automatically
+calculated automatically.  Default mode is --width=70.
 .TP
 .BI \-\-size= WIDTHxHEIGHT
-set output dimension.  Default is --size=80x25.
+set output dimension.
 .TP
 .B \-v \-\-verbose
 print some verbose information to standard error when reading each JPEG image.
@@ -72,8 +72,7 @@ jp2a returns zero for normal operations, 1 when errors are encountered.
 .SH AUTHOR
 Christian Stigen Larsen <csl@sublevel3.org>
 .SH BUGS
-Some artifacts may occur when input and output resolutions differ a bit.
-This is because the program does not use any interpolation, but may be
-fixed in the future.
+The program does not interpolate when resizing the JPEG image, and thus
+big output dimensions will not give very accurate looking results.
 .SH SEE ALSO
 cjpeg(1), djpeg(1), jpegtran(1)

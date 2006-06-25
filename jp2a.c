@@ -174,13 +174,27 @@ void parse_options(int argc, char** argv) {
 void calc_aspect_ratio(int jpeg_width, int jpeg_height) {
 	// Calculate width or height, but not both
 
-	if ( auto_width && !auto_height )
+	if ( auto_width && !auto_height ) {
 		width = 2 * height * jpeg_width / jpeg_height;
+	
+		// adjust for too small dimensions	
+		while ( width==0 ) {
+			++height;
+			calc_aspect_ratio(jpeg_width, jpeg_height);
+		}
+	}
 
-	if ( !auto_width && auto_height )
+	if ( !auto_width && auto_height ) {
+		// divide by two, because most unix chars
+		// in the terminal twice as tall as they are wide:
 		height = width * jpeg_height / jpeg_width / 2;
-		// (above) divide by two, because most unix chars
-		// in the terminal twice as tall as they are wide
+
+		// adjust for too small dimensions
+		while ( height==0 ) {
+			++width;
+			calc_aspect_ratio(jpeg_width, jpeg_height);
+		}
+	}
 }
 
 void print(Image* i, int chars) {
@@ -309,6 +323,8 @@ int decompress(FILE *fp) {
 		fprintf(stderr, "Output palette (%d chars): '%s'\n", 1 + num_chars, ascii_palette);
 	}
 
+	unsigned int last_dsty = 0;
+
 	while ( cinfo.output_scanline < cinfo.output_height ) {
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
@@ -321,6 +337,18 @@ int decompress(FILE *fp) {
 		}
 
 		++image.yadds[dst_y];
+
+		// fill up any scanlines we missed since last iteration
+		while ( dst_y - last_dsty > 1 ) {
+			++last_dsty;
+			for ( dst_x=0; dst_x < image.width; ++dst_x ) {
+				unsigned int src_x = (float) dst_x * to_dst_x;
+				calc_intensity(&buffer[0][src_x*components], &image.p[(last_dsty)*width + dst_x], components);
+			}
+			++image.yadds[last_dsty];
+		}
+
+		last_dsty = dst_y;
 
 		if ( verbose )
 			print_progress( (float) (cinfo.output_scanline + 1.0f) / (float) cinfo.output_height );
