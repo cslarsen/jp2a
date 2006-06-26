@@ -1,6 +1,11 @@
 CHANGES SINCE 0.9.3
 
+- Function signatures changed; added const where applicable
+
+- Reintroduced use of malloc
+
 - Added check for alloca in configure.ac
+
 
 CHANGES SINCE 0.9.2
 

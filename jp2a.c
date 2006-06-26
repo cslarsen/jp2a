@@ -101,7 +101,7 @@ void help() {
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
 }
 
-int parse_options(int argc, char** argv) {
+int parse_options(const int argc, char** argv) {
 	if ( argc<2 ) {
 		help();
 		return 1;
@@ -110,7 +110,7 @@ int parse_options(int argc, char** argv) {
 	int n;
 
 	for ( n=1; n<argc; ++n ) {
-		char *s = argv[n];
+		const char *s = argv[n];
 
 		if ( *s != '-' ) continue;
 		if ( *s=='-' && *(s+1)==0 ) continue; // stdin
@@ -178,7 +178,7 @@ int parse_options(int argc, char** argv) {
 	return -1;
 }
 
-void calc_aspect_ratio(int jpeg_width, int jpeg_height) {
+void calc_aspect_ratio(const int jpeg_width, const int jpeg_height) {
 	// Calculate width or height, but not both
 
 	if ( auto_width && !auto_height ) {
@@ -204,7 +204,7 @@ void calc_aspect_ratio(int jpeg_width, int jpeg_height) {
 	}
 }
 
-void print(Image* i, int chars) {
+void print(const Image* i, const int chars) {
 	int x, y;
 
 	if ( border ) {
@@ -257,7 +257,7 @@ void normalize(Image* i) {
 		}
 }
 
-void print_progress(float progress_0_to_1) {
+void print_progress(const float progress_0_to_1) {
 	char prog[progress_barlength + 2];
 
 	int m;
@@ -273,7 +273,7 @@ void print_progress(float progress_0_to_1) {
 	fprintf(stderr, "Reading file [%s]\r", prog);
 }
 
-void calc_intensity(JSAMPLE* source, float* dest, int components) {
+void calc_intensity(const JSAMPLE* source, float* dest, const int components) {
 	int c = 0;
 
 	while ( c < components ) {
