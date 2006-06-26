@@ -69,6 +69,10 @@ cat image.jpg |
 .PP
 .SH EXIT STATUS
 jp2a returns zero for normal operations, 1 when errors are encountered.
+.PP
+On Mac OS X systems, there seems to be a problem with malloc and using
+either large output dimensions and multiple files on the command line.
+This issue is being looked into.
 .SH AUTHOR
 Christian Stigen Larsen <csl@sublevel3.org>
 .SH BUGS
