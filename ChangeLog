@@ -1,14 +1,15 @@
+CHANGES SINCE 0.9.5
+- None yet
+
 CHANGES SINCE 0.9.4
 - The option --border can now be specified simply as -b
 - New option --invert or -i to invert output image
-
 
 CHANGES SINCE 0.9.3
 - jp2a now exits with error when no files are specified
 - Function signatures changed; added const where applicable
 - Reintroduced use of malloc
 - Added check for alloca in configure.ac
-
 
 CHANGES SINCE 0.9.2
 - When reading multiple files, malloc complained when freeing memory.  Using
@@ -18,7 +19,6 @@ CHANGES SINCE 0.9.2
 - Using `cat file.jpg | jp2a -' now does not print help message along with
   image.
 
-
 CHANGES SINCE 0.9.1
 - Much better output results, due to more accurate normalization and removal of
   missing scanlines in output image.
@@ -27,9 +27,8 @@ CHANGES SINCE 0.9.1
 - Configure does not check for memset function anymore
 - to_dst_x and to_dst_y are now correct
 
-
 CHANGES SINCE 0.9.0
 - Added --border option
 - Fixed buffer overrun bug when using big output dimensions
 - Minor code cleanup
-- Note that to_dst_x and to_dst_y in code might be wrong... :p
+- Note that to_dst_x and to_dst_y in code might be wrong
