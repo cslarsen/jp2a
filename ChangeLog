@@ -1,5 +1,7 @@
 CHANGES SINCE 0.9.3
 
+- jp2a now exits with error when no files are specified
+
 - Function signatures changed; added const where applicable
 
 - Reintroduced use of malloc

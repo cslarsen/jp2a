@@ -109,11 +109,13 @@ int parse_options(const int argc, char** argv) {
 
 	int n;
 
+	int filehits = 0;
+
 	for ( n=1; n<argc; ++n ) {
 		const char *s = argv[n];
 
-		if ( *s != '-' ) continue;
-		if ( *s=='-' && *(s+1)==0 ) continue; // stdin
+		if ( *s != '-' ) { ++filehits; continue; }
+		if ( *s=='-' && *(s+1)==0 ) { ++filehits; continue; } // stdin
 
 		int hits = 0;
 
@@ -166,6 +168,11 @@ int parse_options(const int argc, char** argv) {
 			help();
 			return 1;
 		}
+	}
+
+	if ( !filehits ) {
+		fprintf(stderr, "No files specified\n");
+		return 1;
 	}
 
 	// Palette must be at least two characters
