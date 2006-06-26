@@ -1,5 +1,6 @@
 CHANGES SINCE 0.9.4
-- None yet.
+- The option --border can now be specified simply as -b
+- New option --invert or -i to invert output image
 
 
 CHANGES SINCE 0.9.3

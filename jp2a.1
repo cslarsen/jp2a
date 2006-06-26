@@ -30,12 +30,15 @@ read JPEG image from standard input
 .BI \-\-chars= ....
 use the given characters when producing the output ASCII image
 .TP
-.BI \-\-border
+.B \-b \-\-border
 frame output image in a border
 .TP
 .BI \-\-height= N
 set output height.  If only --height is specified, then output width will
 be calculated according to the source images aspect ratio.
+.TP
+.B \-i \-\-invert
+invert output image.
 .TP
 .BI \-\-width= N
 set output width.  If you only specify the width, the height will be

@@ -57,6 +57,7 @@ int width = 70;
 int height = 0;
 int progress_barlength = 40;
 int border = 0;
+int invert = 0;
 
 char ascii_palette[257] = "";
 const char* default_palette = "   ...',;:clodxkO0KXNWM";
@@ -67,17 +68,18 @@ void help() {
 	fprintf(stderr, "jp2a is  a simple JPEG to ASCII viewer.\n\n");
 
 	fprintf(stderr, "OPTIONS\n");
-	fprintf(stderr, "    -                Decompress from standard input\n");
 	fprintf(stderr, "    --chars=...      Select character palette used to paint the image.  Leftmost character\n");
 	fprintf(stderr, "                     corresponds to black pixel, rightmost to white pixel.  Minium two characters\n");
 	fprintf(stderr, "                     must be specified.\n");
-	fprintf(stderr, "    --border         Print a border around the output image\n");
-	fprintf(stderr, "    -h, --help       Print program help\n");
+	fprintf(stderr, "    -b, --border     Print a border around the output image\n");
+	fprintf(stderr, "    -i, --invert     Invert image\n");
 	fprintf(stderr, "\n");
+	fprintf(stderr, "    --size=WxH       Set exact output dimension, regardless of JPEG aspect ratio\n");
 	fprintf(stderr, "    --height=H       Set output height calculate width by JPEG aspect ratio\n");
 	fprintf(stderr, "    --width=W        Set output width, calculate height by JPEG aspect ratio, default is %d\n", width);
-	fprintf(stderr, "    --size=WxH       Set exact output dimension, regardless of JPEG aspect ratio\n");
 	fprintf(stderr, "\n");
+	fprintf(stderr, "    -                Decompress from standard input\n");
+	fprintf(stderr, "    -h, --help       Print program help\n");
 	fprintf(stderr, "    -v, --verbose    Verbose output\n");
 	fprintf(stderr, "    -V, --version    Show program version\n");
 	fprintf(stderr, "\n");
@@ -137,8 +139,13 @@ int parse_options(const int argc, char** argv) {
 			return 0;
 		}
 
-		if ( !strcmp(s, "--border") ) {
+		if ( !strcmp(s, "--border") || !strcmp(s, "-b") ) {
 			border = 1;
+			++hits;
+		}
+
+		if ( !strcmp(s, "--invert") || !strcmp(s, "-i") ) {
+			invert = 1;
 			++hits;
 		}
 
@@ -227,10 +234,10 @@ void print(const Image* i, const int chars) {
 
 		for ( x=0; x < i->width; ++x ) {
 			int pos = ROUND( (float) chars * i->p[y*i->width + x] );
-			line[x] = ascii_palette[chars - pos];
+			line[x] = ascii_palette[ !invert ? chars - pos : pos ];
 		}
 
-		printf( border==0 ? "%s\n" : "|%s|\n" , line);
+		printf( !border ? "%s\n" : "|%s|\n" , line);
 	}
 
 	if ( border ) {
