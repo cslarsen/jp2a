@@ -234,11 +234,15 @@ void print(Image* i, int chars) {
 }
 
 void clear(Image* i) {
-	int n = 0;
-	while ( n < (i->height * i->width) ) {
-		i->p[n] = 0.0f;
-		i->yadds[n] = 0;
-		++n;
+	int x, y, w, h;
+
+	w = i->width;
+	h = i->height;
+
+	for ( y=0; y < h; ++y )
+	for ( x=0; x < w; ++x ) {
+		i->p[y*w + x] = 0.0f;
+		i->yadds[y*w + x] = 0;
 	}
 }
 
@@ -309,12 +313,15 @@ int decompress(FILE *fp) {
 	image.width = width;
 	image.height = height;
 
-	if ( (image.p = alloca(width * height * sizeof(float))) == NULL ) {
+	image.p = NULL;
+	image.yadds = NULL;
+
+	if ( (image.p = (float*) malloc(width * height * sizeof(float))) == NULL ) {
 		fprintf(stderr, "Not enough memory for given output dimension (image.p)\n");
 		return 1;
 	}
 
-	if ( (image.yadds = alloca(width * sizeof(int))) == NULL ) {
+	if ( (image.yadds = (int*) malloc(width * sizeof(int))) == NULL ) {
 		fprintf(stderr, "Not enough memory for given output dimension (iimage.yadds)\n");
 		return 1;
 	}
@@ -371,6 +378,9 @@ int decompress(FILE *fp) {
 
 	jpeg_finish_decompress(&cinfo);
 	jpeg_destroy_decompress(&cinfo);
+
+	free(image.p);
+	free(image.yadds);
 
 	return 0;
 }

@@ -1,1 +1,2 @@
-No known ones at the moment.
+- When using --width=3000 or --width=4000 the malloc on Mac OS X will complaing when freeing the
+  memory, and sometimes segfaults.
