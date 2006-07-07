@@ -1,5 +1,27 @@
+CHANGES SINCE 0.9.9
+- None yet.
+
+CHANGES SINCE 0.9.8
+- New feature: Added --flipx and --flipy options to flip the output image.
+- New feature: Added --html and --html-fontsize for XHTML 1.0 output.
+- Bugfix: The bugfix from 0.9.6 sneaked back into the 0.9.8 release, and is now removed.
+- Code changes: The code is a little bit cleaner, and faster now for big output dimensions
+- Added reference to The Independent JPEG Group in the man page, as the libjpeg license requires that.
+- The help text now fits inside 80 characters in width.
+- Default mode changed from --width=70 to --width=78
+
+CHANGES SINCE 0.9.7
+- Minor portability issues resolved (regarding size_t usage)
+- Moved some redundant help text to the man page
+- Updated and expanded man page
+
+CHANGES SINCE 0.9.6
+- Minor bugfix, for some images, the last output line would be a "black" line,
+  this has been fixed with the use of ROUND in dst_y calculations.
+
 CHANGES SINCE 0.9.5
-- None yet
+- Fixed a major bug in the clear() function that overwrote the yadds buffer.
+  The program should work much better now, especially on multiple input files.
 
 CHANGES SINCE 0.9.4
 - The option --border can now be specified simply as -b

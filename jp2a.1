@@ -1,4 +1,4 @@
-.TH jp2a 1  "June 24, 2006" "version 0.9.6" "USER COMMANDS"
+.TH jp2a 1  "July 6, 2006" "version 0.9.10" "USER COMMANDS"
 .SH NAME
 jp2a \- convert JPEG images to ASCII characters
 .SH SYNOPSIS
@@ -11,50 +11,60 @@ jp2a \- convert JPEG images to ASCII characters
 .LP
 .SH DESCRIPTION
 .B jp2a
-will convert JPEG image to ASCII characters.  You can specify
-many files on the command line, or use dash to read from standard
-input.
-.PP
-The program doesn't use any fancy interpolation when resizing the
-image, so for specific combinations of source and destination
-resolutions you might get artifacts.  This may be corrected in
-future versions though.
+will convert JPEG images to ASCII characters.
 .SH OPTIONS
 .TP
-.B \-h \-\-help
-display a short help text
-.TP
 .BI \-
-read JPEG image from standard input
-.TP
-.BI \-\-chars= ....
-use the given characters when producing the output ASCII image
+Read JPEG image from standard input
 .TP
 .B \-b \-\-border
-frame output image in a border
+Frame output image in a border
+.TP
+.BI \-\-chars= ....
+Use the given characters when producing the output ASCII image
+.TP
+.B \-\-flipx
+Flip output image horizontally
+.TP
+.B \-\-flipy
+Flip output image vertically
 .TP
 .BI \-\-height= N
-set output height.  If only --height is specified, then output width will
+Set output height.  If only --height is specified, then output width will
 be calculated according to the source images aspect ratio.
 .TP
-.B \-i \-\-invert
-invert output image.
+.B \-h \-\-help
+Display a short help text
 .TP
-.BI \-\-width= N
-set output width.  If you only specify the width, the height will be
-calculated automatically.  Default mode is --width=70.
+.B \-\-html
+Make ASCII output in strict XHTML 1.0, suitable for viewing with web browsers.
+
+This is useful with big output dimensions, and you want to check the result
+with a browser with small font.
+
+See also \-\-html-fontsize.
+.TP
+.BI \-\-html\-fontsize= N
+Set fontsize when using \-\-html output.  Default is 4.
+.TP
+.B \-i \-\-invert
+Invert output image.
 .TP
 .BI \-\-size= WIDTHxHEIGHT
-set output dimension.
+Set output dimension.
 .TP
 .B \-v \-\-verbose
-print some verbose information to standard error when reading each JPEG image.
+Print some verbose information to standard error when reading each JPEG image.
+.TP
+.BI \-\-width= N
+Set output width.  If you only specify the width, the height will be
+calculated automatically.  Default mode is --width=78.
 .TP
 .B \-V \-\-version
-print program version.
+Print program version.
 .SH EXAMPLES
 .TP
-Pring imagefile.jpg using ASCII characters in 40 columns and 20 rows:
+Print imagefile.jpg using ASCII characters in 40 columns and 20 rows:
 
 .B jp2a
 \-\-size=40x20 imagefile.jpg
@@ -69,17 +79,41 @@ Output image.jpg using 76 columns, height is automatically calculated from aspec
 cat image.jpg |
 .B jp2a
 \-\-width=76 \-
-.PP
+.TP
+If you use jp2a together with ImageMagick's convert(1) then you can make good use of pipes, and have ImageMagick do all sorts of image conversions and effects on the source image.  For example:
+
+.B convert
+somefile.png jpg:\- |
+.B jp2a
+\- \-\-width=80
+.TP
+Check out convert(1) options to see what you can do.  Convert can handle almost any image format, so with this combination you can convert images in e.g. PDF or AVI files to ASCII.
+.TP
+Another example, involving the use of curl(1) or wget(1), enables you to download images and convert on the fly, e.g.:
+
+.B curl
+\-s
+http://foo.bar/image.jpg |
+.B convert
+\- jpg:- |
+.B jp2a
+\-
 .SH EXIT STATUS
 jp2a returns zero for normal operations, 1 when errors are encountered.
-.PP
-On Mac OS X systems, there seems to be a problem with malloc and using
-either large output dimensions and multiple files on the command line.
-This issue is being looked into.
+.SH PROJECT HOMEPAGE
+The latest version of jp2a and news is always available from
+
+http://jp2a.sf.net
 .SH AUTHOR
-Christian Stigen Larsen <csl@sublevel3.org>
+Christian Stigen Larsen <csl@sublevel3.org> -- http://csl.sublevel3.org
+
+jp2a uses jpeglib to read JPEG files.  jpeglib is made by The Independent JPEG Group (IJG),
+who have a page at http://www.ijg.org
+
 .SH BUGS
 The program does not interpolate when resizing the JPEG image, and thus
-big output dimensions will not give very accurate looking results.
+big output dimensions will not give very accurate looking results.  If you
+want better quality, you might be able to use convert(1) to convert the source
+image to the exact ASCII output dimensions of jp2a.
 .SH SEE ALSO
-cjpeg(1), djpeg(1), jpegtran(1)
+cjpeg(1), djpeg(1), jpegtran(1), convert(1)

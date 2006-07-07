@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([jp2a], [0.9.6], [csl@sublevel3.org])
+AC_INIT([jp2a], [0.9.10], [csl@sublevel3.org])
 AM_INIT_AUTOMAKE(dist-bzip2)
 AC_CONFIG_SRCDIR([jp2a.c])
 AC_CONFIG_HEADER([config.h])
@@ -17,31 +17,38 @@ LDFLAGS="$LDFLAGS -Wall -W"
 
 # Checks for libraries.
 AC_ARG_WITH([jpeg-include],
-	[  --with-jpeg-include=PATH to directory containing jpeglib.h],
+	[  --with-jpeg-include=PATH   to directory containing jpeglib.h (http://www.ijg.org/)],
 	[CPPFLAGS="$CPPFLAGS -I$withval"])
 
 AC_ARG_WITH([jpeg-lib],
-	[  --with-jpeg-lib=PATH to directory containing jpeglib lib file],
+	[  --with-jpeg-lib=PATH       to directory containing jpeglib lib file (http://www.ijg.org/)],
 	[LDFLAGS="$LDFLAGS -L$withval"])
 
 AC_ARG_WITH([jpeg-prefix],
-	[  --with-jpeg-prefix=PATH is same as --with-jpeg-include=PATH/include and --with-jpeg-lib=PATH/lib],
+	[  --with-jpeg-prefix=PATH    is same as --with-jpeg-include=PATH/include and --with-jpeg-lib=PATH/lib],
 	[CPPFLAGS="$CPPFLAGS -I$withval/include" LDFLAGS="$LDFLAGS -L$withval/lib"])
+
+AC_ARG_ENABLE([libcurl],
+	[  --enable-libcurl to be able to use CURL to download images from the net],
+	[$enableval])
 
 AC_CHECK_LIB([jpeg],
 	[jpeg_start_decompress],
 	[LIBS="$LIBS -ljpeg"],
 	[
-	  AC_MSG_ERROR([I need jpeglib, please specify --with-jpeg-include=PATH and --with-jpeg-lib=PATH])
+	  AC_MSG_ERROR([I need a working jpeglib; please specify --with-jpeg-lib=PATH or see --help for more explicit options])
 	])
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([jpeglib.h],,AC_MSG_ERROR([required header file missing]))
+AC_CHECK_HEADERS([jpeglib.h],,AC_MSG_ERROR([required header file missing (download source from http://www.ijg.org/)]))
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
+AC_TYPE_SIZE_T
 
 # Checks for library functions.
+AC_CHECK_FUNCS([memset])
+AC_C_INLINE
 AC_FUNC_MALLOC
 AC_OUTPUT

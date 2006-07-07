@@ -1,21 +1,3 @@
-                                                                               
-      .oo.                                 ..oooo..                            
-     .OOOOo                            .oOOOOOOOOOOOo                          
-     .OOOO.                            OOOOOOOOOOOOOOO.                        
-     ......     ......  ......         OOo.....OOOOOOOo          .......       
-     OOOOOO.   .OOOOOOoOOOOOOOOo.      o        OOOOOOo     .oOOOOOOOOOOOOo    
-     OOOOOO.   .OOOOOOOOOOOOOOOOOO              oOOOOOo     OOOOOooooOOOOOOo   
-     OOOOOO.   .OOOOOOo.  .oOOOOOOO            .OOOOOo      Oo.      .OOOOOO.  
-     OOOOOO.   .OOOOOO      oOOOOOO.          .OOOOOo            ..ooOOOOOOO.  
-     OOOOOO.   .OOOOOO      .OOOOOO.         oOOOOO.         .oOOOOOooOOOOOO.  
-     OOOOOO.   .OOOOOO      oOOOOOO        oOOOOOo         .OOOOOO.  .OOOOOO.  
-     OOOOOO.   .OOOOOOoo..oOOOOOOO.      .OOOOOOOOOOOOOOo  oOOOOOo   .OOOOOO. .
-     OOOOOO.   .OOOOOOOOOOOOOOOOO.     .oOOOOOOOOOOOOOOOo  .OOOOOOOoOOOOOOOOOOo
-     OOOOOO.   .OOOOOO.oOOOOOoo.      .oooooooooooooooooo   .oOOOOOoo..oOOOOoo.
-    .OOOOOO.   .OOOOOO                                                         
-  .oOOOOOOO    .OOOOOO                                                         
-   oOOOOOO.    .OOOOOO                                                         
-    oOoo.      .OOOOOo                                                         
 
 
     ABOUT JP2A
@@ -41,6 +23,12 @@
     it is, you specify with
 
     ./configure --with-jpeg-include=PATH --with-jpeg-lib=PATH
+
+
+    PRE-REQUISITES
+
+    jp2a neesd jpeglib.  If you don't have it, the source is
+    available from http://www.ijg.org/
 
 
     BUILDING ON MAC OS X

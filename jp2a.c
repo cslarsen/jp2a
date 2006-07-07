@@ -16,8 +16,13 @@
 
 #ifdef HAVE_CONFIG_H
   #include "config.h"
-#endif
 
+  #ifdef _WIN32
+    // i386-mingw32 doesn't have GNU compatible malloc, as reported
+    // by `configure', but it nevertheless works if we just ignore that.
+    #undef malloc
+  #endif
+#endif
 
 #ifdef HAVE_STDLIB_H
   #include <stdlib.h>
@@ -33,7 +38,7 @@
   #undef HAVE_STDLIB_H
 #endif
 
-#include <jpeglib.h>
+#include "jpeglib.h"
 
 #define ROUND(x) (int) ( 0.5 + x )
 
@@ -53,52 +58,53 @@ typedef struct Image_ {
 int verbose = 0;
 int auto_height = 1;
 int auto_width = 0;
-int width = 70;
+int width = 78;
 int height = 0;
-int progress_barlength = 40;
+int progress_barlength = 56;
 int border = 0;
 int invert = 0;
+int flipx = 0;
+int flipy = 0;
+int html = 0;
+int html_fontsize = 4;
 
 char ascii_palette[257] = "";
 const char* default_palette = "   ...',;:clodxkO0KXNWM";
 
 void help() {
 	fprintf(stderr, "%s\n", version);
-	fprintf(stderr, "Usage: jp2a [ options ] [ file(s) ]\n\n");
-	fprintf(stderr, "jp2a is  a simple JPEG to ASCII viewer.\n\n");
-
-	fprintf(stderr, "OPTIONS\n");
-	fprintf(stderr, "    --chars=...      Select character palette used to paint the image.  Leftmost character\n");
-	fprintf(stderr, "                     corresponds to black pixel, rightmost to white pixel.  Minium two characters\n");
-	fprintf(stderr, "                     must be specified.\n");
-	fprintf(stderr, "    -b, --border     Print a border around the output image\n");
-	fprintf(stderr, "    -i, --invert     Invert image\n");
-	fprintf(stderr, "\n");
-	fprintf(stderr, "    --size=WxH       Set exact output dimension, regardless of JPEG aspect ratio\n");
-	fprintf(stderr, "    --height=H       Set output height calculate width by JPEG aspect ratio\n");
-	fprintf(stderr, "    --width=W        Set output width, calculate height by JPEG aspect ratio, default is %d\n", width);
-	fprintf(stderr, "\n");
-	fprintf(stderr, "    -                Decompress from standard input\n");
-	fprintf(stderr, "    -h, --help       Print program help\n");
-	fprintf(stderr, "    -v, --verbose    Verbose output\n");
-	fprintf(stderr, "    -V, --version    Show program version\n");
-	fprintf(stderr, "\n");
-
-	fprintf(stderr, "DEFAULT\n");
-	fprintf(stderr,"     The default running mode is ``jp2a --width=70 [ filename ]'', so that aspect\n");
-	fprintf(stderr, "    is correct for output mode.\n");
-	fprintf(stderr, "\n");
-
-	fprintf(stderr, "EXAMPLES\n");
-	fprintf(stderr, "    jp2a --size=80x25 --chars=' ...ooxx@@' picture.jpg\n");
-	fprintf(stderr, "    jp2a picture.jpg --width=76\n");
-	fprintf(stderr, "    jp2a picture.jpg --size=140x40\n");
-	fprintf(stderr, "    cat picture.jpg | jp2a - --size=100x100\n");
-	fprintf(stderr, "\n");
-
 	fprintf(stderr, "%s\n", copyright);
 	fprintf(stderr, "%s\n", license);
-	fprintf(stderr, "\n");
+
+fputs(
+"\n"
+"Usage: jp2a [ options ] [ file(s) ]\n\n"
+
+"Convert file(s) in JPEG format to ASCII.\n\n"
+
+"OPTIONS\n"
+"  -                Read JPEG image from standard input.\n"
+"  -b, --border     Print a border around the output image.\n"
+"      --chars=...  Select character palette used to paint the image.\n"
+"                   Leftmost character corresponds to black pixel, rightmost\n"
+"                   to white.  Minimum two characters must be specified.\n"
+"      --flipx      Flip image in X direction.\n"
+"      --flipy      Flip image in Y direction.\n"
+"  -i, --invert     Invert output image.\n"
+"  -h, --help       Print program help.\n"
+"      --height=H   Set output height, calculate width from aspect ratio.\n"
+"      --html       Produce strict XHTML 1.0 output.\n"
+"      --html-fontsize=N\n"
+"                   With --html, sets fontsize to N pt.  Default is 4.\n"
+"      --size=WxH   Set exact output dimension.\n"
+"  -v, --verbose    Verbose output.\n"
+"      --width=W    Set output width, calculate height from ratio.\n"
+"  -V, --version    Print program version.\n\n"
+
+"  The default running mode is `jp2a --width=78'.  See the man page for jp2a\n"
+"  to see detailed usage examples.\n\n"
+, stderr);
+
 	fprintf(stderr, "Project homepage on %s\n", url);
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
 }
@@ -139,6 +145,11 @@ int parse_options(const int argc, char** argv) {
 			return 0;
 		}
 
+		if ( !strcmp(s, "--html") ) {
+			html = 1;
+			++hits;
+		}
+
 		if ( !strcmp(s, "--border") || !strcmp(s, "-b") ) {
 			border = 1;
 			++hits;
@@ -146,6 +157,16 @@ int parse_options(const int argc, char** argv) {
 
 		if ( !strcmp(s, "--invert") || !strcmp(s, "-i") ) {
 			invert = 1;
+			++hits;
+		}
+
+		if ( !strcmp(s, "--flipx") ) {
+			flipx = 1;
+			++hits;
+		}
+
+		if ( !strcmp(s, "--flipy") ) {
+			flipy = 1;
 			++hits;
 		}
 
@@ -170,6 +191,9 @@ int parse_options(const int argc, char** argv) {
 			++hits;
 		}
 
+		if ( sscanf(s, "--html-fontsize=%d", &html_fontsize) == 1 )
+			++hits;
+
 		if ( !hits ) {
 			fprintf(stderr, "Unknown option %s\n\n", s);
 			help();
@@ -193,6 +217,7 @@ int parse_options(const int argc, char** argv) {
 }
 
 void calc_aspect_ratio(const int jpeg_width, const int jpeg_height) {
+
 	// Calculate width or height, but not both
 
 	if ( auto_width && !auto_height ) {
@@ -220,78 +245,98 @@ void calc_aspect_ratio(const int jpeg_width, const int jpeg_height) {
 
 void print(const Image* i, const int chars) {
 	int x, y;
+	const int w = i->width;
+	const int h = i->height;
 
-	if ( border ) {
-		printf("+");
-		for ( x=0; x < i->width; ++x ) printf("-");
-		printf("+\n");
+	// Make "+--------+" string
+	char bord[w + 3];
+	bord[0] = bord[w+1] = '+';
+	bord[w+2] = 0;
+	memset(bord+1, '-', w);
+
+	char line[w + 1];
+	line[w] = 0;
+
+	if ( html ) {
+		printf(
+		"<?xml version='1.0' encoding='ISO-8859-1'?>\n"
+		"<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'"
+		"  'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n"
+		"<html xmlns='http://www.w3.org/1999/xhtml' lang='en' xml:lang='en'>\n"
+		"<head>\n"
+		"<title>jp2a converted image</title>\n"
+		"<style type='text/css'>\n"
+		".ascii {\n"
+		"   font-size:%dpt;\n"
+		"}\n"
+		"</style>\n"
+		"</head>\n"
+		"<body>\n"
+		"<div class='ascii'>\n"
+		"<pre>\n"
+		,
+		html_fontsize);
 	}
 
-	char line[i->width + 1];
-	line[i->width] = 0;
+	if ( border ) puts(bord);
 
-	for ( y=0; y < i->height; ++y ) {
-
-		for ( x=0; x < i->width; ++x ) {
-			int pos = ROUND( (float) chars * i->p[y*i->width + x] );
-			line[x] = ascii_palette[ !invert ? chars - pos : pos ];
+	for ( y=0; y < h; ++y ) {
+		for ( x=0; x < w; ++x ) {
+			int pos = ROUND( (float) chars * i->p[(!flipy? y : h-y-1)*w + x] );
+			line[!flipx? x : w-x-1] = ascii_palette[ !invert ? chars - pos : pos ];
 		}
 
-		printf( !border ? "%s\n" : "|%s|\n" , line);
+		printf(!border? "%s\n" : "|%s|\n" , line);
 	}
 
-	if ( border ) {
-		printf("+");
-		for ( x=0; x < i->width; ++x ) printf("-");
-		printf("+\n");
+	if ( border ) puts(bord);
+
+	if ( html ) {
+		printf("</pre>\n");
+		printf("</div>\n");
+		printf("</body>\n");
+		printf("</html>\n");
 	}
 }
 
 void clear(Image* i) {
-	int x, y, w, h;
-
-	w = i->width;
-	h = i->height;
-
-	for ( y=0; y < h; ++y )
-	for ( x=0; x < w; ++x ) {
-		i->p[y*w + x] = 0.0f;
-		i->yadds[y*w + x] = 0;
-	}
+	memset(i->p, 0, i->width * i->height * sizeof(float));
+	memset(i->yadds, 0, i->height);
 }
 
 // This exaggerates the differences in the picture, good for ASCII output
 void normalize(Image* i) {
-	int x, y;
+	const int w = i->width;
+	const int h = i->height;
 
-	for ( y=0; y < i->height; ++y )
-		for ( x=0; x < i->width; ++x ) {
-			if ( i->yadds[y] > 0 )
-				i->p[y*i->width + x] /= (float) (i->yadds[y] );
+	register int x, y, yoffs;
+
+	for ( y=0, yoffs=0; y < h; ++y, yoffs += w ) {
+		for ( x=0; x < w; ++x ) {
+			if ( i->yadds[y] != 0 )
+				i->p[yoffs + x] /= (float) i->yadds[y];
 		}
+	}
 }
 
 void print_progress(const float progress_0_to_1) {
-	char prog[progress_barlength + 2];
-
-	int m;
-	for ( m=0; m <= progress_barlength; ++m )
-		prog[m] = '.';
 
 	int tenth = ROUND( (float) progress_barlength * progress_0_to_1 );
 
-	while ( tenth > 0 ) prog[--tenth] = '#';
+	char s[progress_barlength + 1];
+	s[progress_barlength] = 0;
 
-	prog[progress_barlength] = 0;
+	memset(s, '.', progress_barlength);
+	memset(s, '#', tenth);
 
-	fprintf(stderr, "Reading file [%s]\r", prog);
+	fprintf(stderr, "Decompressing image [%s]\r", s);
 }
 
-void calc_intensity(const JSAMPLE* source, float* dest, const int components) {
-	int c = 0;
+inline void calc_intensity(const JSAMPLE* source, float* dest, const int components) {
+	int c;
 
-	while ( c < components ) {
-		*dest += (float) *(source + c++)
+	for ( c=0; c < components; ++c ) {
+		*dest += (float) *(source + c)
 			/ (255.0f * (float) components);
 	}
 }
@@ -302,7 +347,7 @@ void print_info(const struct jpeg_decompress_struct* cinfo) {
 	fprintf(stderr, "Source color components: %d\n", cinfo->output_components);
 	fprintf(stderr, "Output width: %d\n", width);
 	fprintf(stderr, "Output height: %d\n", height);
-	fprintf(stderr, "Output palette (%ld chars): '%s'\n", strlen(ascii_palette), ascii_palette);
+	fprintf(stderr, "Output palette (%d chars): '%s'\n", (int) strlen(ascii_palette), ascii_palette);
 }
 
 int decompress(FILE *fp) {
@@ -330,19 +375,19 @@ int decompress(FILE *fp) {
 	image.p = NULL;
 	image.yadds = NULL;
 
-	if ( (image.p = (float*) malloc(width * height * sizeof(float))) == NULL ) {
-		fprintf(stderr, "Not enough memory for given output dimension (image.p)\n");
+	if ( (image.p = malloc(width * height * sizeof(float))) == NULL ) {
+		fprintf(stderr, "Not enough memory for given output dimension\n");
 		return 1;
 	}
 
-	if ( (image.yadds = (int*) malloc(width * sizeof(int))) == NULL ) {
-		fprintf(stderr, "Not enough memory for given output dimension (iimage.yadds)\n");
+	if ( (image.yadds = malloc(height * sizeof(int))) == NULL ) {
+		fprintf(stderr, "Not enough memory for given output dimension (for yadds)\n");
 		return 1;
 	}
 
 	clear(&image);
 
-	int num_chars = strlen(ascii_palette) - 1;
+	size_t num_chars = strlen(ascii_palette) - 1;
 	int components = cinfo.out_color_components;
 
 	float to_dst_y = (float) (height-1) / (float) (cinfo.output_height-1);
@@ -356,12 +401,12 @@ int decompress(FILE *fp) {
 	while ( cinfo.output_scanline < cinfo.output_height ) {
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
-		unsigned int dst_y = to_dst_y * (float) (cinfo.output_scanline-1);
+		unsigned int dst_y = ROUND(to_dst_y * (float) (cinfo.output_scanline-1));
 		int dst_x;
 
 		for ( dst_x=0; dst_x < image.width; ++dst_x ) {
 			unsigned int src_x = (float) dst_x * to_dst_x;
-			calc_intensity(&buffer[0][src_x*components], &image.p[dst_y*width + dst_x], components);
+			calc_intensity(&buffer[0][src_x*components], &image.p[dst_y*image.width + dst_x], components);
 		}
 
 		++image.yadds[dst_y];
@@ -372,7 +417,7 @@ int decompress(FILE *fp) {
 
 			for ( dst_x=0; dst_x < image.width; ++dst_x ) {
 				unsigned int src_x = (float) dst_x * to_dst_x;
-				calc_intensity(&buffer[0][src_x*components], &image.p[(last_dsty)*width + dst_x], components);
+				calc_intensity(&buffer[0][src_x*components], &image.p[last_dsty*image.width + dst_x], components);
 			}
 
 			++image.yadds[last_dsty];
@@ -390,11 +435,11 @@ int decompress(FILE *fp) {
 	normalize(&image);
 	print(&image, num_chars);
 
-	jpeg_finish_decompress(&cinfo);
-	jpeg_destroy_decompress(&cinfo);
-
 	free(image.p);
 	free(image.yadds);
+
+	jpeg_finish_decompress(&cinfo);
+	jpeg_destroy_decompress(&cinfo);
 
 	return 0;
 }
