@@ -28,13 +28,13 @@ AC_ARG_WITH([jpeg-prefix],
 	[  --with-jpeg-prefix=PATH    is same as --with-jpeg-include=PATH/include and --with-jpeg-lib=PATH/lib],
 	[CPPFLAGS="$CPPFLAGS -I$withval/include" LDFLAGS="$LDFLAGS -L$withval/lib"])
 
-AC_ARG_WITH([curl-prefix],
-	[  --with-curl-prefix=PATH    look for curl.h in PATH/include and libcurl in PATH/lib],
-	[CPPFLAGS="$CPPFLAGS -I$withval/include" LDFLAGS="$LDFLAGS -L$withval//lib"])
-
-AC_ARG_ENABLE([curl],
-	[  --enable-curl to be able to use libcurl (http://curl.haxx.se) to download images from the net],
-	[enable_curl=$enableval])
+#AC_ARG_WITH([curl-prefix],
+#	[  --with-curl-prefix=PATH    look for curl.h in PATH/include and libcurl in PATH/lib],
+#	[CPPFLAGS="$CPPFLAGS -I$withval/include" LDFLAGS="$LDFLAGS -L$withval//lib"])
+#
+#AC_ARG_ENABLE([curl],
+#	[  --enable-curl to be able to use libcurl (http://curl.haxx.se) to download images from the net],
+#	[enable_curl=$enableval])
 
 AC_CHECK_LIB([jpeg],
 	[jpeg_start_decompress],
@@ -43,15 +43,15 @@ AC_CHECK_LIB([jpeg],
 	  AC_MSG_ERROR([I need a working jpeglib; please specify --with-jpeg-lib=PATH or see --help for more explicit options])
 	])
 
-if test "$enable_curl" = "yes" ; then
-	AC_CHECK_HEADERS([curl.h],,AC_MSG_ERROR([required header file missing (download source from http://curl.haxx.se)]))
-	AC_CHECK_LIB([curl],
-		[curl_easy_init],
-		[LIBS="$LIBS -lcurl"],
-		[
-		  AC_MSG_ERROR([I need a working libcurl, see --help])
-		])
-fi
+#if test "$enable_curl" = "yes" ; then
+#	AC_CHECK_HEADERS([curl.h],,AC_MSG_ERROR([required header file missing (download source from http://curl.haxx.se)]))
+#	AC_CHECK_LIB([curl],
+#		[curl_easy_init],
+#		[LIBS="$LIBS -lcurl"],
+#		[
+#		  AC_MSG_ERROR([I need a working libcurl, see --help])
+#		])
+#fi
 
 # Checks for header files.
 AC_HEADER_STDC
