@@ -182,12 +182,12 @@ int parse_options(const int argc, char** argv) {
 		}
 
 		if ( sscanf(s, "--width=%d", &width) == 1 ) {
-			auto_height = 1;
+			auto_height += 1;
 			++hits;
 		}
 
 		if ( sscanf(s, "--height=%d", &height) == 1 ) {
-			auto_width = 1;
+			auto_width += 1;
 			++hits;
 		}
 
@@ -206,6 +206,16 @@ int parse_options(const int argc, char** argv) {
 		return 1;
 	}
 
+	// only --width specified, calc width
+	if ( auto_width==1 && auto_height == 1 )
+		auto_height = 0;
+
+	// if both --width and --height are set, we will use that
+	// as an explicit setting, and not calculate
+	if ( auto_width==2 && auto_height==1 ) {
+		auto_width = auto_height = 0;
+	}
+
 	// Palette must be at least two characters
 	if ( ascii_palette[0] == 0 ) strcpy(ascii_palette, default_palette);
 	if ( ascii_palette[1] == 0 ) strcpy(ascii_palette, default_palette);
@@ -221,8 +231,8 @@ void calc_aspect_ratio(const int jpeg_width, const int jpeg_height) {
 	// Calculate width or height, but not both
 
 	if ( auto_width && !auto_height ) {
-		width = 2 * height * jpeg_width / jpeg_height;
-	
+		width = ROUND(2.0f * (float) height * (float) jpeg_width / (float) jpeg_height);
+
 		// adjust for too small dimensions	
 		while ( width==0 ) {
 			++height;
@@ -231,9 +241,7 @@ void calc_aspect_ratio(const int jpeg_width, const int jpeg_height) {
 	}
 
 	if ( !auto_width && auto_height ) {
-		// divide by two, because most unix chars
-		// in the terminal twice as tall as they are wide:
-		height = width * jpeg_height / jpeg_width / 2;
+		height = ROUND(0.5f * (float) width * (float) jpeg_height / (float) jpeg_width);
 
 		// adjust for too small dimensions
 		while ( height==0 ) {

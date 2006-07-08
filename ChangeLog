@@ -1,5 +1,6 @@
 CHANGES SINCE 0.9.9
-- None yet.
+- Using both --width and --height is equivalent to using --size
+- Now correctly calculates width and height if one of --width or --height is used
 
 CHANGES SINCE 0.9.8
 - New feature: Added --flipx and --flipy options to flip the output image.
