@@ -1,3 +1,6 @@
+CHANGES SINCE 0.9.10
+- Added --enable-curl in configure
+
 CHANGES SINCE 0.9.9
 - Using both --width and --height is equivalent to using --size
 - Now correctly calculates width and height if one of --width or --height is used

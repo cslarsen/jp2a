@@ -38,6 +38,10 @@
   #undef HAVE_STDLIB_H
 #endif
 
+#ifdef HAVE_CURL_CURL_H
+  #include "curl/curl.h"
+#endif
+
 #include "jpeglib.h"
 
 #define ROUND(x) (int) ( 0.5 + x )
