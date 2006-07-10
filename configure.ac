@@ -72,7 +72,19 @@ fi
 # Checks for header files.
 AC_HEADER_STDC
 
-AC_CHECK_HEADERS([jpeglib.h curl/curl.h])
+AC_CHECK_HEADER([jpeglib.h],
+	[ AC_DEFINE([HAVE_JPEGLIB_H], [1], [Define to 1 if you have <jpeglib.h> header file.]) ],
+	[ AC_MSG_ERROR([required header file jpeglib.h not found, use --with-jpeg-include=PATH or see --help]) ])
+
+if test "x$enable_curl" = "xyes" ; then
+AC_CHECK_HEADER([curl.h],
+	[ AC_DEFINE([HAVE_CURL_H], [1], [Define to 1 if you have the <curl.h> header file]) ],
+	[])
+
+AC_CHECK_HEADER([curl/curl.h],
+	[ AC_DEFINE([HAVE_CURL_CURL_H], [1], [Define to 1 if you have the <curl/curl.h> header file]) ],
+	[ AC_MSG_ERROR([required header file curl/curl.h not found, see --help]) ])
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
