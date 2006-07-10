@@ -68,7 +68,7 @@ if test "x$enable_curl" = "xyes" ; then
 	fi
 
 	AC_CHECK_LIB([curl], [curl_easy_init], [LIBS="$LIBS $curl_libs" AC_DEFINE([FEAT_CURL], [1], [Found working libcurl environment])], [
-		  AC_MSG_WARN([I need a working libcurl (see --with-curl-config=PATH), support will be disabled])
+		  AC_MSG_WARN([I need a working libcurl (use --with-curl-config=PATH); download-support will be disabled])
 		  enable_curl="no"
 		])
 fi
