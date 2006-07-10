@@ -1,3 +1,6 @@
+CHANGES SINCE 0.9.11
+- None yet.
+
 CHANGES SINCE 0.9.10
 - New feature:  Can now download images from URLs (requires libcurl)
 - New feature:  Added --debug (-d) for debug output with libcurl
