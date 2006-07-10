@@ -25,17 +25,13 @@ AC_ARG_WITH([jpeg-lib],
 	[LDFLAGS="$LDFLAGS -L$withval"])
 
 AC_ARG_WITH([jpeg-prefix],
-	[  --with-jpeg-prefix=PATH    is same as --with-jpeg-include=PATH/include and --with-jpeg-lib=PATH/lib],
+	[  --with-jpeg-prefix=PATH    is the same as --with-jpeg-include=PATH/include and --with-jpeg-lib=PATH/lib],
 	[CPPFLAGS="$CPPFLAGS -I$withval/include" LDFLAGS="$LDFLAGS -L$withval/lib"])
 
 AC_ARG_WITH([curl-config],
-	[  --with-curl-config=PATH    path to curl-config,],
+	[  --with-curl-config=PATH    path to curl-config],
 	[curl_config_path="$withval" enable_curl="yes"],
 	[curl_config_path="$PATH"])
-
-AC_ARG_ENABLE([curl],
-	[  --enable-curl to be able to use libcurl (http://curl.haxx.se) to download images from the net, see also --with-curl-config],
-	[enable_curl=$enableval])
 
 AC_CHECK_LIB([jpeg],
 	[jpeg_start_decompress],
@@ -44,33 +40,39 @@ AC_CHECK_LIB([jpeg],
 	  AC_MSG_ERROR([I need a working jpeglib; please specify --with-jpeg-lib=PATH or see --help for more explicit options])
 	])
 
-if test "$enable_curl" = "yes" ; then
+AC_ARG_ENABLE([curl],
+	[  --enable-curl to be able to use libcurl (http://curl.haxx.se) to download images from the net, see also --with-curl-config],
+	[enable_curl=$enableval],
+	[enable_curl="no"])
+
+AC_MSG_CHECKING([enable-curl])
+AC_MSG_RESULT([$enable_curl])
+
+if test "x$enable_curl" = "xyes" ; then
 	AC_PATH_PROGS([curl_config], [curl-config], [no], [$curl_config_path])
 
-	if test "$curl_config" != "no" ; then
-		AC_MSG_CHECKING([curl-config --cflags])
+	if test "x$curl_config" != "xno" ; then
 		curl_cflags="`$curl_config --cflags`"
+		curl_libs="`$curl_config --libs`"
+		CPPFLAGS="$CPPFLAGS $curl_cflags"
+
+		AC_MSG_CHECKING([curl-config --cflags])
 		AC_MSG_RESULT([$curl_cflags])
-		CPPFLAGS="$CPPFLAGS `$curl_config --cflags`"
-		AC_CHECK_HEADERS([curl/curl.h],,AC_MSG_ERROR([required header file missing (download source from http://curl.haxx.se/)]))
 
 		AC_MSG_CHECKING([curl-config --libs])
-		curl_libs="`$curl_config --libs`"
 		AC_MSG_RESULT([$curl_libs])
-
-		AC_CHECK_LIB([curl],
-			[curl_easy_init],
-			[LIBS="$LIBS `$curl_config --libs`"],
-			[
-			  AC_MSG_ERROR([I need a working libcurl; see --help])
-			])
-
 	fi
+
+	AC_CHECK_LIB([curl], [curl_easy_init], [LIBS="$LIBS $curl_libs" AC_DEFINE([FEAT_CURL], [1], [Found working libcurl environment])], [
+	  AC_MSG_ERROR([I need a working libcurl; see --help])
+	])
+
 fi
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([jpeglib.h],,AC_MSG_ERROR([required header file missing (download source from http://www.ijg.org/)]))
+
+AC_CHECK_HEADERS([jpeglib.h curl/curl.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

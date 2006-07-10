@@ -15,35 +15,34 @@
  */
 
 #ifdef HAVE_CONFIG_H
-  #include "config.h"
-
-  #ifdef _WIN32
-    // i386-mingw32 doesn't have GNU compatible malloc, as reported
-    // by `configure', but it nevertheless works if we just ignore that.
-    #undef malloc
-  #endif
+ #include "config.h"
+ #ifdef _WIN32
+  // i386-mingw32 doesn't have GNU compatible malloc, as reported
+  // by `configure', but it nevertheless works if we just ignore that.
+  #undef malloc
+ #endif
 #endif
 
 #ifdef HAVE_STDLIB_H
-  #include <stdlib.h>
+ #include <stdlib.h>
+ // below is needed for jpeglib.h
+ #undef HAVE_STDLIB_H
 #endif
 
 #include <unistd.h>
 #include <stdio.h>
 
 #ifdef HAVE_STRING_H
-  #include <string.h>
-#endif
-
-#ifdef HAVE_JPEGLIB_H
-  #undef HAVE_STDLIB_H
-#endif
-
-#ifdef HAVE_CURL_CURL_H
-  #include "curl/curl.h"
+ #include <string.h>
 #endif
 
 #include "jpeglib.h"
+
+#ifdef FEAT_CURL
+ #ifdef HAVE_CURL_CURL_H
+  #include "curl/curl.h"
+ #endif
+#endif
 
 #define ROUND(x) (int) ( 0.5 + x )
 
@@ -72,6 +71,7 @@ int flipx = 0;
 int flipy = 0;
 int html = 0;
 int html_fontsize = 4;
+int debug = 0;
 
 char ascii_palette[257] = "";
 const char* default_palette = "   ...',;:clodxkO0KXNWM";
@@ -83,7 +83,7 @@ void help() {
 
 fputs(
 "\n"
-#ifdef HAVE_CURL_CURL_H
+#ifdef FEAT_CURL
 
 "Usage: jp2a [ options ] [ file(s) | URL(s) ]\n\n"
 
@@ -103,6 +103,7 @@ fputs(
 "      --chars=...  Select character palette used to paint the image.\n"
 "                   Leftmost character corresponds to black pixel, rightmost\n"
 "                   to white.  Minimum two characters must be specified.\n"
+"  -d, --debug      Print additional debug information.\n"
 "      --flipx      Flip image in X direction.\n"
 "      --flipy      Flip image in Y direction.\n"
 "  -i, --invert     Invert output image.\n"
@@ -149,6 +150,11 @@ int parse_options(const int argc, char** argv) {
 
 		if ( !strcmp(s, "-v") || !strcmp(s, "--verbose") ) {
 			verbose = 1;
+			++hits;
+		}
+
+		if ( !strcmp(s, "-d") || !strcmp(s, "--debug") ) {
+			debug = 1;
 			++hits;
 		}
 
@@ -373,7 +379,7 @@ void print_info(const struct jpeg_decompress_struct* cinfo) {
 	fprintf(stderr, "Output palette (%d chars): '%s'\n", (int) strlen(ascii_palette), ascii_palette);
 }
 
-#ifdef HAVE_CURL_CURL_H
+#ifdef FEAT_CURL
 //! return 1 if `s' is an URL, 0 if not
 int is_url(const char* s) {
 	int r = 0;
@@ -386,6 +392,59 @@ int is_url(const char* s) {
 //	r |= !strncmp(s, "dict://", 7);  // don't think we need to support this
 //	r |= !strncmp(s, "ldap://", 7);  // same here
 	return r;
+}
+
+// Fork and return filedescriptor of read-pipe for downloaded data
+// Returns -1 in case of errors
+// You must close() the filedescriptor after using it.
+int curl_download(const char* url, const int debug) {
+	int p, fd[2];
+	pid_t pid;
+
+	if ( (p = pipe(fd)) != 0 ) {
+		fprintf(stderr, "Could not create pipe (returned %d)\n", p);
+		return -1;
+	}
+
+	if ( (pid = fork()) == 0 ) {
+		// CHILD process
+		close(fd[0]); // close read end
+
+		FILE *fw = fdopen(fd[1], "wb");
+
+		if ( fw == NULL ) {
+			fprintf(stderr, "Could not write to pipe\n");
+			exit(1);
+		}
+
+		curl_global_init(CURL_GLOBAL_ALL);
+		atexit(curl_global_cleanup);
+
+		CURL *curl = curl_easy_init();
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+
+		if ( debug )
+			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
+
+		curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // fail silently on errors
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL); // use default handler
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, fw);
+
+		curl_easy_perform(curl);
+		curl_easy_cleanup(curl);
+		fflush(fw);
+		fclose(fw);
+		close(fd[1]);
+		exit(0);
+	} else if ( pid < 0 ) {
+		fprintf(stderr, "Failed to fork\n");
+		return -1;
+	}
+
+	// PARENT process
+
+	close(fd[1]); // close write end of pipe
+	return fd[0];
 }
 #endif
 
@@ -501,71 +560,30 @@ int main(int argc, char** argv) {
 				continue;
 		}
 
-#ifdef HAVE_CURL_CURL_H
+#ifdef FEAT_CURL
 		if ( is_url(argv[n]) ) {
+			if ( verbose )
+				fprintf(stderr, "URL: %s\n", argv[n]);
 
-			int fd[2];
-			fd[0] = fd[1] = -1; // [0]==read, [1]==write
+			int fd = curl_download(argv[n], debug);
+				
+			if ( fd < 0 )
+				return 1; // error message printed in curl_download
 
-			int p = pipe(fd);
+			FILE *fr = fdopen(fd, "rb");
 
-			if ( p!=0 ) {
-				fprintf(stderr, "Could not create pipe (returned %d)\n", p);
+			if ( fr == NULL ) {
+				fprintf(stderr, "Could not fdopen read pipe\n");
 				return 1;
 			}
 
-			pid_t pid = fork();
+			int r = decompress(fr);
 
-			if ( pid==0 ) {
-				close(fd[0]); // close read end
+			fclose(fr);
+			close(fd);
 
-				FILE *fw = fdopen(fd[1], "wb");
-
-				if ( fw == NULL ) {
-					fprintf(stderr, "Could not write to pipe\n");
-					return 1;
-				}
-
-				curl_global_init(CURL_GLOBAL_ALL);
-				atexit(curl_global_cleanup);
-
-				CURL *curl = curl_easy_init();
-				curl_easy_setopt(curl, CURLOPT_URL, argv[n]);
-
-				curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // fail silently on errors
-				curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL); // use default handler
-				curl_easy_setopt(curl, CURLOPT_WRITEDATA, fw);
-
-				curl_easy_perform(curl);
-				curl_easy_cleanup(curl);
-				fflush(fw);
-				fclose(fw);
-				exit(0);
-
-			} else if ( pid < 0 ) {
-				fprintf(stderr, "Failed to fork\n");
-				return 1;
-			} else {
-				close(fd[1]); // close write end
-
-				FILE *fr = fdopen(fd[0], "rb");
-
-				if ( fr == NULL ) {
-					fprintf(stderr, "Could not fdopen read pipe\n");
-					return 1;
-				}
-
-				if ( verbose )
-					fprintf(stderr, "URL: %s\n", argv[n]);
-
-				int r = decompress(fr);
-
-				fclose(fr);
-				close(fd[0]);
-
-				if ( r != 0 ) return r;
-				continue;
-			}
+			if ( r != 0 ) return r;
+			continue;
 		}
 #endif
 
