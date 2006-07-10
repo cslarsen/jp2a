@@ -24,24 +24,43 @@
 
     ./configure --with-jpeg-include=PATH --with-jpeg-lib=PATH
 
+    If you want to be able to download images from the net, you
+    must have libcurl installed (http://curl.haxx.se) and configure
+    for example like this:
+
+    ./configure --enable-curl
+
+    This will look for `curl-config' in $PATH, but you can specify
+    it directly with --with-curl-config=PATH if you need to.
+
 
     PRE-REQUISITES
 
-    jp2a neesd jpeglib.  If you don't have it, the source is
+    jp2a requires jpeglib.  If you don't have it, the source is
     available from http://www.ijg.org/
+
+    If you want to be able to download images from the net, you
+    also need libcurl, from http://curl.haxx.se
 
 
     BUILDING ON MAC OS X
 
-    Install jpeglib.h using fink or port:
+    jp2a is now part of darwin ports, so the easiest installation is:
 
-    fink install jpeglib
-    sudo port install jpeg
+    sudo port install jp2a
 
-    Then configure with proper directory:
+    If you do not have darwinports installed, go to http://www.opendarwin.org
+    and install it from there.
 
-    ./configure --with-jpeg-prefix=/sw           # fink
-    ./configure --with-jpeg-prefix=/opt/local    # port
+    To build yourself, do this:
+
+    # USING FINK
+    fink install libjpeg curl
+    ./configure --with-jpeg-prefix=/sw --with-curl-config=/sw/bin
+
+    # USING DARWIN PORTS
+    sudo port install jpeg curl
+    ./configure --with-jpeg-prefix=/opt/local --with-curl-config=/opt/local/bin
 
 
 $Id$

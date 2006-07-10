@@ -1,6 +1,8 @@
 CHANGES SINCE 0.9.10
-- New feature: Can now download images from the net
-- Added --enable-curl in configure to enable downloading of images
+- New feature: Can now use URLs on commandline to download images from the net.
+  To use this feature you have to install libcurl (http://curl.haxx.se) and also
+  configure with --enable-curl (which will look for curl-config in the search path).
+- Added --enable-curl and --with-curl-config=PATH to configure
 
 CHANGES SINCE 0.9.9
 - Using both --width and --height is equivalent to using --size
