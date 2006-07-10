@@ -362,6 +362,22 @@ void print_info(const struct jpeg_decompress_struct* cinfo) {
 	fprintf(stderr, "Output palette (%d chars): '%s'\n", (int) strlen(ascii_palette), ascii_palette);
 }
 
+#ifdef HAVE_CURL_CURL_H
+//! return 1 if `s' is an URL, 0 if not
+int is_url(const char* s) {
+	int r = 0;
+	r |= !strncmp(s, "ftp://", 6);
+	r |= !strncmp(s, "ftps://", 7);
+	r |= !strncmp(s, "file://", 7);
+	r |= !strncmp(s, "http://", 7);
+	r |= !strncmp(s, "https://", 8);
+	r |= !strncmp(s, "tftp://", 7);
+	r |= !strncmp(s, "dict://", 7);
+	r |= !strncmp(s, "ldap://", 7);
+	return r;
+}
+#endif
+
 int decompress(FILE *fp) {
 	struct jpeg_error_mgr jerr;
 	struct jpeg_decompress_struct cinfo;
@@ -473,6 +489,27 @@ int main(int argc, char** argv) {
 			if ( r == 0 )
 				continue;
 		}
+
+#ifdef HAVE_CURL_CURL_H
+		if ( is_url(argv[n]) ) {
+			static int curlinit = 0;
+			if ( !curlinit ) {
+				curl_global_init(CURL_GLOBAL_ALL);
+				curlinit = 1;
+			}
+
+			atexit(curl_global_cleanup);
+
+			CURL *curl = curl_easy_init();
+
+			if ( verbose )
+				fprintf(stderr, "URL: %s\n", argv[n]);
+
+			int r = 0; // status code
+			if ( r != 0 ) return r;
+			continue;
+		}
+#endif
 
 		FILE *fp;
 		if ( (fp = fopen(argv[n], "rb")) != NULL ) {
