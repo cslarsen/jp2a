@@ -1,5 +1,6 @@
 CHANGES SINCE 0.9.10
-- Added --enable-curl in configure
+- New feature: Can now download images from the net
+- Added --enable-curl in configure to enable downloading of images
 
 CHANGES SINCE 0.9.9
 - Using both --width and --height is equivalent to using --size

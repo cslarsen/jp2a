@@ -28,6 +28,7 @@
   #include <stdlib.h>
 #endif
 
+#include <unistd.h>
 #include <stdio.h>
 
 #ifdef HAVE_STRING_H
@@ -82,9 +83,19 @@ void help() {
 
 fputs(
 "\n"
+#ifdef HAVE_CURL_CURL_H
+
+"Usage: jp2a [ options ] [ file(s) | URL(s) ]\n\n"
+
+"Convert files or URLs from JPEG format to ASCII.\n\n"
+
+#else
+
 "Usage: jp2a [ options ] [ file(s) ]\n\n"
 
-"Convert file(s) in JPEG format to ASCII.\n\n"
+"Convert files in JPEG format to ASCII.\n\n"
+
+#endif
 
 "OPTIONS\n"
 "  -                Read JPEG image from standard input.\n"
@@ -492,22 +503,69 @@ int main(int argc, char** argv) {
 
 #ifdef HAVE_CURL_CURL_H
 		if ( is_url(argv[n]) ) {
-			static int curlinit = 0;
-			if ( !curlinit ) {
-				curl_global_init(CURL_GLOBAL_ALL);
-				curlinit = 1;
+
+			int fd[2];
+			fd[0] = fd[1] = -1; // [0]==read, [1]==write
+
+			int p = pipe(fd);
+
+			if ( p!=0 ) {
+				fprintf(stderr, "Could not create pipe (returned %d)\n", p);
+				return 1;
 			}
 
-			atexit(curl_global_cleanup);
+			pid_t pid = fork();
 
-			CURL *curl = curl_easy_init();
+			if ( pid==0 ) {
+				close(fd[0]); // close read end
 
-			if ( verbose )
-				fprintf(stderr, "URL: %s\n", argv[n]);
+				FILE *fw = fdopen(fd[1], "wb");
 
-			int r = 0; // status code
-			if ( r != 0 ) return r;
-			continue;
+				if ( fw == NULL ) {
+					fprintf(stderr, "Could not write to pipe\n");
+					return 1;
+				}
+
+				curl_global_init(CURL_GLOBAL_ALL);
+				atexit(curl_global_cleanup);
+
+				CURL *curl = curl_easy_init();
+				curl_easy_setopt(curl, CURLOPT_URL, argv[n]);
+
+				curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // fail silently on errors
+				curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL); // use default handler
+				curl_easy_setopt(curl, CURLOPT_WRITEDATA, fw);
+
+				curl_easy_perform(curl);
+				curl_easy_cleanup(curl);
+				fflush(fw);
+				fclose(fw);
+				exit(0);
+
+			} else if ( pid < 0 ) {
+				fprintf(stderr, "Failed to fork\n");
+				return 1;
+			} else {
+				close(fd[1]); // close write end
+
+				FILE *fr = fdopen(fd[0], "rb");
+
+				if ( fr == NULL ) {
+					fprintf(stderr, "Could not fdopen read pipe\n");
+					return 1;
+				}
+
+				if ( verbose )
+					fprintf(stderr, "URL: %s\n", argv[n]);
+
+				int r = decompress(fr);
+
+				fclose(fr);
+				close(fd[0]);
+
+				if ( r != 0 ) return r;
+				continue;
+			}
 		}
 #endif
 

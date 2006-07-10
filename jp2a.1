@@ -6,12 +6,12 @@ jp2a \- convert JPEG images to ASCII characters
 [
 .I options
 ] [
-.I filename
+.I filename | URL
 ]
 .LP
 .SH DESCRIPTION
 .B jp2a
-will convert JPEG images to ASCII characters.
+will convert JPEG images to ASCII characters.  You can specify a mixture of files and URLs.
 .SH OPTIONS
 .TP
 .BI \-
@@ -88,6 +88,11 @@ somefile.png jpg:\- |
 \- \-\-width=80
 .TP
 Check out convert(1) options to see what you can do.  Convert can handle almost any image format, so with this combination you can convert images in e.g. PDF or AVI files to ASCII.
+.TP
+If you have compiled jp2a with libcurl support, you can download files from the net like this:
+
+.B jp2a
+http://www.google.com/intl/en/logos/easter_logo.jpg
 .TP
 Another example, involving the use of curl(1) or wget(1), enables you to download images and convert on the fly, e.g.:
 
