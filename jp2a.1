@@ -62,6 +62,21 @@ calculated automatically.  Default mode is --width=78.
 .TP
 .B \-V \-\-version
 Print program version.
+.SH DOWNLOADING IMAGES FROM THE NET
+If you have compiled jp2a with libcurl(3), you can download images by specifying URLs.
+The protocols recognized are ftp, ftps, file, http, https and tftp.
+
+.B jp2a
+doesn't care about proxy servers or HTTP authentication, but it will pass along the URL
+unaltered to libcurl, so you can download URLs from password-protected pages, e.g.:
+
+.B jp2a
+https://user:pass@foo.com/bar.jpg
+
+If you need more control of the downloading, you should use curl(1) or wget(1) and jp2a
+read the image from standard input.  jp2a uses a pipe and fork to download images using
+libcurl, but no exec or system calls, and hence does not worry about malformed URLs.
+
 .SH EXAMPLES
 .TP
 Print imagefile.jpg using ASCII characters in 40 columns and 20 rows:

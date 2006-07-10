@@ -383,8 +383,8 @@ int is_url(const char* s) {
 	r |= !strncmp(s, "http://", 7);
 	r |= !strncmp(s, "https://", 8);
 	r |= !strncmp(s, "tftp://", 7);
-	r |= !strncmp(s, "dict://", 7);
-	r |= !strncmp(s, "ldap://", 7);
+//	r |= !strncmp(s, "dict://", 7);  // don't think we need to support this
+//	r |= !strncmp(s, "ldap://", 7);  // same here
 	return r;
 }
 #endif
