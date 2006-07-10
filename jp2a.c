@@ -126,103 +126,65 @@ fputs(
 }
 
 int parse_options(const int argc, char** argv) {
-	if ( argc<2 ) {
-		help();
-		return 1;
-	}
 
-	int n;
+	// define some shorthand defines
+	#define IF_OPTS(shortopt, longopt) if ( !strcmp(s, shortopt) || !strcmp(s, longopt) )
+	#define IF_OPT(shortopt) if ( !strcmp(s, shortopt) )
 
-	int filehits = 0;
-
-	for ( n=1; n<argc; ++n ) {
+	int n, files;
+	for ( n=1, files=0; n<argc; ++n ) {
 		const char *s = argv[n];
 
-		if ( *s != '-' ) { ++filehits; continue; }
-		if ( *s=='-' && *(s+1)==0 ) { ++filehits; continue; } // stdin
-
-		int hits = 0;
-
-		if ( !strcmp(s, "-h") || !strcmp(s, "--help") ) {
-			help();
+		if ( *s != '-' ) { // count files to read
+			++files; continue;
+		}
+	
+		IF_OPT("-")			{ /* stdin to be read */ ++files; continue; }
+		IF_OPTS("-h", "--help")		{ help(); return 0; }
+		IF_OPTS("-v", "--verbose")	{ verbose = 1; continue; }
+		IF_OPTS("-d", "--debug")	{ debug = 1; continue; }
+		IF_OPT("--html") 		{ html = 1; continue; }
+		IF_OPTS("-b", "--border") 	{ border = 1; continue; }
+		IF_OPTS("-i", "--invert") 	{ invert = 1; continue; }
+		IF_OPT("--flipx") 		{ flipx = 1; continue; }
+		IF_OPT("--flipy") 		{ flipy = 1; continue; }
+		IF_OPTS("-V", "--version") {
+			fprintf(stderr, "%s\n%s\n%s\n\nProject homepage %s\n",
+				version, copyright, license, url);
 			return 0;
-		}
-
-		if ( !strcmp(s, "-v") || !strcmp(s, "--verbose") ) {
-			verbose = 1;
-			++hits;
-		}
-
-		if ( !strcmp(s, "-d") || !strcmp(s, "--debug") ) {
-			debug = 1;
-			++hits;
-		}
-
-		if ( !strcmp(s, "-V") || !strcmp(s, "--version") ) {
-			fprintf(stderr, "%s\n", version);
-			fprintf(stderr, "%s\n", copyright);
-			fprintf(stderr, "%s\n", license);
-			fprintf(stderr, "News and updates on %s\n", url);
-			return 0;
-		}
-
-		if ( !strcmp(s, "--html") ) {
-			html = 1;
-			++hits;
-		}
-
-		if ( !strcmp(s, "--border") || !strcmp(s, "-b") ) {
-			border = 1;
-			++hits;
-		}
-
-		if ( !strcmp(s, "--invert") || !strcmp(s, "-i") ) {
-			invert = 1;
-			++hits;
-		}
-
-		if ( !strcmp(s, "--flipx") ) {
-			flipx = 1;
-			++hits;
-		}
-
-		if ( !strcmp(s, "--flipy") ) {
-			flipy = 1;
-			++hits;
 		}
 
 		if ( sscanf(s, "--size=%dx%d", &width, &height) == 2 ) {
 			auto_width = auto_height = 0;
-			++hits;
+			continue;
 		}
 
 		if ( !strncmp(s, "--chars=", 8) ) {
 			// don't use sscanf, we need to read spaces as well
 			strcpy(ascii_palette, s+8);
-			++hits;
+			continue;
 		}
 
 		if ( sscanf(s, "--width=%d", &width) == 1 ) {
 			auto_height += 1;
-			++hits;
+			continue;
 		}
 
 		if ( sscanf(s, "--height=%d", &height) == 1 ) {
 			auto_width += 1;
-			++hits;
+			continue;
 		}
 
 		if ( sscanf(s, "--html-fontsize=%d", &html_fontsize) == 1 )
-			++hits;
+			continue;
 
-		if ( !hits ) {
-			fprintf(stderr, "Unknown option %s\n\n", s);
-			help();
-			return 1;
-		}
-	}
+		fprintf(stderr, "Unknown option %s\n\n", s);
+		help();
+		return 1;
 
-	if ( !filehits ) {
+	} // args ...
+
+	if ( !files ) {
 		fprintf(stderr, "No files specified\n");
 		return 1;
 	}
@@ -241,8 +203,15 @@ int parse_options(const int argc, char** argv) {
 	if ( ascii_palette[0] == 0 ) strcpy(ascii_palette, default_palette);
 	if ( ascii_palette[1] == 0 ) strcpy(ascii_palette, default_palette);
 	
-	if ( width < 1 ) width = 1;
-	if ( height < 1 ) height = 1;
+	if ( width < 1 ) {
+		fprintf(stderr, "Negative or zero width specified.\n");
+		return 1;
+	}
+
+	if ( height < 1 ) {
+		fprintf(stderr, "Negative or zero height specified.\n");
+		return 1;
+	}
 
 	return -1;
 }
