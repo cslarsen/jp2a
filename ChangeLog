@@ -1,5 +1,5 @@
 CHANGES SINCE 0.9.10
-- New feature:  Can now specify images as URLs to download and convert (requires libcurl)
+- New feature:  Can now download images from URLs (requires libcurl)
 - New feature:  Added --debug (-d) for debug output with libcurl
 - configure:    Added --enable-curl and --with-curl-config=PATH
 
