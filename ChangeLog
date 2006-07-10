@@ -1,5 +1,6 @@
 CHANGES SINCE 0.9.11
-- None yet.
+- Some Linux build failed on this:  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
+  This has been removed, and works well for the Linux distro tested on.
 
 CHANGES SINCE 0.9.10
 - New feature:  Can now download images from URLs (requires libcurl)

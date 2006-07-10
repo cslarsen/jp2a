@@ -398,7 +398,6 @@ int curl_download(const char* url, const int debug) {
 			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
 
 		curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // fail silently on errors
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL); // use default handler
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, fw);
 
 		curl_easy_perform(curl);
