@@ -92,6 +92,10 @@ AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_CHECK_FUNCS([memset])
+AC_CHECK_FUNCS([atexit])
+AC_FUNC_FORK
+AC_TYPE_PID_T
+
 AC_C_INLINE
 AC_FUNC_MALLOC
 AC_OUTPUT
