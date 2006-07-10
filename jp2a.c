@@ -39,12 +39,8 @@
 #include "jpeglib.h"
 
 #ifdef FEAT_CURL
- #ifdef HAVE_CURL_H
-  #include "curl.h"
- #else
-  #ifdef HAVE_CURL_CURL_H
-   #include "curl/curl.h"
-  #endif
+ #ifdef HAVE_CURL_CURL_H
+  #include "curl/curl.h"
  #endif
 #endif
 

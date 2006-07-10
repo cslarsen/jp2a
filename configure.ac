@@ -41,9 +41,9 @@ AC_CHECK_LIB([jpeg],
 	])
 
 AC_ARG_ENABLE([curl],
-	[  --enable-curl to be able to use libcurl (http://curl.haxx.se) to download images from the net, see also --with-curl-config],
+	[  --enable-curl to be able to use libcurl (http://curl.haxx.se) to download images from the net (default: yes)],
 	[enable_curl=$enableval],
-	[enable_curl="no"])
+	[enable_curl="yes"])
 
 AC_MSG_CHECKING([enable-curl])
 AC_MSG_RESULT([$enable_curl])
@@ -63,10 +63,14 @@ if test "x$enable_curl" = "xyes" ; then
 		AC_MSG_RESULT([$curl_libs])
 	fi
 
-	AC_CHECK_LIB([curl], [curl_easy_init], [LIBS="$LIBS $curl_libs" AC_DEFINE([FEAT_CURL], [1], [Found working libcurl environment])], [
-	  AC_MSG_ERROR([I need a working libcurl; see --help])
-	])
+	if test "x$curl_libs" = "x" ; then
+		curl_libs="-lcurl"
+	fi
 
+	AC_CHECK_LIB([curl], [curl_easy_init], [LIBS="$LIBS $curl_libs" AC_DEFINE([FEAT_CURL], [1], [Found working libcurl environment])], [
+		  AC_MSG_WARN([I need a working libcurl (see --with-curl-config=PATH), support will be disabled])
+		  enable_curl="no"
+		])
 fi
 
 # Checks for header files.
@@ -77,13 +81,9 @@ AC_CHECK_HEADER([jpeglib.h],
 	[ AC_MSG_ERROR([required header file jpeglib.h not found, use --with-jpeg-include=PATH or see --help]) ])
 
 if test "x$enable_curl" = "xyes" ; then
-AC_CHECK_HEADER([curl.h],
-	[ AC_DEFINE([HAVE_CURL_H], [1], [Define to 1 if you have the <curl.h> header file]) ],
-	[])
-
-AC_CHECK_HEADER([curl/curl.h],
-	[ AC_DEFINE([HAVE_CURL_CURL_H], [1], [Define to 1 if you have the <curl/curl.h> header file]) ],
-	[ AC_MSG_ERROR([required header file curl/curl.h not found, see --help]) ])
+	AC_CHECK_HEADER([curl/curl.h],
+		[ AC_DEFINE([HAVE_CURL_CURL_H], [1], [Define to 1 if you have the <curl/curl.h> header file]) ],
+		[ AC_MSG_WARN([required header file curl/curl.h not found, libcurl will be disabled (see --help)]) ])
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.
