@@ -6,7 +6,7 @@ jp2a \- convert JPEG images to ASCII characters
 [
 .I options
 ] [
-.I filename | URL
+.I filename(s) | URL(s)
 ]
 .LP
 .SH DESCRIPTION
@@ -66,26 +66,30 @@ calculated automatically.  Default mode is --width=78.
 .B \-V \-\-version
 Print program version.
 .SH DOWNLOADING IMAGES FROM THE NET
-If you have compiled jp2a with libcurl(3), you can download images by specifying URLs.
-The protocols recognized are ftp, ftps, file, http, https and tftp.
-
-.B jp2a
-doesn't care about proxy servers or HTTP authentication, but it will pass along the URL
-unaltered to libcurl, so you can download URLs from password-protected pages, e.g.:
+.TP
+If you have compiled jp2a with libcurl(3), you can download images by specifying URLs:
 
 .B jp2a
 https://user:pass@foo.com/bar.jpg
-
+.PP
+The protocols recognized are ftp, ftps, file, http, https and tftp.
+.PP
 If you need more control of the downloading, you should use curl(1) or wget(1) and jp2a
-read the image from standard input.  jp2a uses a pipe and fork to download images using
-libcurl, but no exec or system calls, and hence does not worry about malformed URLs.
-
+read the image from standard input.
+.PP
+jp2a uses pipe and fork to download images using libcurl (i.e., no exec or system calls) 
+and therefore does not worry about malevolently formatted URLs.
 .SH EXAMPLES
 .TP
-Print imagefile.jpg using ASCII characters in 40 columns and 20 rows:
+Convert and print imagefile.jpg using ASCII characters in 40 columns and 20 rows:
 
 .B jp2a
 \-\-size=40x20 imagefile.jpg
+.TP
+Download an image off the net, convert and print:
+
+.B jp2a
+http://www.google.com/intl/en/logos/easter_logo.jpg
 .TP
 Output picture.jpg and picture2.jpg, each 80x25 characters, using the characters " ...ooxx@@" for output:
 
@@ -107,12 +111,8 @@ somefile.png jpg:\- |
 .TP
 Check out convert(1) options to see what you can do.  Convert can handle almost any image format, so with this combination you can convert images in e.g. PDF or AVI files to ASCII.
 .TP
-If you have compiled jp2a with libcurl support, you can download files from the net like this:
-
-.B jp2a
-http://www.google.com/intl/en/logos/easter_logo.jpg
-.TP
-Another example, involving the use of curl(1) or wget(1), enables you to download images and convert on the fly, e.g.:
+Although the default build of jp2a includes automatic downloading of files specified by URLs, you can explicitly
+download them by using curl(1) or wget(1), for example:
 
 .B curl
 \-s
