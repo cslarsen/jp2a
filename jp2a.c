@@ -185,7 +185,8 @@ int parse_options(const int argc, char** argv) {
 	} // args ...
 
 	if ( !files ) {
-		fprintf(stderr, "No files specified\n");
+		fprintf(stderr, "No files specified\n\n");
+		help();
 		return 1;
 	}
 
@@ -203,12 +204,12 @@ int parse_options(const int argc, char** argv) {
 	if ( ascii_palette[0] == 0 ) strcpy(ascii_palette, default_palette);
 	if ( ascii_palette[1] == 0 ) strcpy(ascii_palette, default_palette);
 	
-	if ( width < 1 ) {
+	if ( width < 1 && !auto_width ) {
 		fprintf(stderr, "Negative or zero width specified.\n");
 		return 1;
 	}
 
-	if ( height < 1 ) {
+	if ( height < 1 && !auto_height ) {
 		fprintf(stderr, "Negative or zero height specified.\n");
 		return 1;
 	}
