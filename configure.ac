@@ -73,6 +73,24 @@ if test "x$enable_curl" = "xyes" ; then
 		])
 fi
 
+AC_ARG_ENABLE([convert],
+	[  --enable-convert to use ImageMagick's convert utility for reading non-JPEG images (default: yes)],
+	[enable_convert=$enableval],
+	[enable_convert="yes"])
+
+AC_MSG_CHECKING([enable-convert])
+AC_MSG_RESULT([$enable_convert])
+
+if test "$enable_convert" = "yes" ; then
+	AC_PATH_PROG([prog_convert], [convert], [no])
+	AC_MSG_WARN([progconvert: $prog_convert])
+
+	if test "x$prog_convert" != "xno" ; then
+		AC_DEFINE([FEAT_CONVERT], [1], [Define to 1 if ImageMagick's convert program is to be used])
+#		AC_DEFINE([PATH_CONVERT], [$prog_convert], [Absolute path to convert during configuration])
+	fi
+fi
+
 # Checks for header files.
 AC_HEADER_STDC
 

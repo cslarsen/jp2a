@@ -1,2 +1,5 @@
-- When using --width=3000 or --width=4000 the malloc on Mac OS X will complaing when freeing the
-  memory, and sometimes segfaults.
+- Seems convert downloads URLs, so it may be overkill to use that to convert images
+- Take a look at GD lib (or gd2 lib) for reading images
+- Or just use libpng, and have people use convert for other imageformats
+- When using another library that converts, consider removing the jpeg-reader and using
+  a png 24-bits reader instead (convert all images to png grayscale, then read those images)
