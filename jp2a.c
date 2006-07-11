@@ -267,7 +267,7 @@ void print_image(const Image* i, const int chars) {
 
 void clear(Image* i) {
 	memset(i->p, 0, i->width * i->height * sizeof(float));
-	memset(i->yadds, 0, i->height);
+	memset(i->yadds, 0, i->height * sizeof(int) );
 }
 
 void normalize(Image* i) {
@@ -289,10 +289,11 @@ void print_progress(const struct jpeg_decompress_struct* cinfo) {
 	int pos = ROUND( (float) progress_barlength * progress );
 
 	char s[progress_barlength + 1];
-	s[progress_barlength] = 0;
 
 	memset(s, '.', progress_barlength);
 	memset(s, '#', pos);
+
+	s[progress_barlength] = 0;
 
 	fprintf(stderr, "Decompressing image [%s]\r", s);
 }
@@ -422,8 +423,7 @@ int decompress(FILE *fp) {
 	float to_dst_y = (float) (height-1) / (float) (cinfo.output_height-1);
 	float to_dst_x = (float) cinfo.output_width / (float) width;
 	
-	if ( verbose )
-		print_info(&cinfo);
+	if ( verbose ) print_info(&cinfo);
 
 	int last_dsty = 0;
 
@@ -454,12 +454,10 @@ int decompress(FILE *fp) {
 
 		last_dsty = dst_y;
 
-		if ( verbose )
-			print_progress(&cinfo);
+		if ( verbose ) print_progress(&cinfo);
 	}
 
-	if ( verbose )
-		fprintf(stderr, "\n");
+	if ( verbose ) fprintf(stderr, "\n");
 
 	normalize(&image);
 
