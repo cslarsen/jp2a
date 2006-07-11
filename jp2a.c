@@ -260,7 +260,8 @@ void print_image(const Image* i, const int chars) {
 			line[!flipx? x : w-x-1] = ascii_palette[ !invert ? chars - pos : pos ];
 		}
 
-		printf(!border? "%s\n" : "|%s|\n" , line);
+		if ( !border ) puts(line);
+		else printf("|%s|\n", line);
 	}
 }
 
