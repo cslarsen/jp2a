@@ -73,14 +73,20 @@ int html = 0;
 int html_fontsize = 4;
 int debug = 0;
 
-char ascii_palette[257] = "";
+#define ASCII_PALETTE_SIZE 256
+
+char ascii_palette[ASCII_PALETTE_SIZE+1] = "";
 const char* default_palette = "   ...',;:clodxkO0KXNWM";
 
-void help() {
-	fprintf(stderr, "%s\n", version);
-	fprintf(stderr, "%s\n", copyright);
-	fprintf(stderr, "%s\n", license);
 
+void print_version() {
+	fputs(version, stderr);
+	fputs(copyright, stderr);
+	fputs(license, stderr);
+}
+
+void help() {
+	print_version();
 fputs(
 "\n"
 #ifdef FEAT_CURL
@@ -126,11 +132,13 @@ fputs(
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
 }
 
+// returns positive error code, or -1 for parsing OK
 int parse_options(const int argc, char** argv) {
-
 	// define some shorthand defines
 	#define IF_OPTS(shortopt, longopt) if ( !strcmp(s, shortopt) || !strcmp(s, longopt) )
 	#define IF_OPT(shortopt) if ( !strcmp(s, shortopt) )
+	#define IF_VARS(format, var1, var2) if ( sscanf(s, format, var1, var2) == 2 )
+	#define IF_VAR(format, var) if ( sscanf(s, format, var) == 1 )
 
 	int n, files;
 	for ( n=1, files=0; n<argc; ++n ) {
@@ -140,7 +148,7 @@ int parse_options(const int argc, char** argv) {
 			++files; continue;
 		}
 	
-		IF_OPT("-")			{ /* stdin to be read */ ++files; continue; }
+		IF_OPT("-")			{ ++files; continue; }
 		IF_OPTS("-h", "--help")		{ help(); return 0; }
 		IF_OPTS("-v", "--verbose")	{ verbose = 1; continue; }
 		IF_OPTS("-d", "--debug")	{ debug = 1; continue; }
@@ -149,35 +157,22 @@ int parse_options(const int argc, char** argv) {
 		IF_OPTS("-i", "--invert") 	{ invert = 1; continue; }
 		IF_OPT("--flipx") 		{ flipx = 1; continue; }
 		IF_OPT("--flipy") 		{ flipy = 1; continue; }
-		IF_OPTS("-V", "--version") {
-			fprintf(stderr, "%s\n%s\n%s\n\nProject homepage %s\n",
-				version, copyright, license, url);
-			return 0;
-		}
-
-		if ( sscanf(s, "--size=%dx%d", &width, &height) == 2 ) {
-			auto_width = auto_height = 0;
-			continue;
-		}
+		IF_OPTS("-V", "--version")	{ print_version(); return 0; }
+		IF_VAR("--width=%ud", &width)	{ auto_height += 1; continue; }
+		IF_VAR("--height=%ud", &height)	{ auto_width += 1; continue; }
+		IF_VAR("--html-fontsize=%ud", &html_fontsize) { continue; }
+		IF_VARS("--size=%udx%ud", &width, &height) { auto_width = auto_height = 0; continue; }
 
 		if ( !strncmp(s, "--chars=", 8) ) {
+			if ( strlen(s-8) > ASCII_PALETTE_SIZE ) {
+				fprintf(stderr, "Too many ascii characters specified.\n");
+				return 1;
+			}
+	
 			// don't use sscanf, we need to read spaces as well
 			strcpy(ascii_palette, s+8);
 			continue;
 		}
-
-		if ( sscanf(s, "--width=%d", &width) == 1 ) {
-			auto_height += 1;
-			continue;
-		}
-
-		if ( sscanf(s, "--height=%d", &height) == 1 ) {
-			auto_width += 1;
-			continue;
-		}
-
-		if ( sscanf(s, "--html-fontsize=%d", &html_fontsize) == 1 )
-			continue;
 
 		fprintf(stderr, "Unknown option %s\n\n", s);
 		help();
@@ -195,23 +190,17 @@ int parse_options(const int argc, char** argv) {
 	if ( auto_width==1 && auto_height == 1 )
 		auto_height = 0;
 
-	// if both --width and --height are set, we will use that
-	// as an explicit setting, and not calculate
-	if ( auto_width==2 && auto_height==1 ) {
+	// --width and --height is the same as using --size
+	if ( auto_width==2 && auto_height==1 )
 		auto_width = auto_height = 0;
-	}
 
-	// Palette must be at least two characters
-	if ( ascii_palette[0] == 0 ) strcpy(ascii_palette, default_palette);
-	if ( ascii_palette[1] == 0 ) strcpy(ascii_palette, default_palette);
-	
-	if ( width < 1 && !auto_width ) {
-		fprintf(stderr, "Negative or zero width specified.\n");
+	if ( strlen(ascii_palette) <= 2 ) {
+		fprintf(stderr, "You must specify at least two characters in --chars.\n");
 		return 1;
 	}
-
-	if ( height < 1 && !auto_height ) {
-		fprintf(stderr, "Negative or zero height specified.\n");
+	
+	if ( (width < 1 && !auto_width) || (height < 1 && !auto_height) ) {
+		fprintf(stderr, "Invalid width or height specified.\n");
 		return 1;
 	}
 
@@ -513,6 +502,7 @@ int decompress(FILE *fp) {
 }
 
 int main(int argc, char** argv) {
+	strcpy(ascii_palette, default_palette);
 	int r = parse_options(argc, argv);
 	if ( r >= 0 ) return r;
 

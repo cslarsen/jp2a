@@ -1,3 +1,6 @@
+CHANGES SINCE 0.9.12
+- Minor code cleanup.
+
 CHANGES SINCE 0.9.11
 - Some Linux build failed on this:  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
   This has been removed, and works well for the Linux distro tested on.
