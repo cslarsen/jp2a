@@ -214,42 +214,50 @@ void calc_aspect_ratio(const int jpeg_width, const int jpeg_height) {
 	}
 }
 
-void print(const Image* i, const int chars) {
+void print_html_start() {
+	printf(
+	"<?xml version='1.0' encoding='ISO-8859-1'?>\n"
+	"<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'"
+	"  'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n"
+	"<html xmlns='http://www.w3.org/1999/xhtml' lang='en' xml:lang='en'>\n"
+	"<head>\n"
+	"<title>jp2a converted image</title>\n"
+	"<style type='text/css'>\n"
+	".ascii {\n"
+	"   font-size:%dpt;\n"
+	"}\n"
+	"</style>\n"
+	"</head>\n"
+	"<body>\n"
+	"<div class='ascii'>\n"
+	"<pre>\n"
+	,
+	html_fontsize);
+}
+
+void print_html_end() {
+	printf("</pre>\n");
+	printf("</div>\n");
+	printf("</body>\n");
+	printf("</html>\n");
+}
+
+void print_border(const int width) {
+	char bord[width + 3];
+	bord[0] = bord[width+1] = '+';
+	bord[width+2] = 0;
+	memset(bord+1, '-', width);
+	puts(bord);
+}
+
+void print_image(const Image* i, const int chars) {
 	int x, y;
 	const int w = i->width;
 	const int h = i->height;
 
-	// Make "+--------+" string
-	char bord[w + 3];
-	bord[0] = bord[w+1] = '+';
-	bord[w+2] = 0;
-	memset(bord+1, '-', w);
-
 	char line[w + 1];
 	line[w] = 0;
 
-	if ( html ) {
-		printf(
-		"<?xml version='1.0' encoding='ISO-8859-1'?>\n"
-		"<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'"
-		"  'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n"
-		"<html xmlns='http://www.w3.org/1999/xhtml' lang='en' xml:lang='en'>\n"
-		"<head>\n"
-		"<title>jp2a converted image</title>\n"
-		"<style type='text/css'>\n"
-		".ascii {\n"
-		"   font-size:%dpt;\n"
-		"}\n"
-		"</style>\n"
-		"</head>\n"
-		"<body>\n"
-		"<div class='ascii'>\n"
-		"<pre>\n"
-		,
-		html_fontsize);
-	}
-
-	if ( border ) puts(bord);
 
 	for ( y=0; y < h; ++y ) {
 		for ( x=0; x < w; ++x ) {
@@ -258,15 +266,6 @@ void print(const Image* i, const int chars) {
 		}
 
 		printf(!border? "%s\n" : "|%s|\n" , line);
-	}
-
-	if ( border ) puts(bord);
-
-	if ( html ) {
-		printf("</pre>\n");
-		printf("</div>\n");
-		printf("</body>\n");
-		printf("</html>\n");
 	}
 }
 
@@ -472,7 +471,14 @@ int decompress(FILE *fp) {
 		fprintf(stderr, "\n");
 
 	normalize(&image);
-	print(&image, num_chars);
+
+	if ( html ) print_html_start();
+	if ( border ) print_border(image.width);
+
+	print_image(&image, num_chars);
+
+	if ( border ) print_border(image.width);
+	if ( html ) print_html_end();
 
 	free(image.p);
 	free(image.yadds);
