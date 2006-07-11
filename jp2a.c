@@ -1,15 +1,8 @@
 /*
- * Copyright (C) 2006 Christian Stigen Larsen
+ * Copyright (C) 2006 Christian Stigen Larsen, http://csl.sublevel3.org
  * Distributed under the GNU General Public License (GPL) v2 or later.
  *
- * jp2a converts JPEG to ASCII.
- *
  * Project homepage on http://jp2a.sf.net
- * Author's homepage on http://csl.sublevel3.org
- *
- * Compilation hint:
- *
- *   cc -g -O2 jp2a.c -I/sw/include -L/sw/lib -ljpeg
  *
  * $Id$
  */
