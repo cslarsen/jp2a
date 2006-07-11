@@ -14,33 +14,25 @@
  * $Id$
  */
 
-#ifdef HAVE_CONFIG_H
- #include "config.h"
- #ifdef _WIN32
-  // i386-mingw32 doesn't have GNU compatible malloc, as reported
-  // by `configure', but it nevertheless works if we just ignore that.
-  #undef malloc
- #endif
-#endif
-
-#ifdef HAVE_STDLIB_H
- #include <stdlib.h>
- // below is needed for jpeglib.h
- #undef HAVE_STDLIB_H
-#endif
-
-#include <unistd.h>
 #include <stdio.h>
+#include "jpeglib.h"
 
-#ifdef HAVE_STRING_H
- #include <string.h>
+#ifdef HAVE_CONFIG_H
+
+ #ifdef HAVE_STDLIB_H
+ #undef HAVE_STDLIB_H
+ #endif
+
+ #include "config.h"
 #endif
 
-#include "jpeglib.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 
 #ifdef FEAT_CURL
  #ifdef HAVE_CURL_CURL_H
-  #include "curl/curl.h"
+ #include "curl/curl.h"
  #endif
 #endif
 
