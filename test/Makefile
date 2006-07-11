@@ -1,6 +1,6 @@
 # $Id$
 
-all: normal normal-b 160x49 10h 40x40 1x1-inv 110x30-i-b flip-xy-invert
+all: normal normal-b 160x49 10h 40x40 1x1-inv 110x30-i-b flip-xy-invert web-normal
 	@echo All tests ok.
 
 normal:
@@ -29,3 +29,6 @@ big:
 
 flip-xy-invert:
 	../jp2a --flipx --flipy --invert jp2a.jpg | diff - flip-xy-invert.txt
+
+web-normal:
+	../jp2a http://jp2a.sourceforge.net/jp2a.jpg | diff - normal.txt
