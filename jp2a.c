@@ -70,45 +70,39 @@ void print_version() {
 
 void help() {
 	print_version();
-fputs(
-"\n"
+
+	fputs("\n"
 #ifdef FEAT_CURL
+	"Usage: jp2a [ options ] [ file(s) | URL(s) ]\n\n"
 
-"Usage: jp2a [ options ] [ file(s) | URL(s) ]\n\n"
-
-"Convert files or URLs from JPEG format to ASCII.\n\n"
-
+	"Convert files or URLs from JPEG format to ASCII.\n\n"
 #else
+	"Usage: jp2a [ options ] [ file(s) ]\n\n"
 
-"Usage: jp2a [ options ] [ file(s) ]\n\n"
-
-"Convert files in JPEG format to ASCII.\n\n"
-
+	"Convert files in JPEG format to ASCII.\n\n"
 #endif
+	"OPTIONS\n"
+	"  -                Read JPEG image from standard input.\n"
+	"  -b, --border     Print a border around the output image.\n"
+	"      --chars=...  Select character palette used to paint the image.\n"
+	"                   Leftmost character corresponds to black pixel, right-\n"
+	"                   most to white.  Minimum two characters must be specified.\n"
+	"  -d, --debug      Print additional debug information.\n"
+	"      --flipx      Flip image in X direction.\n"
+	"      --flipy      Flip image in Y direction.\n"
+	"      --height=N   Set output height, calculate width from aspect ratio.\n"
+	"  -h, --help       Print program help.\n"
+	"      --html       Produce strict XHTML 1.0 output.\n"
+	"      --html-fontsize=N  Set fontsize to N pt when using --html, default is 4.\n"
+	"  -i, --invert     Invert output image.  Use if your display has a dark\n"
+	"                   background.\n"
+	"      --size=WxH   Set output width and height.\n"
+	"  -v, --verbose    Verbose output.\n"
+	"  -V, --version    Print program version.\n"
+	"      --width=N    Set output width, calculate height from ratio.\n\n"
 
-"OPTIONS\n"
-"  -                Read JPEG image from standard input.\n"
-"  -b, --border     Print a border around the output image.\n"
-"      --chars=...  Select character palette used to paint the image.\n"
-"                   Leftmost character corresponds to black pixel, right-\n"
-"                   most to white.  Minimum two characters must be specified.\n"
-"  -d, --debug      Print additional debug information.\n"
-"      --flipx      Flip image in X direction.\n"
-"      --flipy      Flip image in Y direction.\n"
-"      --height=N   Set output height, calculate width from aspect ratio.\n"
-"  -h, --help       Print program help.\n"
-"      --html       Produce strict XHTML 1.0 output.\n"
-"      --html-fontsize=N  Set fontsize to N pt when using --html, default is 4.\n"
-"  -i, --invert     Invert output image.  Use if your display has a dark\n"
-"                   background.\n"
-"      --size=WxH   Set output width and height.\n"
-"  -v, --verbose    Verbose output.\n"
-"  -V, --version    Print program version.\n"
-"      --width=N    Set output width, calculate height from ratio.\n\n"
-
-"  The default running mode is `jp2a --width=78'.  See the man page for jp2a\n"
-"  to see detailed usage examples.\n\n"
-, stderr);
+	"  The default running mode is `jp2a --width=78'.  See the man page for jp2a\n"
+	"  to see detailed usage examples.\n\n" , stderr);
 
 	fprintf(stderr, "Project homepage on %s\n", url);
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
