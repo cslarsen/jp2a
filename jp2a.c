@@ -116,6 +116,7 @@ fputs(
 
 // returns positive error code, or -1 for parsing OK
 int parse_options(const int argc, char** argv) {
+
 	// define some shorthand defines
 	#define IF_OPTS(shortopt, longopt) if ( !strcmp(s, shortopt) || !strcmp(s, longopt) )
 	#define IF_OPT(shortopt) if ( !strcmp(s, shortopt) )
@@ -244,9 +245,9 @@ void print_html_end() {
 
 void print_border(const int width) {
 	char bord[width + 3];
+	memset(bord, '-', width+2);
 	bord[0] = bord[width+1] = '+';
 	bord[width+2] = 0;
-	memset(bord+1, '-', width);
 	puts(bord);
 }
 
@@ -258,10 +259,10 @@ void print_image(const Image* i, const int chars) {
 	char line[w + 1];
 	line[w] = 0;
 
-
 	for ( y=0; y < h; ++y ) {
 		for ( x=0; x < w; ++x ) {
-			int pos = ROUND( (float) chars * i->p[(!flipy? y : h-y-1)*w + x] );
+			float intensity = i->p[(!flipy? y : h-y-1)*w + x];
+			int pos = ROUND( (float) chars * intensity );
 			line[!flipx? x : w-x-1] = ascii_palette[ !invert ? chars - pos : pos ];
 		}
 
