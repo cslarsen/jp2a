@@ -210,8 +210,7 @@ void calc_aspect_ratio(const int jpeg_width, const int jpeg_height) {
 }
 
 void print_html_start() {
-	printf(
-	"<?xml version='1.0' encoding='ISO-8859-1'?>\n"
+	printf("<?xml version='1.0' encoding='ISO-8859-1'?>\n"
 	"<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'"
 	"  'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n"
 	"<html xmlns='http://www.w3.org/1999/xhtml' lang='en' xml:lang='en'>\n"
@@ -226,8 +225,7 @@ void print_html_start() {
 	"<body>\n"
 	"<div class='ascii'>\n"
 	"<pre>\n"
-	,
-	html_fontsize);
+		, html_fontsize);
 }
 
 void print_html_end() {
@@ -260,8 +258,10 @@ void print_image(const Image* i, const int chars) {
 			line[!flipx? x : w-x-1] = ascii_palette[ !invert ? chars - pos : pos ];
 		}
 
-		if ( !border ) puts(line);
-		else printf("|%s|\n", line);
+		if ( !border )
+			puts(line);
+		else
+			printf("|%s|\n", line);
 	}
 }
 
@@ -404,9 +404,6 @@ int decompress(FILE *fp) {
 	image.width = width;
 	image.height = height;
 
-	image.p = NULL;
-	image.yadds = NULL;
-
 	if ( (image.p = malloc(width * height * sizeof(float))) == NULL ) {
 		fprintf(stderr, "Not enough memory for given output dimension\n");
 		return 1;
@@ -428,16 +425,16 @@ int decompress(FILE *fp) {
 	if ( verbose )
 		print_info(&cinfo);
 
-	unsigned int last_dsty = 0;
+	int last_dsty = 0;
 
 	while ( cinfo.output_scanline < cinfo.output_height ) {
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 
-		unsigned int dst_y = ROUND(to_dst_y * (float) (cinfo.output_scanline-1));
+		int dst_y = ROUND(to_dst_y * (float) (cinfo.output_scanline-1));
 		int dst_x;
 
 		for ( dst_x=0; dst_x < image.width; ++dst_x ) {
-			unsigned int src_x = (float) dst_x * to_dst_x;
+			int src_x = (float) dst_x * to_dst_x;
 			calc_intensity(&buffer[0][src_x*components], &image.p[dst_y*image.width + dst_x], components);
 		}
 
@@ -448,7 +445,7 @@ int decompress(FILE *fp) {
 			++last_dsty;
 
 			for ( dst_x=0; dst_x < image.width; ++dst_x ) {
-				unsigned int src_x = (float) dst_x * to_dst_x;
+				int src_x = (float) dst_x * to_dst_x;
 				calc_intensity(&buffer[0][src_x*components], &image.p[last_dsty*image.width + dst_x], components);
 			}
 
