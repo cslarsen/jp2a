@@ -80,9 +80,7 @@ const char* default_palette = "   ...',;:clodxkO0KXNWM";
 
 
 void print_version() {
-	fputs(version, stderr);
-	fputs(copyright, stderr);
-	fputs(license, stderr);
+	fprintf(stderr, "%s\n%s\n%s\n", version, copyright, license);
 }
 
 void help() {
@@ -181,7 +179,7 @@ int parse_options(const int argc, char** argv) {
 	} // args ...
 
 	if ( !files ) {
-		fprintf(stderr, "No files specified\n\n");
+		fprintf(stderr, "No files specified.\n\n");
 		help();
 		return 1;
 	}
