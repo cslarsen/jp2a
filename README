@@ -67,9 +67,9 @@
 
     You need (at least) jpeglib.h and libjpeg, then you do this:
 
-    gcc -g -O2
-	-DPACKAGE_BUGREPORT='"csl@sublevel3.org"'
-	-DPACKAGE_STRING='"jp2a 0.9.xx"'
+    gcc -g -O2 \
+	-DPACKAGE_BUGREPORT='"csl@sublevel3.org"' \
+	-DPACKAGE_STRING='"jp2a 0.9.xx"' \
 	-I/opt/local/include/ -L/opt/local/lib -l jpeg jp2a.c -o jp2a
 
 
