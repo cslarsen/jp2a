@@ -155,10 +155,10 @@ int parse_options(const int argc, char** argv) {
 		IF_OPT("--flipx") 		{ flipx = 1; continue; }
 		IF_OPT("--flipy") 		{ flipy = 1; continue; }
 		IF_OPTS("-V", "--version")	{ print_version(); return 0; }
-		IF_VAR("--width=%ud", &width)	{ auto_height += 1; continue; }
-		IF_VAR("--height=%ud", &height)	{ auto_width += 1; continue; }
-		IF_VAR("--html-fontsize=%ud", &html_fontsize) { continue; }
-		IF_VARS("--size=%udx%ud", &width, &height) { auto_width = auto_height = 0; continue; }
+		IF_VAR("--width=%d", &width)	{ auto_height += 1; continue; }
+		IF_VAR("--height=%d", &height)	{ auto_width += 1; continue; }
+		IF_VAR("--html-fontsize=%d", &html_fontsize) { continue; }
+		IF_VARS("--size=%dx%d", &width, &height) { auto_width = auto_height = 0; continue; }
 
 		if ( !strncmp(s, "--chars=", 8) ) {
 			if ( strlen(s-8) > ASCII_PALETTE_SIZE ) {
