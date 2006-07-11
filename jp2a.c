@@ -288,9 +288,10 @@ void normalize(Image* i) {
 	}
 }
 
-void print_progress(const float progress_0_to_1) {
+void print_progress(const struct jpeg_decompress_struct* cinfo) {
 
-	int pos = ROUND( (float) progress_barlength * progress_0_to_1 );
+ 	float progress = (float) (cinfo->output_scanline + 1.0f) / (float) cinfo->output_height;
+	int pos = ROUND( (float) progress_barlength * progress );
 
 	char s[progress_barlength + 1];
 	s[progress_barlength] = 0;
@@ -462,7 +463,7 @@ int decompress(FILE *fp) {
 		last_dsty = dst_y;
 
 		if ( verbose )
-			print_progress( (float) (cinfo.output_scanline + 1.0f) / (float) cinfo.output_height );
+			print_progress(&cinfo);
 	}
 
 	if ( verbose )
