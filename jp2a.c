@@ -281,33 +281,33 @@ void normalize(Image* i) {
 
 	register int x, y, yoffs;
 
-	for ( y=0, yoffs=0; y < h; ++y, yoffs += w ) {
-		for ( x=0; x < w; ++x ) {
-			if ( i->yadds[y] != 0 )
-				i->p[yoffs + x] /= (float) i->yadds[y];
-		}
+	for ( y=0, yoffs=0; y < h; ++y, yoffs += w )
+	for ( x=0; x < w; ++x ) {
+		if ( i->yadds[y] != 0 )
+			i->p[yoffs + x] /= (float) i->yadds[y];
 	}
 }
 
 void print_progress(const float progress_0_to_1) {
 
-	int tenth = ROUND( (float) progress_barlength * progress_0_to_1 );
+	int pos = ROUND( (float) progress_barlength * progress_0_to_1 );
 
 	char s[progress_barlength + 1];
 	s[progress_barlength] = 0;
 
 	memset(s, '.', progress_barlength);
-	memset(s, '#', tenth);
+	memset(s, '#', pos);
 
 	fprintf(stderr, "Decompressing image [%s]\r", s);
 }
 
 inline void calc_intensity(const JSAMPLE* source, float* dest, const int components) {
-	int c;
+	int c=0;
 
-	for ( c=0; c < components; ++c ) {
+	while ( c < components ) {
 		*dest += (float) *(source + c)
 			/ (255.0f * (float) components);
+		++c;
 	}
 }
 
@@ -328,10 +328,8 @@ int is_url(const char* s) {
 	r |= !strncmp(s, "ftps://", 7);
 	r |= !strncmp(s, "file://", 7);
 	r |= !strncmp(s, "http://", 7);
-	r |= !strncmp(s, "https://", 8);
 	r |= !strncmp(s, "tftp://", 7);
-//	r |= !strncmp(s, "dict://", 7);  // don't think we need to support this
-//	r |= !strncmp(s, "ldap://", 7);  // same here
+	r |= !strncmp(s, "https://", 8);
 	return r;
 }
 
