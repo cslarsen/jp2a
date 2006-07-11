@@ -275,7 +275,6 @@ void clear(Image* i) {
 	memset(i->yadds, 0, i->height);
 }
 
-// This exaggerates the differences in the picture, good for ASCII output
 void normalize(Image* i) {
 	const int w = i->width;
 	const int h = i->height;
