@@ -1,5 +1,6 @@
 CHANGES SINCE 0.9.13
-- Minor bugfix: --chars=".O" now works for two chars
+- Minor bugfix: --chars now correctly accepts minimum two chars.
+- Changed package layout (added src/ and tests/).
 
 CHANGES SINCE 0.9.12
 - Bugfix: Fixed bug when viewing several files (in clear(), yadds wasn't completely cleared)
