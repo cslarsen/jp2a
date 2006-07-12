@@ -73,5 +73,26 @@
 	-I/opt/local/include/ -L/opt/local/lib -l jpeg jp2a.c -o jp2a
 
 
+    BUILDING ON WINDOWS
+    
+    Download a reasonable jpeglib version for Windows, e.g. from
+    
+    http://www.ece.sunysb.edu/~cvl/e358/f2001/jpeg-windows.html
+
+    (Don't use Gnuwin32's version, it completely broke on my system).
+    
+    Fire up MS Visual Studio, you should select C++ compilation, because
+    (at least with my setup) the C compiler gave some extremely strange
+    warnings.
+    
+    Since config.h is not there, you need to add defines:
+    
+    PACKAGE_STRING=\"jp2a x.x.x-win32\"
+    PACKAGE_BUGREPORT=\"csl@sublevel3.org\"
+    
+    Add the jpeg.lib file provided by above URL in the search directory
+    and in the linker input, and then everything should compile without
+    any errors.
+    
 
 $Id$

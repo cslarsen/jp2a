@@ -12,6 +12,7 @@
 
 #ifdef HAVE_CONFIG_H
 
+ // jpeglib (may) set this
  #ifdef HAVE_STDLIB_H
  #undef HAVE_STDLIB_H
  #endif
@@ -20,8 +21,11 @@
 #endif
 
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #ifdef FEAT_CURL
  #ifdef HAVE_CURL_CURL_H
@@ -29,7 +33,7 @@
  #endif
 #endif
 
-#define ROUND(x) (int) ( 0.5 + x )
+#define ROUND(x) (int) ( 0.5f + x )
 
 const char* version   = PACKAGE_STRING;
 const char* copyright = "Copyright (C) 2006 Christian Stigen Larsen";
@@ -236,11 +240,20 @@ void print_html_end() {
 }
 
 void print_border(const int width) {
+	#ifdef WIN32
+	char *bord = (char*) malloc(width+3);
+	#else
 	char bord[width + 3];
+	#endif
+
 	memset(bord, '-', width+2);
 	bord[0] = bord[width+1] = '+';
 	bord[width+2] = 0;
 	puts(bord);
+
+	#ifdef WIN32
+	free(bord);
+	#endif
 }
 
 void print_image(const Image* i, const int chars) {
@@ -248,7 +261,12 @@ void print_image(const Image* i, const int chars) {
 	const int w = i->width;
 	const int h = i->height;
 
+	#ifdef WIN32
+	char *line = (char*) malloc(w+1);
+	#else
 	char line[w + 1];
+	#endif
+
 	line[w] = 0;
 
 	for ( y=0; y < h; ++y ) {
@@ -263,6 +281,10 @@ void print_image(const Image* i, const int chars) {
 		else
 			printf("|%s|\n", line);
 	}
+
+	#ifdef WIN32
+	free(line);
+	#endif
 }
 
 void clear(Image* i) {
@@ -288,7 +310,11 @@ void print_progress(const struct jpeg_decompress_struct* cinfo) {
  	float progress = (float) (cinfo->output_scanline + 1.0f) / (float) cinfo->output_height;
 	int pos = ROUND( (float) progress_barlength * progress );
 
+#ifdef WIN32
+	char *s = (char*) malloc(progress_barlength + 1);
+#else
 	char s[progress_barlength + 1];
+#endif
 
 	memset(s, '.', progress_barlength);
 	memset(s, '#', pos);
@@ -296,9 +322,16 @@ void print_progress(const struct jpeg_decompress_struct* cinfo) {
 	s[progress_barlength] = 0;
 
 	fprintf(stderr, "Decompressing image [%s]\r", s);
+
+#ifdef WIN32
+	free(s);
+#endif
 }
 
-inline void calc_intensity(const JSAMPLE* source, float* dest, const int components) {
+#ifdef inline
+inline
+#endif
+void calc_intensity(const JSAMPLE* source, float* dest, const int components) {
 	int c=0;
 
 	while ( c < components ) {
@@ -387,6 +420,7 @@ int decompress(FILE *fp) {
 	struct jpeg_error_mgr jerr;
 	struct jpeg_decompress_struct cinfo;
 
+	memset(&jerr, 0, sizeof(jpeg_error_mgr));
 	cinfo.err = jpeg_std_error(&jerr);
 
 	jpeg_create_decompress(&cinfo);
@@ -405,19 +439,19 @@ int decompress(FILE *fp) {
 	image.width = width;
 	image.height = height;
 
-	if ( (image.p = malloc(width * height * sizeof(float))) == NULL ) {
+	if ( (image.p = (float*) malloc(width * height * sizeof(float))) == NULL ) {
 		fprintf(stderr, "Not enough memory for given output dimension\n");
 		return 1;
 	}
 
-	if ( (image.yadds = malloc(height * sizeof(int))) == NULL ) {
+	if ( (image.yadds = (int*) malloc(height * sizeof(int))) == NULL ) {
 		fprintf(stderr, "Not enough memory for given output dimension (for yadds)\n");
 		return 1;
 	}
 
 	clear(&image);
 
-	size_t num_chars = strlen(ascii_palette) - 1;
+	int num_chars = (int) strlen(ascii_palette) - 1;
 	int components = cinfo.out_color_components;
 
 	float to_dst_y = (float) (height-1) / (float) (cinfo.output_height-1);
@@ -434,7 +468,7 @@ int decompress(FILE *fp) {
 		int dst_x;
 
 		for ( dst_x=0; dst_x < image.width; ++dst_x ) {
-			int src_x = (float) dst_x * to_dst_x;
+			int src_x = (int)((float) dst_x * to_dst_x);
 			calc_intensity(&buffer[0][src_x*components], &image.p[dst_y*image.width + dst_x], components);
 		}
 
@@ -445,7 +479,7 @@ int decompress(FILE *fp) {
 			++last_dsty;
 
 			for ( dst_x=0; dst_x < image.width; ++dst_x ) {
-				int src_x = (float) dst_x * to_dst_x;
+				int src_x = (int)((float) dst_x * to_dst_x);
 				calc_intensity(&buffer[0][src_x*components], &image.p[last_dsty*image.width + dst_x], components);
 			}
 
