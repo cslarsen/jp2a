@@ -31,6 +31,11 @@
  #ifdef HAVE_CURL_CURL_H
  #include "curl/curl.h"
  #endif
+
+ #ifdef WIN32
+ #include <io.h> // _pipe
+ #include <fcntl.h> // O_BINARY
+ #endif
 #endif
 
 #define ROUND(x) (int) ( 0.5f + x )
@@ -368,13 +373,17 @@ int is_url(const char* s) {
 // You must close() the filedescriptor after using it.
 int curl_download(const char* url, const int debug) {
 	int p, fd[2];
-	pid_t pid;
 
+#ifdef WIN32
+	if ( (p = _pipe(fd, 256, O_BINARY) ) != 0 ) {
+#else
 	if ( (p = pipe(fd)) != 0 ) {
+#endif
 		fprintf(stderr, "Could not create pipe (returned %d)\n", p);
 		return -1;
 	}
 
+	pid_t pid;
 	if ( (pid = fork()) == 0 ) {
 		// CHILD process
 		close(fd[0]); // close read end
