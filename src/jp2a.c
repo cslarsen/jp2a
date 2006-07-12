@@ -420,7 +420,6 @@ int decompress(FILE *fp) {
 	struct jpeg_error_mgr jerr;
 	struct jpeg_decompress_struct cinfo;
 
-	memset(&jerr, 0, sizeof(jpeg_error_mgr));
 	cinfo.err = jpeg_std_error(&jerr);
 
 	jpeg_create_decompress(&cinfo);
