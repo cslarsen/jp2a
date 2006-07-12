@@ -38,6 +38,10 @@
  #endif
 #endif
 
+#ifdef __MINGW32__
+ #undef rpl_malloc
+#endif
+
 #define ROUND(x) (int) ( 0.5f + x )
 
 const char* version   = PACKAGE_STRING;
