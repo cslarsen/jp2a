@@ -4,10 +4,10 @@
 AC_PREREQ(2.59)
 AC_INIT([jp2a], [0.9.14], [csl@sublevel3.org])
 AM_INIT_AUTOMAKE(dist-bzip2)
-AC_CONFIG_SRCDIR([jp2a.c])
+AC_CONFIG_SRCDIR(src/jp2a.c)
 AC_CONFIG_HEADER([config.h])
 AC_REVISION([$Id$])
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile])
 
 # Checks for programs.
 AC_PROG_CC
