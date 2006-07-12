@@ -171,7 +171,7 @@ int parse_options(const int argc, char** argv) {
 	if ( auto_width==2 && auto_height==1 )
 		auto_width = auto_height = 0;
 
-	if ( strlen(ascii_palette) <= 2 ) {
+	if ( strlen(ascii_palette) < 2 ) {
 		fprintf(stderr, "You must specify at least two characters in --chars.\n");
 		return 1;
 	}
