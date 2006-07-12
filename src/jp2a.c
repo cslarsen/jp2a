@@ -535,14 +535,12 @@ int main(int argc, char** argv) {
 			if ( verbose )
 				fprintf(stderr, "URL: %s\n", argv[n]);
 
-			int fd = curl_download(argv[n], debug);
-				
-			if ( fd < 0 )
-				return 1; // error message printed in curl_download
+			int fd;
+			if ( (fd = curl_download(argv[n], debug)) < 0 )
+				return 1;
 
-			FILE *fr = fdopen(fd, "rb");
-
-			if ( fr == NULL ) {
+			FILE *fr;
+			if ( (fr = fdopen(fd, "rb")) == NULL ) {
 				fprintf(stderr, "Could not fdopen read pipe\n");
 				return 1;
 			}
