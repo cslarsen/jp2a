@@ -2,6 +2,8 @@
 
 JP = ../src/jp2a
 
+test: all
+
 all: intro normal normal-b 160x49 10h 40x40 1x1-inv 110x30-i-b flip-xy-invert 2xnormal-b normal-verbose stdin-normal stdin-40x40 web-normal
 	@echo -e "\nALL TESTS OK."
 
