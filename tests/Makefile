@@ -103,7 +103,7 @@ test-curl:
 	@echo -e "\nALL TESTS OK SO FAR.  IF YOU HAVE COMPILED JP2A WITHOUT CURL, "
 	@echo -e "THE FOLLOWING TEST WILL FAIL.\n"
 	@echo -e "TESTING CURL DOWNLOADS"
-	$(JP) --size=45x20 http://jp2a.sourceforge.net/jp2a.jpg | $(DIFF) normal-curl.txt
+	$(JP) --size=454x207 http://jp2a.sourceforge.net/jp2a.jpg | $(DIFF) normal-curl.txt
 
 test-curl-redir:
-	$(JP) --size=45x20 http://jp2a.sf.net/jp2a.jpg | $(DIFF) normal-curl.txt
+	$(JP) --size=454x207 http://jp2a.sf.net/jp2a.jpg | $(DIFF) normal-curl.txt
