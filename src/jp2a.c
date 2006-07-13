@@ -54,6 +54,10 @@ typedef struct Image_ {
 	int height;
 	float *p;
 	int *yadds;
+
+	float to_dst_y;
+	float to_dst_x;
+	int *lookupx;
 } Image;
 
 // Options with defaults
@@ -315,15 +319,14 @@ void normalize(Image* i) {
 }
 
 void print_progress(const struct jpeg_decompress_struct* cinfo) {
-
  	float progress = (float) (cinfo->output_scanline + 1.0f) / (float) cinfo->output_height;
 	int pos = ROUND( (float) progress_barlength * progress );
 
-#ifdef WIN32
+	#ifdef WIN32
 	char *s = (char*) malloc(progress_barlength + 1);
-#else
+	#else
 	char s[progress_barlength + 1];
-#endif
+	#endif
 
 	memset(s, '.', progress_barlength);
 	memset(s, '#', pos);
@@ -332,22 +335,21 @@ void print_progress(const struct jpeg_decompress_struct* cinfo) {
 
 	fprintf(stderr, "Decompressing image [%s]\r", s);
 
-#ifdef WIN32
+	#ifdef WIN32
 	free(s);
-#endif
+	#endif
 }
 
-#ifdef inline
 inline
-#endif
 void calc_intensity(const JSAMPLE* source, float* dest, const int components) {
-	int c=0;
+	float v = source[0];
 
-	while ( c < components ) {
-		*dest += (float) *(source + c)
-			/ (255.0f * (float) components);
-		++c;
-	}
+	register int c=1;
+	while ( c < components )
+		v += source[c++];
+
+	v /= 255.0f * components;
+	*dest += v;
 }
 
 void print_info(const struct jpeg_decompress_struct* cinfo) {
@@ -429,6 +431,41 @@ int curl_download(const char* url, const int debug) {
 }
 #endif
 
+inline
+void proc_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* image) {
+	static int last_dsty = 0;
+
+	const int dst_y = ROUND(image->to_dst_y * (float) (jpg->output_scanline-1));
+	const int dst_y_w = dst_y * image->width;
+
+	int dst_x;
+
+	for ( dst_x=0; dst_x < image->width; ++dst_x ) {
+		calc_intensity(
+			&scanline[ image->lookupx[dst_x] ],
+			&image->p[dst_y_w + dst_x],
+			jpg->out_color_components);
+	}
+
+	++image->yadds[dst_y];
+
+	// fill up any scanlines we missed since last iteration
+	while ( dst_y - last_dsty > 1 ) {
+		++last_dsty;
+
+		for ( dst_x=0; dst_x < image->width; ++dst_x ) {
+			calc_intensity(
+				&scanline[ image->lookupx[dst_x] ],
+				&image->p[last_dsty*image->width + dst_x],
+				jpg->out_color_components);
+		}
+
+		++image->yadds[last_dsty];
+	}
+
+	last_dsty = dst_y;
+}
+
 int decompress(FILE *fp) {
 	struct jpeg_error_mgr jerr;
 	struct jpeg_decompress_struct cinfo;
@@ -461,44 +498,27 @@ int decompress(FILE *fp) {
 		return 1;
 	}
 
+	if ( (image.lookupx = (int*) malloc(width * sizeof(int))) == NULL ) {
+		fprintf(stderr, "Not enough memory for given output dimension (lookupx)\n");
+		return 1;
+	}
+
 	clear(&image);
 
-	int num_chars = (int) strlen(ascii_palette) - 1;
-	int components = cinfo.out_color_components;
-
-	float to_dst_y = (float) (height-1) / (float) (cinfo.output_height-1);
-	float to_dst_x = (float) cinfo.output_width / (float) width;
-	
 	if ( verbose ) print_info(&cinfo);
 
-	int last_dsty = 0;
+	image.to_dst_y = (float) (image.height - 1) / (float) (cinfo.output_height-1);
+	image.to_dst_x = (float) cinfo.output_width / (float) image.width;
+
+	int dst_x;
+	for ( dst_x=0; dst_x < image.width; ++dst_x ) {
+		image.lookupx[dst_x] = (int)((float) dst_x * image.to_dst_x);
+		image.lookupx[dst_x] *= cinfo.out_color_components;
+	}
 
 	while ( cinfo.output_scanline < cinfo.output_height ) {
 		jpeg_read_scanlines(&cinfo, buffer, 1);
-
-		int dst_y = ROUND(to_dst_y * (float) (cinfo.output_scanline-1));
-		int dst_x;
-
-		for ( dst_x=0; dst_x < image.width; ++dst_x ) {
-			int src_x = (int)((float) dst_x * to_dst_x);
-			calc_intensity(&buffer[0][src_x*components], &image.p[dst_y*image.width + dst_x], components);
-		}
-
-		++image.yadds[dst_y];
-
-		// fill up any scanlines we missed since last iteration
-		while ( dst_y - last_dsty > 1 ) {
-			++last_dsty;
-
-			for ( dst_x=0; dst_x < image.width; ++dst_x ) {
-				int src_x = (int)((float) dst_x * to_dst_x);
-				calc_intensity(&buffer[0][src_x*components], &image.p[last_dsty*image.width + dst_x], components);
-			}
-
-			++image.yadds[last_dsty];
-		}
-
-		last_dsty = dst_y;
+		proc_scanline(&cinfo, buffer[0], &image);
 
 		if ( verbose ) print_progress(&cinfo);
 	}
@@ -510,7 +530,7 @@ int decompress(FILE *fp) {
 	if ( html ) print_html_start();
 	if ( border ) print_border(image.width);
 
-	print_image(&image, num_chars);
+	print_image(&image, strlen(ascii_palette) - 1);
 
 	if ( border ) print_border(image.width);
 	if ( html ) print_html_end();
