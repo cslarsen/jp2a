@@ -95,4 +95,4 @@ test-curl:
 	@echo -e "\nALL TESTS SO FAR OK.  IF YOU HAVENT COMPILED JP2A WITH CURL,"
 	@echo -e "THEN THE FOLLOWING TEST WILL FAIL.\n"
 	@echo -e "TESTING CURL DOWNLOADS"
-	$(JP) --size=78x18 http://jp2a.sourceforge.net/jp2a.jpg | $(DIFF) normal-curl.txt
+	$(JP) --size=454x207 http://jp2a.sourceforge.net/jp2a.jpg | $(DIFF) normal-curl.txt
