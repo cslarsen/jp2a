@@ -37,7 +37,7 @@ AC_CHECK_LIB([jpeg],
 	[jpeg_start_decompress],
 	[LIBS="$LIBS -ljpeg"],
 	[
-	  AC_MSG_WARN([I need a working jpeglib; please specify --with-jpeg-lib=PATH or see --help for more explicit options])
+	  AC_MSG_ERROR([I need a working jpeglib; please specify --with-jpeg-lib=PATH or see --help for more explicit options])
 	])
 
 AC_ARG_ENABLE([curl],
