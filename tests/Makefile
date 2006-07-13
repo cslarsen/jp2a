@@ -91,7 +91,7 @@ normal-verbose:
 	$(JP) -i -b --width=110 --height=30 jp2a.jpg | $(DIFF) 110x30-i-b.txt
 
 logo:
-	$(JP) --size=320x200 --html --html-fontsize=2 jp2a.jpg | $(DIFF) logo.html
+	$(JP) --size=160x100 --html --html-fontsize=2 jp2a.jpg | $(DIFF) logo.html
 
 flip-xy-invert:
 	$(JP) --flipx --flipy --invert jp2a.jpg | $(DIFF) flip-xy-invert.txt
@@ -103,4 +103,4 @@ test-curl:
 	@echo -e "\nALL TESTS SO FAR OK.  IF YOU HAVE COMPILED JP2A WITHOUT CURL, "
 	@echo -e "THE FOLLOWING TEST WILL FAIL.\n"
 	@echo -e "TESTING CURL DOWNLOADS"
-	$(JP) --size=454x207 http://jp2a.sourceforge.net/jp2a.jpg | $(DIFF) normal-curl.txt
+	$(JP) --size=45x20 http://jp2a.sourceforge.net/jp2a.jpg | $(DIFF) normal-curl.txt
