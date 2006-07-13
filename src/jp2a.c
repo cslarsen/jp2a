@@ -52,12 +52,11 @@ const char* url       = "http://jp2a.sf.net";
 typedef struct Image_ {
 	int width;
 	int height;
-	float *p;
+	float *pixel;
 	int *yadds;
-
-	float to_dst_y;
-	float to_dst_x;
-	int *lookupx;
+	float resize_y;
+	float resize_x;
+	int *lookup_resx;
 } Image;
 
 // Options with defaults
@@ -284,7 +283,7 @@ void print_image(const Image* i, const int chars) {
 
 	for ( y=0; y < h; ++y ) {
 		for ( x=0; x < w; ++x ) {
-			float intensity = i->p[(!flipy? y : h-y-1)*w + x];
+			float intensity = i->pixel[(!flipy? y : h-y-1)*w + x];
 			int pos = ROUND( (float) chars * intensity );
 			line[!flipx? x : w-x-1] = ascii_palette[ !invert ? chars - pos : pos ];
 		}
@@ -301,7 +300,7 @@ void print_image(const Image* i, const int chars) {
 }
 
 void clear(Image* i) {
-	memset(i->p, 0, i->width * i->height * sizeof(float));
+	memset(i->pixel, 0, i->width * i->height * sizeof(float));
 	memset(i->yadds, 0, i->height * sizeof(int) );
 }
 
@@ -314,12 +313,12 @@ void normalize(Image* i) {
 	for ( y=0, yoffs=0; y < h; ++y, yoffs += w )
 	for ( x=0; x < w; ++x ) {
 		if ( i->yadds[y] != 0 )
-			i->p[yoffs + x] /= (float) i->yadds[y];
+			i->pixel[yoffs + x] /= (float) i->yadds[y];
 	}
 }
 
-void print_progress(const struct jpeg_decompress_struct* cinfo) {
- 	float progress = (float) (cinfo->output_scanline + 1.0f) / (float) cinfo->output_height;
+void print_progress(const struct jpeg_decompress_struct* jpg) {
+ 	float progress = (float) (jpg->output_scanline + 1.0f) / (float) jpg->output_height;
 	int pos = ROUND( (float) progress_barlength * progress );
 
 	#ifdef WIN32
@@ -434,7 +433,7 @@ int curl_download(const char* url, const int debug) {
 inline
 void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* image) {
 	static int lasty = 0;
-	const int y = ROUND(image->to_dst_y * (float) (jpg->output_scanline-1));
+	const int y = ROUND(image->resize_y * (float) (jpg->output_scanline-1));
 
 	// include all scanlines since last call
 	while ( lasty <= y ) {
@@ -442,8 +441,8 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 		int x;
 
 		for ( x=0; x < image->width; ++x ) {
-			store_intensity(&scanline[ image->lookupx[x] ],
-				&image->p[y_w + x],
+			store_intensity(&scanline[ image->lookup_resx[x] ],
+				&image->pixel[y_w + x],
 				jpg->out_color_components);
 		}
 
@@ -454,20 +453,20 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 }
 
 void free_image(Image* i) {
-	if ( i->p ) free(i->p);
+	if ( i->pixel ) free(i->pixel);
 	if ( i->yadds ) free(i->yadds);
-	if ( i->lookupx ) free(i->lookupx);
+	if ( i->lookup_resx ) free(i->lookup_resx);
 }
 
 void malloc_image(Image* i) {
-	i->p = NULL;
+	i->pixel = NULL;
 	i->yadds = NULL;
-	i->lookupx = NULL;
+	i->lookup_resx = NULL;
 
 	i->width = width;
 	i->height = height;
 
-	if ( (i->p = (float*) malloc(width * height * sizeof(float))) == NULL ) {
+	if ( (i->pixel = (float*) malloc(width * height * sizeof(float))) == NULL ) {
 		fprintf(stderr, "Not enough memory for given output dimension\n");
 		exit(1);
 	}
@@ -478,51 +477,55 @@ void malloc_image(Image* i) {
 		exit(1);
 	}
 
-	if ( (i->lookupx = (int*) malloc(width * sizeof(int))) == NULL ) {
-		fprintf(stderr, "Not enough memory for given output dimension (lookupx)\n");
+	if ( (i->lookup_resx = (int*) malloc(width * sizeof(int))) == NULL ) {
+		fprintf(stderr, "Not enough memory for given output dimension (lookup_resx)\n");
 		free_image(i);
 		exit(1);
 	}
 }
 
+void init_image(Image *i, const struct jpeg_decompress_struct *jpg) {
+	i->resize_y = (float) (i->height - 1) / (float) (jpg->output_height-1);
+	i->resize_x = (float) jpg->output_width / (float) i->width;
+
+	int dst_x;
+	for ( dst_x=0; dst_x < i->width; ++dst_x ) {
+		i->lookup_resx[dst_x] = (int)( (float) dst_x * i->resize_x );
+		i->lookup_resx[dst_x] *= jpg->out_color_components;
+	}
+}
+
 int decompress(FILE *fp) {
 	struct jpeg_error_mgr jerr;
-	struct jpeg_decompress_struct cinfo;
+	struct jpeg_decompress_struct jpg;
 
-	cinfo.err = jpeg_std_error(&jerr);
+	jpg.err = jpeg_std_error(&jerr);
 
-	jpeg_create_decompress(&cinfo);
-	jpeg_stdio_src(&cinfo, fp);
-	jpeg_read_header(&cinfo, TRUE);
-	jpeg_start_decompress(&cinfo);
+	jpeg_create_decompress(&jpg);
+	jpeg_stdio_src(&jpg, fp);
+	jpeg_read_header(&jpg, TRUE);
+	jpeg_start_decompress(&jpg);
 
-	int row_stride = cinfo.output_width * cinfo.output_components;
+	int row_stride = jpg.output_width * jpg.output_components;
 
-	JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray)
-		((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
+	JSAMPARRAY buffer = (*jpg.mem->alloc_sarray)
+		((j_common_ptr) &jpg, JPOOL_IMAGE, row_stride, 1);
 
-	calc_aspect_ratio(cinfo.output_width, cinfo.output_height);
+	calc_aspect_ratio(jpg.output_width, jpg.output_height);
 
 	Image image;
 	malloc_image(&image);
 	clear(&image);
 
-	if ( verbose ) print_info(&cinfo);
+	if ( verbose ) print_info(&jpg);
 
-	image.to_dst_y = (float) (image.height - 1) / (float) (cinfo.output_height-1);
-	image.to_dst_x = (float) cinfo.output_width / (float) image.width;
+	init_image(&image, &jpg);
 
-	int dst_x;
-	for ( dst_x=0; dst_x < image.width; ++dst_x ) {
-		image.lookupx[dst_x] = (int)((float) dst_x * image.to_dst_x);
-		image.lookupx[dst_x] *= cinfo.out_color_components;
-	}
+	while ( jpg.output_scanline < jpg.output_height ) {
+		jpeg_read_scanlines(&jpg, buffer, 1);
+		process_scanline(&jpg, buffer[0], &image);
 
-	while ( cinfo.output_scanline < cinfo.output_height ) {
-		jpeg_read_scanlines(&cinfo, buffer, 1);
-		process_scanline(&cinfo, buffer[0], &image);
-
-		if ( verbose ) print_progress(&cinfo);
+		if ( verbose ) print_progress(&jpg);
 	}
 
 	if ( verbose ) fprintf(stderr, "\n");
@@ -539,8 +542,8 @@ int decompress(FILE *fp) {
 
 	free_image(&image);
 
-	jpeg_finish_decompress(&cinfo);
-	jpeg_destroy_decompress(&cinfo);
+	jpeg_finish_decompress(&jpg);
+	jpeg_destroy_decompress(&jpg);
 
 	return 0;
 }
