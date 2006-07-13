@@ -73,7 +73,7 @@
 	-I/opt/local/include/ -L/opt/local/lib -l jpeg jp2a.c -o jp2a
 
 
-    BUILDING ON WINDOWS
+    BUILDING ON WINDOWS (MS VISUAL STUDIO)
     
     Download a reasonable jpeglib version for Windows, e.g. from
     
@@ -93,6 +93,14 @@
     Add the jpeg.lib file provided by above URL in the search directory
     and in the linker input, and then everything should compile without
     any errors.
+
+    BUILDING ON WINDOWS (MINGW32)
+
+    Using mingw32 is straight-forward if you have a working (non-MSVC)
+    jpeglib.  You do something along these lines:
+
+    ./configure --host=i386-mingw32
+    make test
     
 
 $Id$
