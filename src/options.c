@@ -37,6 +37,7 @@ int debug = 0;
 #define ASCII_PALETTE_SIZE 256
 char ascii_palette[ASCII_PALETTE_SIZE + 1] = "   ...',;:clodxkO0KXNWM";
 
+
 void print_version() {
 	fprintf(stderr, "%s\n%s\n%s\n", version, copyright, license);
 }
