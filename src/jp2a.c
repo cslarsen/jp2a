@@ -432,22 +432,21 @@ int curl_download(const char* url, const int debug) {
 #endif
 
 void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* image) {
-	static int lasty = 0;
+	static int lasty = -1;
 	const int y = ROUND(image->to_dst_y * (float) (jpg->output_scanline-1));
 
 	// include all scanlines since last y-stepping
-	while ( lasty <= y ) {
+	while ( lasty++ != y ) {
 		const int y_w = lasty * image->width;
 		int x;
 
 		for ( x=0; x < image->width; ++x ) {
-			calc_intensity(scanline + image->lookupx[x],
-				image->p + y_w + x,
+			calc_intensity(&scanline[ image->lookupx[x] ],
+				&image->p[y_w + x],
 				jpg->out_color_components);
 		}
 
 		++image->yadds[lasty];
-		++lasty;
 	}
 
 	lasty = y;
