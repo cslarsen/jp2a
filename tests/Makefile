@@ -24,6 +24,7 @@ fry-160-html \
 fry-jp2a-2000x2000 \
 stdin-40x40 \
 stdin-normal \
+dalsnuten-640x480-gray-low \
 test-curl
 	@echo -e "\nALL TESTS OK"
 
@@ -88,6 +89,9 @@ big:
 
 flip-xy-invert:
 	$(JP) --flipx --flipy --invert jp2a.jpg | $(DIFF) flip-xy-invert.txt
+
+dalsnuten-640x480-gray-low:
+	$(JP) --invert dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-640x480-gray-low.txt
 
 test-curl:
 	@echo -e "\nALL TESTS SO FAR OK.  IF YOU HAVENT COMPILED JP2A WITH CURL,"
