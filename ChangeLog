@@ -1,6 +1,8 @@
 CHANGES SINCE 0.9.14
 - Minor code cleanup.  A bit faster code.
 - Minor code optimization, only marginally faster (might be removed later).
+- Changes to make code clearer has led to output images not being 100% exact as before,
+  but the difference is negligible.
 
 CHANGES SINCE 0.9.13
 - Minor bugfix: --chars now correctly accepts minimum two chars.

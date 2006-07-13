@@ -431,39 +431,27 @@ int curl_download(const char* url, const int debug) {
 }
 #endif
 
-inline
-void proc_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* image) {
-	static int last_dsty = 0;
+void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* image) {
+	static int lasty = -1;
+	const int y = ROUND(image->to_dst_y * (float) (jpg->output_scanline-1));
 
-	const int dst_y = ROUND(image->to_dst_y * (float) (jpg->output_scanline-1));
-	const int dst_y_w = dst_y * image->width;
+	// include all scanlines since last y-stepping
+	while ( lasty != y ) {
+		++lasty;
 
-	int dst_x;
+		const int y_w = lasty * image->width;
+		int x;
 
-	for ( dst_x=0; dst_x < image->width; ++dst_x ) {
-		calc_intensity(
-			&scanline[ image->lookupx[dst_x] ],
-			&image->p[dst_y_w + dst_x],
-			jpg->out_color_components);
-	}
-
-	++image->yadds[dst_y];
-
-	// fill up any scanlines we missed since last iteration
-	while ( dst_y - last_dsty > 1 ) {
-		++last_dsty;
-
-		for ( dst_x=0; dst_x < image->width; ++dst_x ) {
-			calc_intensity(
-				&scanline[ image->lookupx[dst_x] ],
-				&image->p[last_dsty*image->width + dst_x],
+		for ( x=0; x < image->width; ++x ) {
+			calc_intensity(scanline + image->lookupx[x],
+				image->p + y_w + x,
 				jpg->out_color_components);
 		}
 
-		++image->yadds[last_dsty];
+		++image->yadds[lasty];
 	}
 
-	last_dsty = dst_y;
+	lasty = y;
 }
 
 int decompress(FILE *fp) {
@@ -518,7 +506,7 @@ int decompress(FILE *fp) {
 
 	while ( cinfo.output_scanline < cinfo.output_height ) {
 		jpeg_read_scanlines(&cinfo, buffer, 1);
-		proc_scanline(&cinfo, buffer[0], &image);
+		process_scanline(&cinfo, buffer[0], &image);
 
 		if ( verbose ) print_progress(&cinfo);
 	}
