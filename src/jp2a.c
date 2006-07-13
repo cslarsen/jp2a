@@ -432,13 +432,11 @@ int curl_download(const char* url, const int debug) {
 #endif
 
 void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* image) {
-	static int lasty = -1;
+	static int lasty = 0;
 	const int y = ROUND(image->to_dst_y * (float) (jpg->output_scanline-1));
 
 	// include all scanlines since last y-stepping
-	while ( lasty != y ) {
-		++lasty;
-
+	while ( lasty <= y ) {
 		const int y_w = lasty * image->width;
 		int x;
 
@@ -449,6 +447,7 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 		}
 
 		++image->yadds[lasty];
+		++lasty;
 	}
 
 	lasty = y;
