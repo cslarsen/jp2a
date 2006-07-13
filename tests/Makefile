@@ -29,10 +29,8 @@ test-curl
 
 intro:
 	@echo
-	@echo "NOTE: Some tests may break on your particular platform."
-	@echo "      This does not necessarily mean your compiled jp2a"
-	@echo "      is broken.  What you DO want to check is that there"
-	@echo "      is no segfaults and stuff like that."
+	@echo "NOTE: When jp2a enlarges JPEGs, the result is platform-independent; shrinking is not."
+	@echo "      Therefore, this test will only enlarge input JPEGs."
 	@echo
 	@echo TESTING VARIOUS JP2A RUNS
 
