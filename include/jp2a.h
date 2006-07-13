@@ -7,7 +7,12 @@
  * $Id: jp2a.c 163 2006-07-13 11:27:28Z csl $
  */
 
+// curl.c
 #ifdef FEAT_CURL
 extern int is_url(const char* s);
 extern int curl_download(const char* url, const int debug);
 #endif
+
+// html.c
+extern void print_html_start();
+extern void print_html_end();
