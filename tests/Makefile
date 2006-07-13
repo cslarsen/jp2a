@@ -9,7 +9,8 @@ DIFF = diff --brief -
 test: all
 
 all: intro normal normal-b 160x49 10h 40x40 1x1-inv 110x30-i-b flip-xy-invert 2xnormal-b normal-verbose \
-stdin-normal stdin-40x40 \
+fry-normal fry-invert fry-80x49-inv \
+stdin-40x40 stdin-normal \
 web-normal
 	@echo -e "\nALL TESTS OK"
 
@@ -21,6 +22,15 @@ normal:
 
 normal-b:
 	$(JP) -b jp2a.jpg | $(DIFF) normal-b.txt
+
+fry-normal:
+	$(JP) fry.jpg | $(DIFF) fry-normal.txt
+
+fry-invert:
+	$(JP) --invert fry.jpg | $(DIFF) fry-invert.txt
+
+fry-80x49-inv:
+	$(JP) --invert --size=80x49 fry.jpg | $(DIFF) fry-80x49-inv.txt
 
 2xnormal-b:
 	$(JP) -b jp2a.jpg jp2a.jpg | $(DIFF) 2xnormal-b.txt
