@@ -1,0 +1,139 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>jp2a</B> [ <I>options</I> ] [ <I>filename(s)</I> <I>|</I> <I>URL(s)</I> ]
+
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       <B>jp2a</B>  will  convert JPEG images to ASCII characters.  You can specify a
+       mixture of files and URLs.
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-</B>      Read JPEG image from standard input
+
+       <B>-b</B> <B>--border</B>
+              Frame output image in a border
+
+       <B>--chars=</B><I>....</I>
+              Use the given characters when producing the output ASCII image
+
+       <B>-d</B> <B>--debug</B>
+              Print debugging  information  when  using  libcurl  to  download
+              images from the net.
+
+       <B>--flipx</B>
+              Flip output image horizontally
+
+       <B>--flipy</B>
+              Flip output image vertically
+
+       <B>--height=</B><I>N</I>
+              Set  output  height.  If only --height is specified, then output
+              width will be calculated according to the source  images  aspect
+              ratio.
+
+       <B>-h</B> <B>--help</B>
+              Display a short help text
+
+       <B>--html</B> Make ASCII output in strict XHTML 1.0, suitable for viewing with
+              web browsers.
+
+              This is useful with big output dimensions, and you want to check
+              the result with a browser with small font.
+
+              See also --html-fontsize.
+
+       <B>--html-fontsize=</B><I>N</I>
+              Set fontsize when using --html output.  Default is 4.
+
+       <B>-i</B> <B>--invert</B>
+              Invert  output  image.   This  is very useful for example if you
+              view a picture where white is the background color,  and  you're
+              using light characters on a dark (black) display.
+
+       <B>--size=</B><I>WIDTHxHEIGHT</I>
+       If  you  have compiled jp2a with <B>libcurl(3)</B>, you can download images by
+       specifying URLs:
+
+              <B>jp2a</B> https://user:pass@foo.com/bar.jpg
+
+       The protocols recognized are ftp, ftps, file, http, https and tftp.
+
+       If  you need more control of the downloading, you should use <B>curl(1)</B> or
+       <B>wget(1)</B> and jp2a read the image from standard input.
+
+       jp2a uses pipe and fork to download images using libcurl (i.e., no exec
+       or  system  calls) and therefore does not worry about malevolently for-
+       matted URLs.
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Convert and print imagefile.jpg using ASCII characters  in  40  columns
+       and 20 rows:
+
+              <B>jp2a</B> --size=40x20 imagefile.jpg
+
+       Download an image off the net, convert and print:
+
+              <B>jp2a</B> http://www.google.com/intl/en/logos/easter_logo.jpg
+
+       Output picture.jpg and picture2.jpg, each 80x25 characters,  using  the
+       characters " ...ooxx@@" for output:
+
+              <B>jp2a</B> --size=80x25 --chars=" ...ooxx@@" picture.jpg picture2.jpg
+
+       Output image.jpg using 76 columns, height is  automatically  calculated
+       from aspect ratio of image.jpg
+
+              cat image.jpg | <B>jp2a</B> --width=76 -
+
+       If you use jp2a together with ImageMagick's  <B>convert(1)</B>  then  you  can
+       make good use of pipes, and have ImageMagick do all sorts of image con-
+       versions and effects on the source image.  For example:
+
+              <B>convert</B> somefile.png jpg:- | <B>jp2a</B> - --width=80
+
+       Check out <B>convert(1)</B> options to see what you can do.  Convert can  han-
+       dle  almost  any image format, so with this combination you can convert
+       images in e.g. PDF or AVI files to ASCII.
+
+       Although the default build of jp2a includes  automatic  downloading  of
+       files specified by URLs, you can explicitly
+              download them by using <B>curl(1)</B> or <B>wget(1)</B>, for example:
+
+              <B>curl</B> -s http://foo.bar/image.jpg | <B>convert</B> - jpg:- | <B>jp2a</B> -
+
+
+</PRE>
+<H2>EXIT STATUS</H2><PRE>
+       jp2a returns zero for normal operations, 1 when errors are encountered.
+       The program does not interpolate when resizing the JPEG image, and thus
+       big output dimensions will not give very accurate looking results.   If
+       you want better quality, you might be able to use <B>convert(1)</B> to convert
+       the source image to the exact ASCII output dimensions of jp2a.
+
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
+       <B>cjpeg(1)</B>, <B>djpeg(1)</B>, <B>jpegtran(1)</B>, <B>convert(1)</B>
+
+
+
+version 0.9.15                   July 13, 2006                         <B>jp2a(1)</B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>
