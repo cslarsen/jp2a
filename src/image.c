@@ -11,8 +11,12 @@
 #include "config.h"
 #endif
 
-#include <stdio.h>
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#undef HAVE_STDLIB_H
+#endif
+
+#include <stdio.h>
 #include <string.h>
 #include "jpeglib.h"
 #include "jp2a.h"
