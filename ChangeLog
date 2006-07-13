@@ -1,9 +1,10 @@
 CHANGES SINCE 0.9.14
+- New feature:  Now follow HTTP redirects when downloading.
 - Cleaner and faster code.
-- Package reorganization (added src, include and man-dir).
-- Binary is larger because of debug-symbols; use `make install-strip' to remedy.
-- While enlarging JPEGs is platform independent, shrinking is not.  Therefore, only
-  enlargement is used in `make test'.
+- Cleaner package organization.
+- Improved `make test'.
+- Binary is larger becase of debug-symbols; remove with `make install-strip'.
+- Added HTML-manual for win32 binary distribution.
 
 CHANGES SINCE 0.9.13
 - Minor bugfix: --chars now correctly accepts minimum two chars.

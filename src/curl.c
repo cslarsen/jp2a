@@ -72,6 +72,7 @@ int curl_download(const char* url, const int debug) {
 
 		curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // fail silently
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, fw);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1); // redirects
 
 		curl_easy_perform(curl);
 		curl_easy_cleanup(curl);
