@@ -14,7 +14,7 @@ extern int curl_download(const char* url, const int debug);
 #endif
 
 // html.c
-extern void print_html_start();
+extern void print_html_start(const int fontsize);
 extern void print_html_end();
 
 // image.c

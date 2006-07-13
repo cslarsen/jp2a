@@ -263,7 +263,7 @@ void decompress(FILE *fp) {
 
 	normalize(&image);
 
-	if ( html ) print_html_start();
+	if ( html ) print_html_start(html_fontsize);
 	if ( border ) print_border(image.width);
 
 	print_image(&image, (int) strlen(ascii_palette) - 1);
