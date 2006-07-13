@@ -202,9 +202,8 @@ int parse_options(const int argc, char** argv) {
 	return -1;
 }
 
-void calc_aspect_ratio(const int jpeg_width, const int jpeg_height) {
-
-	// Calculate width or height, but not both
+// Calculate width or height, but not both
+void aspect_ratio(const int jpeg_width, const int jpeg_height) {
 
 	if ( auto_width && !auto_height ) {
 		width = ROUND(2.0f * (float) height * (float) jpeg_width / (float) jpeg_height);
@@ -212,7 +211,7 @@ void calc_aspect_ratio(const int jpeg_width, const int jpeg_height) {
 		// adjust for too small dimensions	
 		while ( width==0 ) {
 			++height;
-			calc_aspect_ratio(jpeg_width, jpeg_height);
+			aspect_ratio(jpeg_width, jpeg_height);
 		}
 	}
 
@@ -222,7 +221,7 @@ void calc_aspect_ratio(const int jpeg_width, const int jpeg_height) {
 		// adjust for too small dimensions
 		while ( height==0 ) {
 			++width;
-			calc_aspect_ratio(jpeg_width, jpeg_height);
+			aspect_ratio(jpeg_width, jpeg_height);
 		}
 	}
 }
@@ -314,14 +313,13 @@ void print_progress(const struct jpeg_decompress_struct* jpg) {
 
 inline
 float intensity(const JSAMPLE* source, const int components) {
-	float v = source[0];
+	register float v = source[0];
+	register int c=1;
 
-	int c=1;
 	while ( c < components )
 		v += source[c++];
 
-	v /= 255.0f * components;
-	return v;
+	return v / ( 255.0f * components );
 }
 
 void print_info(const struct jpeg_decompress_struct* cinfo) {
@@ -397,12 +395,11 @@ void init_image(Image *i, const struct jpeg_decompress_struct *jpg) {
 	}
 }
 
-int decompress(FILE *fp) {
+void decompress(FILE *fp) {
 	struct jpeg_error_mgr jerr;
 	struct jpeg_decompress_struct jpg;
 
 	jpg.err = jpeg_std_error(&jerr);
-
 	jpeg_create_decompress(&jpg);
 	jpeg_stdio_src(&jpg, fp);
 	jpeg_read_header(&jpg, TRUE);
@@ -413,7 +410,7 @@ int decompress(FILE *fp) {
 	JSAMPARRAY buffer = (*jpg.mem->alloc_sarray)
 		((j_common_ptr) &jpg, JPOOL_IMAGE, row_stride, 1);
 
-	calc_aspect_ratio(jpg.output_width, jpg.output_height);
+	aspect_ratio(jpg.output_width, jpg.output_height);
 
 	Image image;
 	malloc_image(&image);
@@ -446,8 +443,6 @@ int decompress(FILE *fp) {
 
 	jpeg_finish_decompress(&jpg);
 	jpeg_destroy_decompress(&jpg);
-
-	return 0;
 }
 
 int main(int argc, char** argv) {
@@ -458,53 +453,54 @@ int main(int argc, char** argv) {
 	int n;
 	for ( n=1; n<argc; ++n ) {
 
-		// Skip options
-		if ( argv[n][0]=='-' && argv[n][1]!=0 )
+		// skip options
+		if ( argv[n][0]=='-' && argv[n][1] )
 			continue;
 
-		// Read from stdin
-		if ( argv[n][0]=='-' && argv[n][1]==0 ) {
-			int r = decompress(stdin);
-			if ( r == 0 )
-				continue;
+		// read from stdin
+		if ( argv[n][0]=='-' && !argv[n][1] ) {
+			decompress(stdin);
+			continue;
 		}
 
-#ifdef FEAT_CURL
+		#ifdef FEAT_CURL
 		if ( is_url(argv[n]) ) {
+
 			if ( verbose )
 				fprintf(stderr, "URL: %s\n", argv[n]);
 
-			int fd;
-			if ( (fd = curl_download(argv[n], debug)) < 0 )
+			int fd = curl_download(argv[n], debug);
+
+			if ( fd < 0 )
 				return 1;
 
-			FILE *fr;
-			if ( (fr = fdopen(fd, "rb")) == NULL ) {
+			FILE *fr = fdopen(fd, "rb");
+
+			if ( !fr ) {
 				fprintf(stderr, "Could not fdopen read pipe\n");
 				return 1;
 			}
 
-			int r = decompress(fr);
-
+			decompress(fr);
 			fclose(fr);
 			close(fd);
 
-			if ( r != 0 ) return r;
 			continue;
 		}
-#endif
+		#endif
 
-		FILE *fp;
-		if ( (fp = fopen(argv[n], "rb")) != NULL ) {
+		// read files
+		FILE *fp = fopen(argv[n], "rb");
 
+		if ( fp ) {
 			if ( verbose )
 				fprintf(stderr, "File: %s\n", argv[n]);
 
-			int r = decompress(fp);
+			decompress(fp);
 			fclose(fp);
 
-			if ( r != 0 )
-				return r;
+			continue;
+
 		} else {
 			fprintf(stderr, "Can't open %s\n", argv[n]);
 			return 1;
