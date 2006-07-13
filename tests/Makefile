@@ -21,6 +21,7 @@ fry-normal \
 fry-invert \
 fry-80x49-inv \
 fry-160-html \
+fry-jp2a-2000x2000 \
 stdin-40x40 \
 stdin-normal
 	@echo -e "\nALL TESTS OK"
@@ -41,6 +42,9 @@ normal:
 
 normal-b:
 	$(JP) -b jp2a.jpg | $(DIFF) normal-b.txt
+
+fry-jp2a-2000x2000:
+	$(JP) --size=2000x2000 fry.jpg jp2a.jpg | $(DIFF) fry-jp2a-2000x2000.txt
 
 fry-normal:
 	$(JP) fry.jpg | $(DIFF) fry-normal.txt
