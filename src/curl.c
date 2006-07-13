@@ -17,45 +17,47 @@
 #include "curl/curl.h"
 #endif
 
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
-//! return 1 if `s' is an URL, 0 if not
+//! Return 1 if s is a supported URL
 int is_url(const char* s) {
-	int r = 0;
-	r |= !strncmp(s, "ftp://", 6);
-	r |= !strncmp(s, "ftps://", 7);
-	r |= !strncmp(s, "file://", 7);
-	r |= !strncmp(s, "http://", 7);
-	r |= !strncmp(s, "tftp://", 7);
-	r |= !strncmp(s, "https://", 8);
-	return r;
+	return !strncmp(s, "ftp://", 6)
+		| !strncmp(s, "ftps://", 7)
+		| !strncmp(s, "file://", 7)
+		| !strncmp(s, "http://", 7)
+		| !strncmp(s, "tftp://", 7)
+		| !strncmp(s, "https://", 8);
 }
 
-// Fork and return filedescriptor of read-pipe for downloaded data
-// Returns -1 in case of errors
-// You must close() the filedescriptor after using it.
+// Return read-only file-descriptor that must be closed.
 int curl_download(const char* url, const int debug) {
-	int p, fd[2];
+	int pid, fd[2];
 
-	if ( (p = pipe(fd)) != 0 ) {
-		fprintf(stderr, "Could not create pipe (returned %d)\n", p);
-		return -1;
+	if ( pipe(fd) != 0 ) {
+		fputs("Could not create pipe\n", stderr);
+		exit(1);
 	}
 
-	pid_t pid;
 	if ( (pid = fork()) == 0 ) {
+
 		// CHILD process
+
 		close(fd[0]); // close read end
 
 		FILE *fw = fdopen(fd[1], "wb");
 
 		if ( fw == NULL ) {
-			fprintf(stderr, "Could not write to pipe\n");
+			fputs("Could not open pipe for writing.\n", stderr);
 			exit(1);
 		}
 
@@ -68,18 +70,20 @@ int curl_download(const char* url, const int debug) {
 		if ( debug )
 			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
 
-		curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // fail silently on errors
+		curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // fail silently
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, fw);
 
 		curl_easy_perform(curl);
 		curl_easy_cleanup(curl);
-		fflush(fw);
+
 		fclose(fw);
 		close(fd[1]);
+
 		exit(0);
+
 	} else if ( pid < 0 ) {
-		fprintf(stderr, "Failed to fork\n");
-		return -1;
+		fputs("Could not fork.\n", stderr);
+		exit(1);
 	}
 
 	// PARENT process
