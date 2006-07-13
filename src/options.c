@@ -11,13 +11,15 @@
 #include "config.h"
 #endif
 
-const char* version   = PACKAGE_STRING;
-const char* copyright = "Copyright (C) 2006 Christian Stigen Larsen";
-const char* license   = "Distributed under the GNU General Public License (GPL) v2 or later.";
-const char* url       = "http://jp2a.sf.net";
-
 #include <stdio.h>
+
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
+
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
 
 // Default options
 int verbose = 0;
@@ -37,6 +39,10 @@ int debug = 0;
 #define ASCII_PALETTE_SIZE 256
 char ascii_palette[ASCII_PALETTE_SIZE + 1] = "   ...',;:clodxkO0KXNWM";
 
+const char* version   = PACKAGE_STRING;
+const char* copyright = "Copyright (C) 2006 Christian Stigen Larsen";
+const char* license   = "Distributed under the GNU General Public License (GPL) v2 or later.";
+const char* url       = "http://jp2a.sf.net";
 
 void print_version() {
 	fprintf(stderr, "%s\n%s\n%s\n", version, copyright, license);
@@ -83,8 +89,7 @@ void help() {
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
 }
 
-// returns positive error code, or -1 for parsing OK
-int parse_options(const int argc, char** argv) {
+void parse_options(int argc, char** argv) {
 
 	// define some shorthand defines
 	#define IF_OPTS(shortopt, longopt) if ( !strcmp(s, shortopt) || !strcmp(s, longopt) )
@@ -101,7 +106,7 @@ int parse_options(const int argc, char** argv) {
 		}
 	
 		IF_OPT("-")			{ ++files; continue; }
-		IF_OPTS("-h", "--help")		{ help(); return 0; }
+		IF_OPTS("-h", "--help")		{ help(); exit(0); }
 		IF_OPTS("-v", "--verbose")	{ verbose = 1; continue; }
 		IF_OPTS("-d", "--debug")	{ debug = 1; continue; }
 		IF_OPT("--html") 		{ html = 1; continue; }
@@ -109,16 +114,17 @@ int parse_options(const int argc, char** argv) {
 		IF_OPTS("-i", "--invert") 	{ invert = 1; continue; }
 		IF_OPT("--flipx") 		{ flipx = 1; continue; }
 		IF_OPT("--flipy") 		{ flipy = 1; continue; }
-		IF_OPTS("-V", "--version")	{ print_version(); return 0; }
+		IF_OPTS("-V", "--version")	{ print_version(); exit(0); }
 		IF_VAR("--width=%d", &width)	{ auto_height += 1; continue; }
 		IF_VAR("--height=%d", &height)	{ auto_width += 1; continue; }
 		IF_VAR("--html-fontsize=%d", &html_fontsize) { continue; }
 		IF_VARS("--size=%dx%d", &width, &height) { auto_width = auto_height = 0; continue; }
 
 		if ( !strncmp(s, "--chars=", 8) ) {
+
 			if ( strlen(s-8) > ASCII_PALETTE_SIZE ) {
-				fprintf(stderr, "Too many ascii characters specified.\n");
-				return 1;
+				fprintf(stderr, "Too many ascii characters specified (max %d)\n", ASCII_PALETTE_SIZE);
+				exit(1);
 			}
 	
 			// don't use sscanf, we need to read spaces as well
@@ -128,14 +134,14 @@ int parse_options(const int argc, char** argv) {
 
 		fprintf(stderr, "Unknown option %s\n\n", s);
 		help();
-		return 1;
+		exit(1);
 
 	} // args ...
 
 	if ( !files ) {
-		fprintf(stderr, "No files specified.\n\n");
+		fputs("No files specified.\n\n", stderr);
 		help();
-		return 1;
+		exit(1);
 	}
 
 	// only --width specified, calc width
@@ -147,14 +153,12 @@ int parse_options(const int argc, char** argv) {
 		auto_width = auto_height = 0;
 
 	if ( strlen(ascii_palette) < 2 ) {
-		fprintf(stderr, "You must specify at least two characters in --chars.\n");
-		return 1;
+		fputs("You must specify at least two characters in --chars.\n", stderr);
+		exit(1);
 	}
 	
 	if ( (width < 1 && !auto_width) || (height < 1 && !auto_height) ) {
-		fprintf(stderr, "Invalid width or height specified.\n");
-		return 1;
+		fputs("Invalid width or height specified.\n", stderr);
+		exit(1);
 	}
-
-	return -1;
 }

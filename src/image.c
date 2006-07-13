@@ -17,7 +17,11 @@
 #endif
 
 #include <stdio.h>
+
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
+
 #include "jpeglib.h"
 #include "jp2a.h"
 #include "options.h"
@@ -34,8 +38,9 @@ typedef struct Image_ {
 	int *lookup_resx;
 } Image;
 
-// Calculate width or height, but not both
 void aspect_ratio(const int jpeg_width, const int jpeg_height) {
+
+	// Calculate width or height, but not both
 
 	if ( auto_width && !auto_height ) {
 		width = ROUND(2.0f * (float) height * (float) jpeg_width / (float) jpeg_height);
@@ -75,7 +80,7 @@ void print_border(const int width) {
 	#endif
 }
 
-void print_image(const Image* i, const int chars) {
+void print_image(const Image* const i, const int chars) {
 	int x, y;
 	const int w = i->width;
 	const int h = i->height;
@@ -115,10 +120,10 @@ void normalize(Image* i) {
 	register int x, y, yoffs;
 
 	for ( y=0, yoffs=0; y < h; ++y, yoffs += w )
-	for ( x=0; x < w; ++x ) {
-		if ( i->yadds[y] != 0 )
-			i->pixel[yoffs + x] /= (float) i->yadds[y];
-	}
+		for ( x=0; x < w; ++x ) {
+			if ( i->yadds[y] != 0 )
+				i->pixel[yoffs + x] /= (float) i->yadds[y];
+		}
 }
 
 void print_progress(const struct jpeg_decompress_struct* jpg) {
@@ -154,10 +159,10 @@ float intensity(const JSAMPLE* source, const int components) {
 	return v / ( 255.0f * components );
 }
 
-void print_info(const struct jpeg_decompress_struct* cinfo) {
-	fprintf(stderr, "Source width: %d\n", cinfo->output_width);
-	fprintf(stderr, "Source height: %d\n", cinfo->output_height);
-	fprintf(stderr, "Source color components: %d\n", cinfo->output_components);
+void print_info(const struct jpeg_decompress_struct* jpg) {
+	fprintf(stderr, "Source width: %d\n", jpg->output_width);
+	fprintf(stderr, "Source height: %d\n", jpg->output_height);
+	fprintf(stderr, "Source color components: %d\n", jpg->output_components);
 	fprintf(stderr, "Output width: %d\n", width);
 	fprintf(stderr, "Output height: %d\n", height);
 	fprintf(stderr, "Output palette (%d chars): '%s'\n", (int) strlen(ascii_palette), ascii_palette);

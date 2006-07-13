@@ -16,13 +16,16 @@
 #endif
 
 #include <stdio.h>
+
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
+
 #include "jp2a.h"
 #include "options.h"
 
 int main(int argc, char** argv) {
-	int r = parse_options(argc, argv);
-	if ( r >= 0 ) return r;
+	parse_options(argc, argv);
 
 	int n;
 	for ( n=1; n<argc; ++n ) {

@@ -1,4 +1,4 @@
-CHANGES SINCE 0.9.14
+CHANGES SINCE 0.9.15 AND 0.9.14 
 - New feature:  Now follow HTTP redirects when downloading.
 - Cleaner and faster code.
 - Cleaner package organization.

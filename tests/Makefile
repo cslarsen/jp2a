@@ -100,7 +100,7 @@ dalsnuten-640x480-gray-low:
 	$(JP) --invert dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-640x480-gray-low.txt
 
 test-curl:
-	@echo -e "\nALL TESTS SO FAR OK.  IF YOU HAVE COMPILED JP2A WITHOUT CURL, "
+	@echo -e "\nALL TESTS OK SO FAR.  IF YOU HAVE COMPILED JP2A WITHOUT CURL, "
 	@echo -e "THE FOLLOWING TEST WILL FAIL.\n"
 	@echo -e "TESTING CURL DOWNLOADS"
 	$(JP) --size=45x20 http://jp2a.sourceforge.net/jp2a.jpg | $(DIFF) normal-curl.txt
