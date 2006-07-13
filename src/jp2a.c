@@ -7,41 +7,13 @@
  * $Id$
  */
 
-#include <stdio.h>
-#include "jpeglib.h"
-
 #ifdef HAVE_CONFIG_H
-
- // jpeglib (may) set this
- #ifdef HAVE_STDLIB_H
- #undef HAVE_STDLIB_H
- #endif
-
- #include "config.h"
+#include "config.h"
 #endif
 
-#include <stdlib.h>
-#include <string.h>
-
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
-
-#ifdef FEAT_CURL
- #ifdef HAVE_CURL_CURL_H
- #include "curl/curl.h"
- #endif
-
- #ifdef WIN32
- #include <io.h> // _pipe
- #include <fcntl.h> // O_BINARY
- #endif
-#endif
-
-#ifdef __MINGW32__
- #undef rpl_malloc
-#endif
-
+#include <stdio.h>
+#include <string.h>
 #include "jp2a.h"
 #include "options.h"
 
