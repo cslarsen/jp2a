@@ -341,10 +341,10 @@ void print_progress(const struct jpeg_decompress_struct* cinfo) {
 }
 
 inline
-void calc_intensity(const JSAMPLE* source, float* dest, const int components) {
+void store_intensity(const JSAMPLE* source, float* dest, const int components) {
 	float v = source[0];
 
-	register int c=1;
+	int c=1;
 	while ( c < components )
 		v += source[c++];
 
@@ -432,21 +432,21 @@ int curl_download(const char* url, const int debug) {
 #endif
 
 void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* image) {
-	static int lasty = -1;
+	static int lasty = 0;
 	const int y = ROUND(image->to_dst_y * (float) (jpg->output_scanline-1));
 
-	// include all scanlines since last y-stepping
-	while ( lasty++ != y ) {
+	// include all scanlines since last call
+	while ( lasty <= y ) {
 		const int y_w = lasty * image->width;
 		int x;
 
 		for ( x=0; x < image->width; ++x ) {
-			calc_intensity(&scanline[ image->lookupx[x] ],
+			store_intensity(&scanline[ image->lookupx[x] ],
 				&image->p[y_w + x],
 				jpg->out_color_components);
 		}
 
-		++image->yadds[lasty];
+		++image->yadds[lasty++];
 	}
 
 	lasty = y;
