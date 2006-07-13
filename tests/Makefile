@@ -57,7 +57,7 @@ dalsnuten-80x49-inv:
 	$(JP) --invert --size=80x49 dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-80x49-inv.txt
 
 dalsnuten-256-html:
-	$(JP) dalsnuten-640x480-gray-low.jpg --width=256 --html --html-fontsize=8 | $(DIFF) dalsnuten-256.html
+	$(JP) dalsnuten-640x480-gray-low.jpg --width=128 --html --html-fontsize=8 | $(DIFF) dalsnuten-256.html
 
 dalsnuten-640x480-low:
 	$(JP) dalsnuten-640x480-gray-low.jpg --size=80x25 --invert --border --size=150x45 | $(DIFF) dalsnuten-640x480-gray-low.txt
@@ -91,7 +91,7 @@ normal-verbose:
 	$(JP) -i -b --width=110 --height=30 jp2a.jpg | $(DIFF) 110x30-i-b.txt
 
 logo:
-	$(JP) --size=160x100 --html --html-fontsize=2 jp2a.jpg | $(DIFF) logo.html
+	$(JP) --size=80x50 --html --html-fontsize=7 jp2a.jpg | $(DIFF) logo.html
 
 flip-xy-invert:
 	$(JP) --flipx --flipy --invert jp2a.jpg | $(DIFF) flip-xy-invert.txt
