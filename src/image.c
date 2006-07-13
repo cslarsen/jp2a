@@ -7,26 +7,14 @@
  * $Id: jp2a.c 168 2006-07-13 12:53:52Z csl $
  */
 
-#include <stdio.h>
-#include "jpeglib.h"
-
 #ifdef HAVE_CONFIG_H
-
- // jpeglib (may) set this
- #ifdef HAVE_STDLIB_H
- #undef HAVE_STDLIB_H
- #endif
-
- #include "config.h"
+#include "config.h"
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
+#include "jpeglib.h"
 #include "jp2a.h"
 #include "options.h"
 
