@@ -537,6 +537,7 @@ int decompress(FILE *fp) {
 
 	free(image.p);
 	free(image.yadds);
+	free(image.lookupx);
 
 	jpeg_finish_decompress(&cinfo);
 	jpeg_destroy_decompress(&cinfo);
