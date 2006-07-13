@@ -4,7 +4,7 @@
  *
  * Project homepage on http://jp2a.sf.net
  *
- * $Id: jp2a.c 168 2006-07-13 12:53:52Z csl $
+ * $Id$
  */
 
 // see options.c
