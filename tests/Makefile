@@ -17,12 +17,12 @@ normal-b \
 flip-xy-invert \
 2xnormal-b \
 normal-verbose \
-fry-normal \
-fry-invert \
-fry-80x49-inv \
-fry-160-html \
-fry-jp2a-2000x2000 \
-dalsnuten-640x480-gray-low \
+dalsnuten-normal \
+dalsnuten-invert \
+dalsnuten-80x49-inv \
+dalsnuten-256-html \
+dalsnuten-jp2a-2000x2000 \
+dalsnuten-640x480-rgb-low \
 stdin-40x40 \
 stdin-normal \
 test-curl
@@ -43,20 +43,23 @@ normal:
 normal-b:
 	$(JP) -b jp2a.jpg | $(DIFF) normal-b.txt
 
-fry-jp2a-2000x2000:
-	$(JP) --size=2000x2000 fry.jpg jp2a.jpg | $(DIFF) fry-jp2a-2000x2000.txt
+dalsnuten-jp2a-2000x2000:
+	$(JP) --size=2000x2000 dalsnuten-640x480-gray-low.jpg jp2a.jpg | $(DIFF) dalsnuten-jp2a-2000x2000.txt
 
-fry-normal:
-	$(JP) fry.jpg | $(DIFF) fry-normal.txt
+dalsnuten-normal:
+	$(JP) dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-normal.txt
 
-fry-invert:
-	$(JP) --invert fry.jpg | $(DIFF) fry-invert.txt
+dalsnuten-invert:
+	$(JP) --invert dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-invert.txt
 
-fry-80x49-inv:
-	$(JP) --invert --size=80x49 fry.jpg | $(DIFF) fry-80x49-inv.txt
+dalsnuten-80x49-inv:
+	$(JP) --invert --size=80x49 dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-80x49-inv.txt
 
-fry-160-html:
-	$(JP) fry.jpg --width=80 --html --html-fontsize=8 | $(DIFF) fry-160.html
+dalsnuten-256-html:
+	$(JP) dalsnuten-640x480-gray-low.jpg --width=256 --html --html-fontsize=8 | $(DIFF) dalsnuten-256.html
+
+dalsnuten-640x480-rgb-low:
+	$(JP) dalsnuten-640x480-rgb-low.jpg --size=80x25 --invert --border --size=150x45 | $(DIFF) dalsnuten-640x480-rgb-low.txt
 
 2xnormal-b:
 	$(JP) -b jp2a.jpg jp2a.jpg | $(DIFF) 2xnormal-b.txt
