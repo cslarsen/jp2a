@@ -431,6 +431,7 @@ int curl_download(const char* url, const int debug) {
 }
 #endif
 
+inline
 void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* image) {
 	static int lasty = 0;
 	const int y = ROUND(image->to_dst_y * (float) (jpg->output_scanline-1));
@@ -452,6 +453,38 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 	lasty = y;
 }
 
+void free_image(Image* i) {
+	if ( i->p ) free(i->p);
+	if ( i->yadds ) free(i->yadds);
+	if ( i->lookupx ) free(i->lookupx);
+}
+
+void malloc_image(Image* i) {
+	i->p = NULL;
+	i->yadds = NULL;
+	i->lookupx = NULL;
+
+	i->width = width;
+	i->height = height;
+
+	if ( (i->p = (float*) malloc(width * height * sizeof(float))) == NULL ) {
+		fprintf(stderr, "Not enough memory for given output dimension\n");
+		exit(1);
+	}
+
+	if ( (i->yadds = (int*) malloc(height * sizeof(int))) == NULL ) {
+		fprintf(stderr, "Not enough memory for given output dimension (for yadds)\n");
+		free_image(i);
+		exit(1);
+	}
+
+	if ( (i->lookupx = (int*) malloc(width * sizeof(int))) == NULL ) {
+		fprintf(stderr, "Not enough memory for given output dimension (lookupx)\n");
+		free_image(i);
+		exit(1);
+	}
+}
+
 int decompress(FILE *fp) {
 	struct jpeg_error_mgr jerr;
 	struct jpeg_decompress_struct cinfo;
@@ -471,24 +504,7 @@ int decompress(FILE *fp) {
 	calc_aspect_ratio(cinfo.output_width, cinfo.output_height);
 
 	Image image;
-	image.width = width;
-	image.height = height;
-
-	if ( (image.p = (float*) malloc(width * height * sizeof(float))) == NULL ) {
-		fprintf(stderr, "Not enough memory for given output dimension\n");
-		return 1;
-	}
-
-	if ( (image.yadds = (int*) malloc(height * sizeof(int))) == NULL ) {
-		fprintf(stderr, "Not enough memory for given output dimension (for yadds)\n");
-		return 1;
-	}
-
-	if ( (image.lookupx = (int*) malloc(width * sizeof(int))) == NULL ) {
-		fprintf(stderr, "Not enough memory for given output dimension (lookupx)\n");
-		return 1;
-	}
-
+	malloc_image(&image);
 	clear(&image);
 
 	if ( verbose ) print_info(&cinfo);
@@ -521,9 +537,7 @@ int decompress(FILE *fp) {
 	if ( border ) print_border(image.width);
 	if ( html ) print_html_end();
 
-	free(image.p);
-	free(image.yadds);
-	free(image.lookupx);
+	free_image(&image);
 
 	jpeg_finish_decompress(&cinfo);
 	jpeg_destroy_decompress(&cinfo);
