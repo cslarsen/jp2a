@@ -531,7 +531,7 @@ int decompress(FILE *fp) {
 	if ( html ) print_html_start();
 	if ( border ) print_border(image.width);
 
-	print_image(&image, strlen(ascii_palette) - 1);
+	print_image(&image, (int) strlen(ascii_palette) - 1);
 
 	if ( border ) print_border(image.width);
 	if ( html ) print_html_end();
