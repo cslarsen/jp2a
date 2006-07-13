@@ -20,6 +20,7 @@ normal-verbose \
 fry-normal \
 fry-invert \
 fry-80x49-inv \
+fry-160-html \
 stdin-40x40 \
 stdin-normal
 	@echo -e "\nALL TESTS OK"
@@ -49,6 +50,9 @@ fry-invert:
 
 fry-80x49-inv:
 	$(JP) --invert --size=80x49 fry.jpg | $(DIFF) fry-80x49-inv.txt
+
+fry-160-html:
+	$(JP) fry.jpg --width=80 --html --html-fontsize=8 | $(DIFF) fry-160.html
 
 2xnormal-b:
 	$(JP) -b jp2a.jpg jp2a.jpg | $(DIFF) 2xnormal-b.txt
