@@ -1,9 +1,9 @@
 CHANGES SINCE 0.9.14
 - Cleaner and faster code.
 - Package reorganization (added src, include and man-dir).
-- The binary with debug symbosl may be larger than in previous versions.
-  Stripping (`make install-strip') fixes that, if you're concerned over
-  the extra kbytes.
+- Binary is larger because of debug-symbols; use `make install-strip' to remedy.
+- While enlarging JPEGs is platform independent, shrinking is not.  Therefore, only
+  enlargement is used in `make test'.
 
 CHANGES SINCE 0.9.13
 - Minor bugfix: --chars now correctly accepts minimum two chars.

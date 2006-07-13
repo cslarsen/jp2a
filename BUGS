@@ -1,4 +1,5 @@
-- Seems convert downloads URLs, so it may be overkill to use that to convert images
+- Resizing source jpeg to BIGGER output is platform-independent, whilst downsizing jpeg to smaller
+  sizes is _not_ platform independent.
 - Take a look at GD lib (or gd2 lib) for reading images
 - Or just use libpng, and have people use convert for other imageformats
 - When using another library that converts, consider removing the jpeg-reader and using
