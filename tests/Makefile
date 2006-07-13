@@ -17,12 +17,13 @@ normal-b \
 flip-xy-invert \
 2xnormal-b \
 normal-verbose \
+logo \
 dalsnuten-normal \
 dalsnuten-invert \
 dalsnuten-80x49-inv \
 dalsnuten-256-html \
 dalsnuten-jp2a-2000x2000 \
-dalsnuten-640x480-rgb-low \
+dalsnuten-640x480-low \
 stdin-40x40 \
 stdin-normal \
 test-curl
@@ -44,7 +45,7 @@ normal-b:
 	$(JP) -b jp2a.jpg | $(DIFF) normal-b.txt
 
 dalsnuten-jp2a-2000x2000:
-	$(JP) --size=2000x2000 dalsnuten-640x480-gray-low.jpg jp2a.jpg | $(DIFF) dalsnuten-jp2a-2000x2000.txt
+	$(JP) --size=2000x2000 dalsnuten-640x480-gray-low.jpg jp2a.jpg | md5sum | $(DIFF) dalsnuten-jp2a-2000x2000-md5.txt
 
 dalsnuten-normal:
 	$(JP) dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-normal.txt
@@ -58,8 +59,8 @@ dalsnuten-80x49-inv:
 dalsnuten-256-html:
 	$(JP) dalsnuten-640x480-gray-low.jpg --width=256 --html --html-fontsize=8 | $(DIFF) dalsnuten-256.html
 
-dalsnuten-640x480-rgb-low:
-	$(JP) dalsnuten-640x480-rgb-low.jpg --size=80x25 --invert --border --size=150x45 | $(DIFF) dalsnuten-640x480-rgb-low.txt
+dalsnuten-640x480-low:
+	$(JP) dalsnuten-640x480-gray-low.jpg --size=80x25 --invert --border --size=150x45 | $(DIFF) dalsnuten-640x480-gray-low.txt
 
 2xnormal-b:
 	$(JP) -b jp2a.jpg jp2a.jpg | $(DIFF) 2xnormal-b.txt
@@ -89,8 +90,8 @@ normal-verbose:
 110x30-i-b:
 	$(JP) -i -b --width=110 --height=30 jp2a.jpg | $(DIFF) 110x30-i-b.txt
 
-big:
-	$(JP) --size=1024x768 --html --html-fontsize=2 jp2a.jpg | $(DIFF) big.html
+logo:
+	$(JP) --size=320x200 --html --html-fontsize=2 jp2a.jpg | $(DIFF) logo.html
 
 flip-xy-invert:
 	$(JP) --flipx --flipy --invert jp2a.jpg | $(DIFF) flip-xy-invert.txt
