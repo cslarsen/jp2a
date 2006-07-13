@@ -48,13 +48,10 @@ int main(int argc, char** argv) {
 
 			int fd = curl_download(argv[n], debug);
 
-			if ( fd < 0 )
-				return 1;
-
 			FILE *fr = fdopen(fd, "rb");
 
 			if ( !fr ) {
-				fprintf(stderr, "Could not fdopen read pipe\n");
+				fputs("Could not fdopen read pipe\n", stderr);
 				return 1;
 			}
 

@@ -268,6 +268,11 @@ void decompress(FILE *fp) {
 
 	normalize(&image);
 
+	if ( clearscr ) {
+		printf("\e[2J"); // ansi code for clear
+		printf("\e[0;0H"); // move to upper left
+	}
+
 	if ( html ) print_html_start(html_fontsize);
 	if ( border ) print_border(image.width);
 

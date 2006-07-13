@@ -21,4 +21,5 @@ extern int flipy;
 extern int html;
 extern int html_fontsize;
 extern int debug;
+extern int clearscr;
 extern char ascii_palette[];

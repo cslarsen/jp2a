@@ -35,6 +35,7 @@ int flipy = 0;
 int html = 0;
 int html_fontsize = 4;
 int debug = 0;
+int clearscr = 0;
 
 #define ASCII_PALETTE_SIZE 256
 char ascii_palette[ASCII_PALETTE_SIZE + 1] = "   ...',;:clodxkO0KXNWM";
@@ -68,6 +69,7 @@ void help() {
 	"      --chars=...  Select character palette used to paint the image.\n"
 	"                   Leftmost character corresponds to black pixel, right-\n"
 	"                   most to white.  Minimum two characters must be specified.\n"
+	"      --clear      Clears screen before drawing each output image.\n"
 	"  -d, --debug      Print additional debug information.\n"
 	"      --flipx      Flip image in X direction.\n"
 	"      --flipy      Flip image in Y direction.\n"
@@ -109,6 +111,7 @@ void parse_options(int argc, char** argv) {
 		IF_OPTS("-h", "--help")		{ help(); exit(0); }
 		IF_OPTS("-v", "--verbose")	{ verbose = 1; continue; }
 		IF_OPTS("-d", "--debug")	{ debug = 1; continue; }
+		IF_OPT("--clear")		{ clearscr = 1; continue; }
 		IF_OPT("--html") 		{ html = 1; continue; }
 		IF_OPTS("-b", "--border") 	{ border = 1; continue; }
 		IF_OPTS("-i", "--invert") 	{ invert = 1; continue; }
