@@ -337,7 +337,7 @@ void print_progress(const struct jpeg_decompress_struct* jpg) {
 }
 
 inline
-void store_intensity(const JSAMPLE* source, float* dest, const int components) {
+float intensity(const JSAMPLE* source, const int components) {
 	float v = source[0];
 
 	int c=1;
@@ -345,7 +345,7 @@ void store_intensity(const JSAMPLE* source, float* dest, const int components) {
 		v += source[c++];
 
 	v /= 255.0f * components;
-	*dest += v;
+	return v;
 }
 
 void print_info(const struct jpeg_decompress_struct* cinfo) {
@@ -428,22 +428,21 @@ int curl_download(const char* url, const int debug) {
 #endif
 
 inline
-void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* image) {
+void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* i) {
 	static int lasty = 0;
-	const int y = ROUND(image->resize_y * (float) (jpg->output_scanline-1));
+	const int y = ROUND( i->resize_y * (float) (jpg->output_scanline-1) );
 
 	// include all scanlines since last call
 	while ( lasty <= y ) {
-		const int y_w = lasty * image->width;
+		const int yoff = lasty * i->width;
 		int x;
 
-		for ( x=0; x < image->width; ++x ) {
-			store_intensity(&scanline[ image->lookup_resx[x] ],
-				&image->pixel[y_w + x],
+		for ( x=0; x < i->width; ++x ) {
+			i->pixel[yoff + x] += intensity( &scanline[ i->lookup_resx[x] ],
 				jpg->out_color_components);
 		}
 
-		++image->yadds[lasty++];
+		++i->yadds[lasty++];
 	}
 
 	lasty = y;
