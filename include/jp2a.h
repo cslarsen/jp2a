@@ -16,3 +16,9 @@ extern int curl_download(const char* url, const int debug);
 // html.c
 extern void print_html_start();
 extern void print_html_end();
+
+// image.c
+void decompress(FILE *fp);
+
+// options.c
+int parse_options(const int argc, char** argv);
