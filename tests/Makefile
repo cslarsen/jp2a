@@ -6,7 +6,7 @@ DIFF = diff --brief -
 # For renewing, uncomment this
 #DIFF = cat - >
 
-all: intro \
+test: intro \
 normal \
 normal-b \
 160x49 \
@@ -23,19 +23,18 @@ fry-80x49-inv \
 fry-160-html \
 fry-jp2a-2000x2000 \
 stdin-40x40 \
-stdin-normal
+stdin-normal \
+test-curl
 	@echo -e "\nALL TESTS OK"
 
 intro:
+	@echo
+	@echo "NOTE: Some tests may break on your particular platform."
+	@echo "      This does not necessarily mean your compiled jp2a"
+	@echo "      is broken.  What you DO want to check is that there"
+	@echo "      is no segfaults and stuff like that."
+	@echo
 	@echo TESTING VARIOUS JP2A RUNS
-	@echo
-	@echo " NOTE:  Some tests may break on your particular platform."
-	@echo "        This does not necessarily mean your compiled jp2a"
-	@echo "        is broken.  What you DO want to check is that there"
-	@echo "        is no segfaults and stuff like that."
-	@echo
-	@echo " Type make test-curl to test CURL downloading."
-	@echo
 
 normal:
 	$(JP) jp2a.jpg | $(DIFF) normal.txt
@@ -93,6 +92,7 @@ flip-xy-invert:
 	$(JP) --flipx --flipy --invert jp2a.jpg | $(DIFF) flip-xy-invert.txt
 
 test-curl:
-	@echo -e "\nTESTING CURL DOWNLOADS"
+	@echo -e "\nALL TESTS SO FAR OK.  IF YOU HAVENT COMPILED JP2A WITH CURL,"
+	@echo -e "THEN THE FOLLOWING TEST WILL FAIL.\n"
+	@echo -e "TESTING CURL DOWNLOADS"
 	$(JP) http://jp2a.sourceforge.net/jp2a.jpg | $(DIFF) normal-curl.txt
-	@echo OK.
