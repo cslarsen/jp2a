@@ -22,16 +22,18 @@ fry-invert \
 fry-80x49-inv \
 fry-160-html \
 fry-jp2a-2000x2000 \
+dalsnuten-640x480-gray-low \
 stdin-40x40 \
 stdin-normal \
-dalsnuten-640x480-gray-low \
 test-curl
 	@echo -e "\nALL TESTS OK"
 
 intro:
 	@echo
-	@echo "NOTE: When jp2a enlarges JPEGs, the result is platform-independent; shrinking is not."
-	@echo "      Therefore, this test will only enlarge input JPEGs."
+	@echo "NOTE: The output may vary on different platforms, so this test"
+	@echo "      may break.  Check the results against the text-files to"
+	@echo "      see for yourself if jp2a is completely broken.  If not,"
+	@echo "      you can safely install it."
 	@echo
 	@echo TESTING VARIOUS JP2A RUNS
 
