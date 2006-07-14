@@ -13,6 +13,11 @@
 
 #ifdef FEAT_CURL
 
+#ifdef WIN32
+#include <windows.h>
+#include <process.h>
+#endif
+
 #include <stdio.h>
 
 #ifdef HAVE_CURL_CURL_H
@@ -80,6 +85,10 @@ void curl_download_child() {
 
 		fclose(fw);
 		close(fd[1]); // close write-end
+
+#ifdef WIN32
+		_endthread();
+#endif
 }
 
 // Return read-only file-descriptor that must be closed.
@@ -106,7 +115,7 @@ int curl_download(const char* url, const int debug) {
 	}
 
 #else
-
+	uintptr_t dlthread = _beginthread(curl_download_child, 0, NULL);
 #endif
 
 	// PARENT process
