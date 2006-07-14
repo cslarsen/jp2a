@@ -24,6 +24,13 @@
 #include "jp2a.h"
 #include "options.h"
 
+#ifdef WIN32
+#ifdef FEAT_CURL
+#include <io.h>
+#define close _close
+#endif
+#endif
+
 int main(int argc, char** argv) {
 	parse_options(argc, argv);
 
@@ -58,7 +65,7 @@ int main(int argc, char** argv) {
 			decompress(fr);
 			fclose(fr);
 			close(fd);
-
+			
 			continue;
 		}
 		#endif
