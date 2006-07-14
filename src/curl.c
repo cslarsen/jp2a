@@ -39,7 +39,7 @@
 #endif
 
 // local variables to curl.c
-int pid, fd[2], debugopt;
+int fd[2], debugopt;
 const char* URL;
 
 //! Return 1 if s is a supported URL
@@ -94,6 +94,7 @@ int curl_download(const char* url, const int debug) {
 	}
 
 #ifndef WIN32
+	int pid;
 
 	if ( (pid = fork()) == 0 ) {
 		// CHILD process
