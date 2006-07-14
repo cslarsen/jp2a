@@ -21,4 +21,4 @@ extern void print_html_end();
 void decompress(FILE *fp);
 
 // options.c
-int parse_options(const int argc, char** argv);
+void parse_options(int argc, char** argv);
