@@ -38,6 +38,10 @@
 #define pipe(x) _pipe(x, 256, O_BINARY)
 #endif
 
+// local variables to curl.c
+int pid, fd[2], debugopt;
+const char* URL;
+
 //! Return 1 if s is a supported URL
 int is_url(const char* s) {
 	return !strncmp(s, "ftp://", 6)
@@ -48,7 +52,7 @@ int is_url(const char* s) {
 		| !strncmp(s, "https://", 8);
 }
 
-void curl_download_child(int fd[2], const char* url, const int debug) {
+void curl_download_child() {
 		close(fd[0]); // close read-end
 
 		FILE *fw = fdopen(fd[1], "wb");
@@ -62,9 +66,9 @@ void curl_download_child(int fd[2], const char* url, const int debug) {
 		atexit(curl_global_cleanup);
 
 		CURL *curl = curl_easy_init();
-		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_URL, URL);
 
-		if ( debug )
+		if ( debugopt )
 			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
 
 		curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // fail silently
@@ -80,20 +84,29 @@ void curl_download_child(int fd[2], const char* url, const int debug) {
 
 // Return read-only file-descriptor that must be closed.
 int curl_download(const char* url, const int debug) {
-	int pid, fd[2];
+
+	URL = url;
+	debugopt = debug;
 
 	if ( pipe(fd) != 0 ) {
 		fputs("Could not create pipe\n", stderr);
 		exit(1);
 	}
 
+#ifndef WIN32
+
 	if ( (pid = fork()) == 0 ) {
-		curl_download_child(fd, url, debug);
+		// CHILD process
+		curl_download_child();
 		exit(0);
 	} else if ( pid < 0 ) {
 		fputs("Could not fork.\n", stderr);
 		exit(1);
 	}
+
+#else
+
+#endif
 
 	// PARENT process
 
