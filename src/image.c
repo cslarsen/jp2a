@@ -141,7 +141,7 @@ void print_progress(const struct jpeg_decompress_struct* jpg) {
 
 	s[progress_barlength] = 0;
 
-	fprintf(stderr, "Decompressing image [%s]", s);
+	fprintf(stderr, "Decompressing image [%s]\r", s);
 
 	#ifdef WIN32
 	free(s);
