@@ -45,7 +45,7 @@ normal-b:
 	$(JP) -b jp2a.jpg | $(DIFF) normal-b.txt
 
 dalsnuten-jp2a-2000x2000:
-	$(JP) --size=2000x2000 dalsnuten-640x480-gray-low.jpg jp2a.jpg | tr -d '\r' | wc -c | $(DIFF) dalsnuten-jp2a-2000x2000-md5.txt
+	$(JP) --size=2000x2000 dalsnuten-640x480-gray-low.jpg jp2a.jpg | tr -d '\r' | wc -c | tr -d ' ' | $(DIFF) dalsnuten-jp2a-2000x2000-md5.txt
 
 dalsnuten-normal:
 	$(JP) dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-normal.txt
