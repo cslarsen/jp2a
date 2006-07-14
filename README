@@ -16,7 +16,8 @@
     QUICK INSTALL
 
     ./configure
-    make test
+    make
+    make test     # optional
     make install
 
     If configure doesn't find jpeglib.h and you know where
