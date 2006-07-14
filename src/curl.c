@@ -57,7 +57,12 @@ int is_url(const char* s) {
 		| !strncmp(s, "https://", 8);
 }
 
-void curl_download_child() {
+#ifndef WIN32
+void curl_download_child()
+#else
+void curl_download_child(void *dummy)
+#endif
+{
 		close(fd[0]); // close read-end
 
 		FILE *fw = fdopen(fd[1], "wb");
