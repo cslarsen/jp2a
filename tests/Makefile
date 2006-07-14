@@ -1,7 +1,7 @@
 # $Id$
 
 JP = ../src/jp2a
-DIFF = diff --brief -
+DIFF = diff --brief --strip-trailing-cr -
 
 # For renewing, uncomment this
 #DIFF = cat - >
