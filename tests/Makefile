@@ -73,7 +73,7 @@ stdin-40x40:
 	cat jp2a.jpg | $(JP) - --width=40 --height=40 | $(DIFF) 40x40.txt
 
 normal-verbose:
-	$(JP) --verbose jp2a.jpg 2>&1 | $(DIFF) normal-verbose.txt
+	$(JP) --verbose jp2a.jpg 2>&1 | tr -d '\r' | $(DIFF) normal-verbose.txt
 
 160x49:
 	$(JP) --width=160x49 jp2a.jpg | $(DIFF) 160x49.txt
