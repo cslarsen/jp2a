@@ -10,7 +10,7 @@ test: all
 man/jp2a.html: man/jp2a.1
 	nroff -man $< | man2html > $@
 
-jp2a-0.9.16-win32-bin.zip: jp2a.exe
+jp2a-0.9.17-win32-bin.zip: jp2a.exe
 	upx $<
 	rm -f $@
 	zip $@ AUTHORS COPYING ChangeLog INSTALL NEWS README man/jp2a.html jp2a.exe
