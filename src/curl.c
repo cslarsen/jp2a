@@ -67,46 +67,46 @@ size_t mywrite(void *buffer, size_t size, size_t nmemb, void *userp) {
 #ifndef WIN32
 void curl_download_child()
 #else
-void curl_download_child(void *dummy)
+void curl_download_child(void*)
 #endif
 {
-		#ifndef WIN32
-		close(fd[0]); // close read-end
-		#endif
-
-		FILE *fw = fdopen(fd[1], "wb");
-
-		if ( fw == NULL ) {
-			fputs("Could not open pipe for writing.\n", stderr);
-			exit(1);
-		}
-
-		curl_global_init(CURL_GLOBAL_ALL);
-
-		CURL *curl = curl_easy_init();
-		curl_easy_setopt(curl, CURLOPT_URL, URL);
-
-		if ( debugopt )
-			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
-
-		curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // fail silently
-		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1); // redirects
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, fw);
-#ifdef WIN32
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, mywrite);
+#ifndef WIN32
+	close(fd[0]); // close read-end
 #endif
 
-		curl_easy_perform(curl);
-		curl_easy_cleanup(curl);
+	FILE *fw = fdopen(fd[1], "wb");
 
-		fclose(fw);
-		close(fd[1]); // close write-end
+	if ( fw == NULL ) {
+		fputs("Could not open pipe for writing.\n", stderr);
+		exit(1);
+	}
 
-		curl_global_cleanup();
+	curl_global_init(CURL_GLOBAL_ALL);
 
-		#ifdef WIN32
-		_endthread();
-		#endif	
+	CURL *curl = curl_easy_init();
+	curl_easy_setopt(curl, CURLOPT_URL, URL);
+
+	if ( debugopt )
+		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
+
+	curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // fail silently
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1); // redirects
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, fw);
+#ifdef WIN32
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, mywrite);
+#endif
+
+	curl_easy_perform(curl);
+	curl_easy_cleanup(curl);
+
+	fclose(fw);
+	close(fd[1]); // close write-end
+
+	curl_global_cleanup();
+
+#ifdef WIN32
+	_endthread();
+#endif	
 }
 
 // Return read-only file-descriptor that must be closed.
@@ -133,14 +133,18 @@ int curl_download(const char* url, const int debug) {
 	}
 
 #else
-	uintptr_t dlthread = _beginthread(curl_download_child, 0, NULL);
+	if ( _beginthread(curl_download_child, 0, NULL) <= 0 ) {
+		fputs("Could not create thread", stderr);
+		exit(1);
+	}
 #endif
 
 	// PARENT process
 
-	#ifndef WIN32
+#ifndef WIN32
 	close(fd[1]); // close write end of pipe
-	#endif
+#endif
+
 	return fd[0];
 }
 
