@@ -167,7 +167,9 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 		while ( lasty <= y ) {
 			for ( x=0; x < i->width; ++x ) {
 				const JSAMPLE *src = &scanline[i->lookup_resx[x]];
-				pixel[x] += (src[0] + src[1] + src[2]) * ( 1 / (255.0f * 3.0f) );
+
+				// calculate weighted luminance
+				pixel[x] += (0.299f*src[0] + 0.587f*src[1] + 0.114f*src[2]) * ( 1 / 255.0f );
 			}
 			++i->yadds[lasty++];
 			pixel += i->width;
