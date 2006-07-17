@@ -95,8 +95,9 @@ void print_image(const Image* const i, const int chars) {
 
 	for ( y=0; y < h; ++y ) {
 		for ( x=0; x < w; ++x ) {
-			const unsigned short int pos = ROUND( (float) chars * i->pixel[(!flipy? y : h-y-1)*w + x] );
-			line[!flipx? x : w-x-1] = ascii_palette[ !invert ? chars - pos : pos ];
+			float f = i->pixel[x + w*(flipy ? h-y-1 : y)];
+			int pos = ROUND(f * (float)chars);
+			line[flipx? w-x-1 : x] = ascii_palette[invert? pos : chars - pos];
 		}
 
 		printf(!border? "%s\n" : "|%s|\n", line);
@@ -128,13 +129,15 @@ void normalize(Image* i) {
 }
 
 void print_progress(const struct jpeg_decompress_struct* jpg) {
-	static char s[64];
-	s[63] = 0;
+	#define BARLEN 64
+
+	static char s[BARLEN];
+	s[BARLEN-1] = 0;
 
  	float progress = (float) (jpg->output_scanline + 1.0f) / (float) jpg->output_height;
-	int pos = ROUND( (float) 62 * progress );
+	int pos = ROUND( (float) (BARLEN-2) * progress );
 
-	memset(s, '.', 62);
+	memset(s, '.', BARLEN-2);
 	memset(s, '#', pos);
 
 	fprintf(stderr, "Decompressing image [%s]\r", s);
@@ -146,41 +149,40 @@ void print_info(const struct jpeg_decompress_struct* jpg) {
 	fprintf(stderr, "Source color components: %d\n", jpg->output_components);
 	fprintf(stderr, "Output width: %d\n", width);
 	fprintf(stderr, "Output height: %d\n", height);
-	fprintf(stderr, "Output palette (%d chars): '%s'\n", (int) strlen(ascii_palette), ascii_palette);
+	fprintf(stderr, "Output palette (%d chars): '%s'\n", (int)strlen(ascii_palette), ascii_palette);
 }
-
-inline float intensity_rgb(const JSAMPLE* source) {
-	return (source[0] + source[1] + source[2]) / (255.0f * 3.0f);
-}
-
-inline float intensity_gray(const JSAMPLE* source) {
-	return *source / 255.0f;
-}
-
 
 void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* i) {
 	static int lasty = 0;
 	const int y = ROUND( i->resize_y * (float) (jpg->output_scanline-1) );
 	int x;
 
-
 	// include all scanlines since last call
-	while ( lasty <= y ) {
-		float *pixel = &i->pixel[lasty * i->width];
 
-		if ( jpg->out_color_components == 3 ) {
-			// RGB
+	float *pixel = &i->pixel[lasty * i->width];
+
+	if ( jpg->out_color_components == 3 ) {
+
+		// RGB
+		while ( lasty <= y ) {
 			for ( x=0; x < i->width; ++x ) {
 				const JSAMPLE *src = &scanline[i->lookup_resx[x]];
-				pixel[x] += (src[0] + src[1] + src[2]) / (255.0f * 3.0f);
+				pixel[x] += (src[0] + src[1] + src[2]) * ( 1 / (255.0f * 3.0f) );
 			}
-		} else {
-			// Grayscale
-			for ( x=0; x < i->width; ++x )
-				pixel[x] += scanline[i->lookup_resx[x]] / 255.0f;
+			++i->yadds[lasty++];
+			pixel += i->width;
 		}
 
-		++i->yadds[lasty++];
+	} else {
+
+		// Grayscale
+		while ( lasty <= y ) {
+			for ( x=0; x < i->width; ++x )
+				pixel[x] += scanline[i->lookup_resx[x]] * ( 1 / 255.0f );
+
+			++i->yadds[lasty++];
+			pixel += i->width;
+		}
 	}
 
 	lasty = y;
