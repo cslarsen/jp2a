@@ -1,5 +1,5 @@
 CHANGES SINCE 0.9.17
-- None yet.
+- Minor speed optimization.
 
 CHANGES SINCE 0.9.16
 - New feature: Download-support on win32 binary builds.

@@ -95,8 +95,7 @@ void print_image(const Image* const i, const int chars) {
 
 	for ( y=0; y < h; ++y ) {
 		for ( x=0; x < w; ++x ) {
-			float intensity = i->pixel[(!flipy? y : h-y-1)*w + x];
-			int pos = ROUND( (float) chars * intensity );
+			int pos = ROUND( (float) chars * i->pixel[(!flipy? y : h-y-1)*w + x] );
 			line[!flipx? x : w-x-1] = ascii_palette[ !invert ? chars - pos : pos ];
 		}
 
@@ -114,16 +113,14 @@ void clear(Image* i) {
 }
 
 void normalize(Image* i) {
-	const int w = i->width;
-	const int h = i->height;
-
 	register int x, y, yoffs;
 
-	for ( y=0, yoffs=0; y < h; ++y, yoffs += w )
-		for ( x=0; x < w; ++x ) {
-			if ( i->yadds[y] > 1 )
-				i->pixel[yoffs + x] /= (float) i->yadds[y];
+	for ( y=0, yoffs=0; y < i->height; ++y, yoffs += i->width ) {
+		if ( i->yadds[y] > 1 ) {
+			for ( x=0; x < i->width; ++x )
+				i->pixel[yoffs + x] /= i->yadds[y];
 		}
+	}
 }
 
 void print_progress(const struct jpeg_decompress_struct* jpg) {
@@ -148,17 +145,6 @@ void print_progress(const struct jpeg_decompress_struct* jpg) {
 	#endif
 }
 
-inline
-float intensity(const JSAMPLE* source, const int components) {
-	register float v = source[0];
-	register int c=1;
-
-	while ( c < components )
-		v += source[c++];
-
-	return v / ( 255.0f * components );
-}
-
 void print_info(const struct jpeg_decompress_struct* jpg) {
 	fprintf(stderr, "Source width: %d\n", jpg->output_width);
 	fprintf(stderr, "Source height: %d\n", jpg->output_height);
@@ -168,19 +154,36 @@ void print_info(const struct jpeg_decompress_struct* jpg) {
 	fprintf(stderr, "Output palette (%d chars): '%s'\n", (int) strlen(ascii_palette), ascii_palette);
 }
 
-inline
+inline float intensity_rgb(const JSAMPLE* source) {
+	return (source[0] + source[1] + source[2]) / (255.0f * 3.0f);
+}
+
+inline float intensity_gray(const JSAMPLE* source) {
+	return *source / 255.0f;
+}
+
+
 void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* i) {
 	static int lasty = 0;
 	const int y = ROUND( i->resize_y * (float) (jpg->output_scanline-1) );
+	int x;
+
 
 	// include all scanlines since last call
 	while ( lasty <= y ) {
-		const int yoff = lasty * i->width;
-		int x;
+		float *pixel = &i->pixel[lasty * i->width];
 
-		for ( x=0; x < i->width; ++x ) {
-			i->pixel[yoff + x] += intensity( &scanline[ i->lookup_resx[x] ],
-				jpg->out_color_components);
+		if ( jpg->out_color_components == 3 ) {
+			// RGB
+			const JSAMPLE *src;
+			for ( x=0; x < i->width; ++x ) {
+				src = &scanline[i->lookup_resx[x]];
+				pixel[x] += (src[0] + src[1] + src[2]) / (255.0f * 3.0f);
+			}
+		} else {
+			// Grayscale
+			for ( x=0; x < i->width; ++x )
+				pixel[x] += scanline[i->lookup_resx[x]] / 255.0f;
 		}
 
 		++i->yadds[lasty++];
@@ -260,7 +263,6 @@ void decompress(FILE *fp) {
 	while ( jpg.output_scanline < jpg.output_height ) {
 		jpeg_read_scanlines(&jpg, buffer, 1);
 		process_scanline(&jpg, buffer[0], &image);
-
 		if ( verbose ) print_progress(&jpg);
 	}
 
