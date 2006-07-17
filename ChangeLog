@@ -1,6 +1,6 @@
 CHANGES SINCE 0.9.17
+- Better calculation of luminance.
 - Minor speed optimization.
-- Better conversion using weighted luminance calculation.
 
 CHANGES SINCE 0.9.16
 - New feature: Download-support on win32 binary builds.
