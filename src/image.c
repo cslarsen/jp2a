@@ -121,7 +121,7 @@ void normalize(Image* i) {
 
 	for ( y=0, yoffs=0; y < h; ++y, yoffs += w )
 		for ( x=0; x < w; ++x ) {
-			if ( i->yadds[y] != 0 )
+			if ( i->yadds[y] > 1 )
 				i->pixel[yoffs + x] /= (float) i->yadds[y];
 		}
 }

@@ -1,3 +1,6 @@
+CHANGES SINCE 0.9.17
+- None yet.
+
 CHANGES SINCE 0.9.16
 - New feature: Download-support on win32 binary builds.
 - Added option to --clear screen before writing each output image.
