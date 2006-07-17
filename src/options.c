@@ -27,7 +27,6 @@ int auto_height = 1;
 int auto_width = 0;
 int width = 78;
 int height = 0;
-int progress_barlength = 56;
 int border = 0;
 int invert = 0;
 int flipx = 0;

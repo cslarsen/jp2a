@@ -13,7 +13,6 @@ extern int auto_height;
 extern int auto_width;
 extern int width;
 extern int height;
-extern int progress_barlength;
 extern int border;
 extern int invert;
 extern int flipx;

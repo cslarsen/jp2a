@@ -128,25 +128,16 @@ void normalize(Image* i) {
 }
 
 void print_progress(const struct jpeg_decompress_struct* jpg) {
+	static char s[64];
+	s[63] = 0;
+
  	float progress = (float) (jpg->output_scanline + 1.0f) / (float) jpg->output_height;
-	int pos = ROUND( (float) progress_barlength * progress );
+	int pos = ROUND( (float) 62 * progress );
 
-	#ifdef WIN32
-	char *s = (char*) malloc(progress_barlength + 1);
-	#else
-	char s[progress_barlength + 1];
-	#endif
-
-	memset(s, '.', progress_barlength);
+	memset(s, '.', 62);
 	memset(s, '#', pos);
 
-	s[progress_barlength] = 0;
-
 	fprintf(stderr, "Decompressing image [%s]\r", s);
-
-	#ifdef WIN32
-	free(s);
-	#endif
 }
 
 void print_info(const struct jpeg_decompress_struct* jpg) {
