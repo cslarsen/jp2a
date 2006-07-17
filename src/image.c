@@ -113,13 +113,17 @@ void clear(Image* i) {
 }
 
 void normalize(Image* i) {
-	register int x, y, yoffs;
 
-	for ( y=0, yoffs=0; y < i->height; ++y, yoffs += i->width ) {
-		if ( i->yadds[y] > 1 ) {
-			for ( x=0; x < i->width; ++x )
-				i->pixel[yoffs + x] /= i->yadds[y];
-		}
+	float *pixel = i->pixel;
+	int x, y;
+
+	for ( y=0; y < i->height; ++y, pixel += i->width ) {
+
+		if ( i->yadds[y] <= 1 )
+			continue;
+
+		for ( x=0; x < i->width; ++x )
+			pixel[x] /= i->yadds[y];
 	}
 }
 
@@ -175,9 +179,8 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 
 		if ( jpg->out_color_components == 3 ) {
 			// RGB
-			const JSAMPLE *src;
 			for ( x=0; x < i->width; ++x ) {
-				src = &scanline[i->lookup_resx[x]];
+				const JSAMPLE *src = &scanline[i->lookup_resx[x]];
 				pixel[x] += (src[0] + src[1] + src[2]) / (255.0f * 3.0f);
 			}
 		} else {
