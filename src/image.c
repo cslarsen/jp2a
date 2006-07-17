@@ -168,14 +168,17 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 			// RGB -> Grayscale, calculate luminance based on weights
 			for ( x=0; x < i->width; ++x ) {
 				const JSAMPLE *src = &scanline[i->lookup_resx[x]];
-				pixel[x] += (0.299f*src[0] + 0.587f*src[1] + 0.114f*src[2]) * ( 1 / 255.0f );
+
+				pixel[x] += (     0.299f * (float) src[0]
+						+ 0.587f * (float) src[1]
+						+ 0.114f * (float) src[2]) / 255.0f;
 			}
 
 		} else {
 
 			// Grayscale
 			for ( x=0; x < i->width; ++x )
-				pixel[x] += scanline[i->lookup_resx[x]] * ( 1 / 255.0f );
+				pixel[x] += (float) scanline[i->lookup_resx[x]] / 255.0f;
 
 		}
 
