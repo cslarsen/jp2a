@@ -58,7 +58,7 @@ int is_url(const char* s) {
 }
 
 #ifdef WIN32
-size_t mywrite(void *buffer, size_t size, size_t nmemb, void *userp) {
+size_t passthru_write(void *buffer, size_t size, size_t nmemb, void *userp) {
 	FILE *f = (FILE*) userp;
 	return f!=NULL? fwrite(buffer, size, nmemb, f) : 0;
 }
@@ -92,9 +92,9 @@ void curl_download_child(void*)
 	curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // fail silently
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1); // redirects
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, fw);
-#ifdef WIN32
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, mywrite);
-#endif
+	#ifdef WIN32
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, passthru_write);
+	#endif
 
 	curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
