@@ -6,8 +6,10 @@ DIFF = diff --brief --strip-trailing-cr -
 # For renewing, uncomment this
 #DIFF = cat - >
 
-test: intro \
-normal \
+test: intro test-normal test-curl 
+	@echo -e "\nALL TESTS OK"
+
+test-normal: normal \
 normal-b \
 160x49 \
 10h \
@@ -24,10 +26,10 @@ dalsnuten-80x49-inv \
 dalsnuten-256-html \
 dalsnuten-jp2a-2000x2000 \
 dalsnuten-640x480-low \
-stdin-40x40 \
 stdin-normal \
-test-curl test-curl-redir
-	@echo -e "\nALL TESTS OK"
+stdin-40x40
+
+test-curl: curl-simple curl-redir
 
 intro:
 	@echo
@@ -99,11 +101,11 @@ flip-xy-invert:
 dalsnuten-640x480-gray-low:
 	$(JP) --invert dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-640x480-gray-low.txt
 
-test-curl:
+curl-simple:
 	@echo -e "\nALL TESTS OK SO FAR.  IF YOU HAVE COMPILED JP2A WITHOUT CURL, "
 	@echo -e "THE FOLLOWING TEST WILL FAIL.\n"
 	@echo -e "TESTING CURL DOWNLOADS"
 	$(JP) --size=454x207 http://jp2a.sourceforge.net/jp2a.jpg | $(DIFF) normal-curl.txt
 
-test-curl-redir:
+curl-redir:
 	$(JP) --size=454x207 http://jp2a.sf.net/jp2a.jpg | $(DIFF) normal-curl.txt

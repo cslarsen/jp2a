@@ -17,3 +17,6 @@ jp2a-0.9.17-win32-bin.zip: jp2a.exe
 
 test-curl: all
 	cd tests/; make test-curl
+
+test-normal:
+	cd tests/; make test-normal

@@ -95,7 +95,7 @@ void print_image(const Image* const i, const int chars) {
 
 	for ( y=0; y < h; ++y ) {
 		for ( x=0; x < w; ++x ) {
-			int pos = ROUND( (float) chars * i->pixel[(!flipy? y : h-y-1)*w + x] );
+			const unsigned short int pos = ROUND( (float) chars * i->pixel[(!flipy? y : h-y-1)*w + x] );
 			line[!flipx? x : w-x-1] = ascii_palette[ !invert ? chars - pos : pos ];
 		}
 
