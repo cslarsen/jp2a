@@ -81,23 +81,23 @@ void print_border(const int width) {
 }
 
 void print_image(const Image* const i, const int chars) {
-	int x, y;
-	const int w = i->width;
-	const int h = i->height;
-
 	#ifdef WIN32
 	char *line = (char*) malloc(w+1);
 	#else
-	char line[w + 1];
+	char line[i->width + 1];
 	#endif
 
-	line[w] = 0;
+	line[i->width] = 0;
 
-	for ( y=0; y < h; ++y ) {
-		for ( x=0; x < w; ++x ) {
-			float f = i->pixel[x + w*(flipy ? h-y-1 : y)];
-			int pos = ROUND(f * (float)chars);
-			line[flipx? w-x-1 : x] = ascii_palette[invert? pos : chars - pos];
+	int x, y;
+	for ( y=0; y < i->height; ++y ) {
+
+		for ( x=0; x < i->width; ++x ) {
+
+			const float lum = i->pixel[x + (flipy? i->height - y - 1 : y) * i->width];
+			const int pos = ROUND((float)chars * lum);
+
+			line[flipx? i->width - x - 1 : x] = ascii_palette[invert? pos : chars - pos];
 		}
 
 		printf(!border? "%s\n" : "|%s|\n", line);
@@ -169,16 +169,14 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 			for ( x=0; x < i->width; ++x ) {
 				const JSAMPLE *src = &scanline[i->lookup_resx[x]];
 
-				pixel[x] += (     0.299f * (float) src[0]
-						+ 0.587f * (float) src[1]
-						+ 0.114f * (float) src[2]) / 255.0f;
+				pixel[x] += ( RED[src[0]] + GREEN[src[1]] + BLUE[src[2]] ) * ( 1.0f / 255.0f );
 			}
 
 		} else {
 
 			// Grayscale
 			for ( x=0; x < i->width; ++x )
-				pixel[x] += (float) scanline[i->lookup_resx[x]] / 255.0f;
+				pixel[x] += (float) scanline[i->lookup_resx[x]] * ( 1.0f / 255.0f );
 
 		}
 

@@ -22,3 +22,5 @@ extern int html_fontsize;
 extern int debug;
 extern int clearscr;
 extern char ascii_palette[];
+extern float redweight, greenweight, blueweight;
+extern float RED[256], GREEN[256], BLUE[256];

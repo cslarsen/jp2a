@@ -39,6 +39,14 @@ int clearscr = 0;
 #define ASCII_PALETTE_SIZE 256
 char ascii_palette[ASCII_PALETTE_SIZE + 1] = "   ...',;:clodxkO0KXNWM";
 
+// Default weights, must add up to 1.0
+float redweight = 0.299f;
+float greenweight = 0.587f;
+float blueweight = 0.114f;
+
+// calculated in parse_options
+float RED[256], GREEN[256], BLUE[256];
+
 const char* version   = PACKAGE_STRING;
 const char* copyright = "Copyright (C) 2006 Christian Stigen Larsen";
 const char* license   = "Distributed under the GNU General Public License (GPL) v2 or later.";
@@ -88,6 +96,15 @@ void help() {
 
 	fprintf(stderr, "Project homepage on %s\n", url);
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
+}
+
+void calc_weights(const float red, const float green, const float blue) {
+	int n;
+	for ( n=0; n<256; ++n ) {
+		RED[n] = red * (float) n;
+		GREEN[n] = green * (float) n;
+		BLUE[n] = blue * (float) n;
+	}
 }
 
 void parse_options(int argc, char** argv) {
@@ -163,4 +180,6 @@ void parse_options(int argc, char** argv) {
 		fputs("Invalid width or height specified.\n", stderr);
 		exit(1);
 	}
+
+	calc_weights(redweight, greenweight, blueweight);
 }
