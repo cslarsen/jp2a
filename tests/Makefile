@@ -20,6 +20,7 @@ flip-xy-invert \
 2xnormal-b \
 normal-verbose \
 normal-output \
+normal-clear \
 logo \
 dalsnuten-normal \
 dalsnuten-invert \
@@ -47,6 +48,9 @@ normal:
 normal-output:
 	$(JP) jp2a.jpg --output=/tmp/jp2a-test.txt && diff --brief /tmp/jp2a-test.txt normal.txt
 	rm -f /tmp/jp2a-test.txt
+
+normal-clear:
+	$(JP) jp2a.jpg --clear | $(DIFF) normal-clear.txt
 
 normal-b:
 	$(JP) -b jp2a.jpg | $(DIFF) normal-b.txt
