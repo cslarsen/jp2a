@@ -269,8 +269,8 @@ void decompress(FILE *fp, FILE *fout) {
 	normalize(&image);
 
 	if ( clearscr ) {
-		fprintf(fout, "\e[2J"); // ansi code for clear
-		fprintf(fout, "\e[0;0H"); // move to upper left
+		fprintf(fout, "%c[2J", 27); // ansi code for clear
+		fprintf(fout, "%c[0;0H", 27); // move to upper left
 	}
 
 	if ( html ) print_html_start(html_fontsize);
