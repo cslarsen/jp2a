@@ -34,6 +34,15 @@
 int main(int argc, char** argv) {
 	parse_options(argc, argv);
 
+	FILE *fout = stdout;
+
+	if ( strcmp(fileout, "-") ) {
+		if ( (fout = fopen(fileout, "wb")) == NULL ) {
+			fprintf(stderr, "Could not open '%s' for writing.\n", fileout);
+			return 1;
+		}
+	}
+
 	int n;
 	for ( n=1; n<argc; ++n ) {
 
@@ -43,7 +52,7 @@ int main(int argc, char** argv) {
 
 		// read from stdin
 		if ( argv[n][0]=='-' && !argv[n][1] ) {
-			decompress(stdin);
+			decompress(stdin, fout);
 			continue;
 		}
 
@@ -62,7 +71,7 @@ int main(int argc, char** argv) {
 				return 1;
 			}
 
-			decompress(fr);
+			decompress(fr, fout);
 			fclose(fr);
 			close(fd);
 			
@@ -77,7 +86,7 @@ int main(int argc, char** argv) {
 			if ( verbose )
 				fprintf(stderr, "File: %s\n", argv[n]);
 
-			decompress(fp);
+			decompress(fp, fout);
 			fclose(fp);
 
 			continue;
@@ -87,6 +96,9 @@ int main(int argc, char** argv) {
 			return 1;
 		}
 	}
+
+	if ( fout != stdout )
+		fclose(fout);
 
 	return 0;
 }

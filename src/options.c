@@ -47,6 +47,8 @@ float blueweight = 0.114f;
 // calculated in parse_options
 float RED[256], GREEN[256], BLUE[256];
 
+const char *fileout = "-"; // stdout
+
 const char* version   = PACKAGE_STRING;
 const char* copyright = "Copyright (C) 2006 Christian Stigen Larsen";
 const char* license   = "Distributed under the GNU General Public License (GPL) v2 or later.";
@@ -59,43 +61,44 @@ void print_version() {
 void help() {
 	print_version();
 
-	fputs("\n"
-
+	fputs(
+"\n"
 #ifdef FEAT_CURL
-	"Usage: jp2a [ options ] [ file(s) | URL(s) ]\n\n"
+"Usage: jp2a [ options ] [ file(s) | URL(s) ]\n\n"
 
-	"Convert files or URLs from JPEG format to ASCII.\n\n"
+"Convert files or URLs from JPEG format to ASCII.\n\n"
 #else
-	"Usage: jp2a [ options ] [ file(s) ]\n\n"
+"Usage: jp2a [ options ] [ file(s) ]\n\n"
 
-	"Convert files in JPEG format to ASCII.\n\n"
+"Convert files in JPEG format to ASCII.\n\n"
 #endif
-	"OPTIONS\n"
-	"  -                Read JPEG image from standard input.\n"
-	"      --blue=N.N   Set RGB to grayscale conversion weight, default is 0.114\n"
-	"  -b, --border     Print a border around the output image.\n"
-	"      --chars=...  Select character palette used to paint the image.\n"
-	"                   Leftmost character corresponds to black pixel, right-\n"
-	"                   most to white.  Minimum two characters must be specified.\n"
-	"      --clear      Clears screen before drawing each output image.\n"
-	"  -d, --debug      Print additional debug information.\n"
-	"  -x, --flipx      Flip image in X direction.\n"
-	"  -y, --flipy      Flip image in Y direction.\n"
-	"      --green=N.N  Set RGB to grayscale conversion weight, default is 0.587\n"
-	"      --height=N   Set output height, calculate width from aspect ratio.\n"
-	"  -h, --help       Print program help.\n"
-	"      --html       Produce strict XHTML 1.0 output.\n"
-	"      --html-fontsize=N  Set fontsize to N pt when using --html, default is 4.\n"
-	"  -i, --invert     Invert output image.  Use if your display has a dark\n"
-	"                   background.\n"
-	"      --red=N.N    Set RGB to grayscale conversion weight, default 0.299f.\n"
-	"      --size=WxH   Set output width and height.\n"
-	"  -v, --verbose    Verbose output.\n"
-	"  -V, --version    Print program version.\n"
-	"      --width=N    Set output width, calculate height from ratio.\n\n"
+"OPTIONS\n"
+"  -                Read JPEG image from standard input.\n"
+"      --blue=N.N   Set RGB to grayscale conversion weight, default is 0.114\n"
+"  -b, --border     Print a border around the output image.\n"
+"      --chars=...  Select character palette used to paint the image.\n"
+"                   Leftmost character corresponds to black pixel, right-\n"
+"                   most to white.  Minimum two characters must be specified.\n"
+"      --clear      Clears screen before drawing each output image.\n"
+"  -d, --debug      Print additional debug information.\n"
+"  -x, --flipx      Flip image in X direction.\n"
+"  -y, --flipy      Flip image in Y direction.\n"
+"      --green=N.N  Set RGB to grayscale conversion weight, default is 0.587\n"
+"      --height=N   Set output height, calculate width from aspect ratio.\n"
+"  -h, --help       Print program help.\n"
+"      --html       Produce strict XHTML 1.0 output.\n"
+"      --html-fontsize=N  Set fontsize to N pt, default is 4.\n"
+"  -i, --invert     Invert output image.  Use if your display has a dark\n"
+"                   background.\n"
+"      --output=... Write output to file.\n"
+"      --red=N.N    Set RGB to grayscale conversion weight, default 0.299f.\n"
+"      --size=WxH   Set output width and height.\n"
+"  -v, --verbose    Verbose output.\n"
+"  -V, --version    Print program version.\n"
+"      --width=N    Set output width, calculate height from ratio.\n\n"
 
-	"  The default running mode is `jp2a --width=78'.  See the man page for jp2a\n"
-	"  to see detailed usage examples.\n\n" , stderr);
+"  The default running mode is `jp2a --width=78'.  See the man page for jp2a\n"
+"  to see detailed usage examples.\n\n" , stderr);
 
 	fprintf(stderr, "Project homepage on %s\n", url);
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
@@ -113,10 +116,10 @@ void precalc_rgb(const float red, const float green, const float blue) {
 void parse_options(int argc, char** argv) {
 
 	// define some shorthand defines
-	#define IF_OPTS(shortopt, longopt) if ( !strcmp(s, shortopt) || !strcmp(s, longopt) )
-	#define IF_OPT(shortopt) if ( !strcmp(s, shortopt) )
-	#define IF_VARS(format, var1, var2) if ( sscanf(s, format, var1, var2) == 2 )
-	#define IF_VAR(format, var) if ( sscanf(s, format, var) == 1 )
+	#define IF_OPTS(sopt, lopt) if ( !strcmp(s, sopt) || !strcmp(s, lopt) )
+	#define IF_OPT(sopt) if ( !strcmp(s, sopt) )
+	#define IF_VARS(format, v1, v2) if ( sscanf(s, format, v1, v2) == 2 )
+	#define IF_VAR(format, v1) if ( sscanf(s, format, v1) == 1 )
 
 	int n, files;
 	for ( n=1, files=0; n<argc; ++n ) {
@@ -140,15 +143,24 @@ void parse_options(int argc, char** argv) {
 		IF_VAR("--width=%d", &width)	{ auto_height += 1; continue; }
 		IF_VAR("--height=%d", &height)	{ auto_width += 1; continue; }
 		IF_VAR("--html-fontsize=%d", &html_fontsize) { continue; }
-		IF_VARS("--size=%dx%d", &width, &height) { auto_width = auto_height = 0; continue; }
+		IF_VARS("--size=%dx%d", &width, &height) {
+			auto_width = auto_height = 0; continue;
+		}
 		IF_VAR("--red=%f", &redweight)	{ continue; }
 		IF_VAR("--green=%f", &greenweight) { continue; }
 		IF_VAR("--blue=%f", &blueweight) { continue; }
+		
+		if ( !strncmp(s, "--output=", 9) ) {
+			fileout = s+9;
+			continue;
+		}
 
 		if ( !strncmp(s, "--chars=", 8) ) {
 
 			if ( strlen(s-8) > ASCII_PALETTE_SIZE ) {
-				fprintf(stderr, "Too many ascii characters specified (max %d)\n", ASCII_PALETTE_SIZE);
+				fprintf(stderr,
+					"Too many ascii characters specified (max %d)\n",
+					ASCII_PALETTE_SIZE);
 				exit(1);
 			}
 	
@@ -178,7 +190,8 @@ void parse_options(int argc, char** argv) {
 		auto_width = auto_height = 0;
 
 	if ( strlen(ascii_palette) < 2 ) {
-		fputs("You must specify at least two characters in --chars.\n", stderr);
+		fputs("You must specify at least two characters in --chars.\n",
+			stderr);
 		exit(1);
 	}
 	
@@ -188,7 +201,12 @@ void parse_options(int argc, char** argv) {
 	}
 
 	if ( (redweight + greenweight + blueweight) != 1.0f ) {
-		fputs("Red, green and blue weights must add up to exactly 1.0\n", stderr);
+		fputs("Red, green and blue must add up to 1.0\n", stderr);
+		exit(1);
+	}
+
+	if ( *fileout == 0 ) {
+		fputs("Empty output filename.\n", stderr);
 		exit(1);
 	}
 

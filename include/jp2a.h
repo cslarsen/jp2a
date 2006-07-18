@@ -18,7 +18,7 @@ extern void print_html_start(const int fontsize);
 extern void print_html_end();
 
 // image.c
-void decompress(FILE *fp);
+void decompress(FILE *fin, FILE *fout);
 
 // options.c
 void parse_options(int argc, char** argv);

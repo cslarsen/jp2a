@@ -80,7 +80,7 @@ void print_border(const int width) {
 	#endif
 }
 
-void print_image(const Image* const i, const int chars) {
+void print_image(const Image* const i, const int chars, FILE *f) {
 	#ifdef WIN32
 	char *line = (char*) malloc(i->width + 1);
 	#else
@@ -100,7 +100,7 @@ void print_image(const Image* const i, const int chars) {
 			line[flipx? i->width - x - 1 : x] = ascii_palette[invert? pos : chars - pos];
 		}
 
-		printf(!border? "%s\n" : "|%s|\n", line);
+		fprintf(f, !border? "%s\n" : "|%s|\n", line);
 	}
 
 	#ifdef WIN32
@@ -225,12 +225,12 @@ void init_image(Image *i, const struct jpeg_decompress_struct *jpg) {
 
 	int dst_x;
 	for ( dst_x=0; dst_x < i->width; ++dst_x ) {
-		i->lookup_resx[dst_x] = (int)( (float) dst_x * i->resize_x );
+		i->lookup_resx[dst_x] = ROUND((float) dst_x * i->resize_x);
 		i->lookup_resx[dst_x] *= jpg->out_color_components;
 	}
 }
 
-void decompress(FILE *fp) {
+void decompress(FILE *fp, FILE *fout) {
 	struct jpeg_error_mgr jerr;
 	struct jpeg_decompress_struct jpg;
 
@@ -269,14 +269,14 @@ void decompress(FILE *fp) {
 	normalize(&image);
 
 	if ( clearscr ) {
-		printf("\e[2J"); // ansi code for clear
-		printf("\e[0;0H"); // move to upper left
+		fprintf(fout, "\e[2J"); // ansi code for clear
+		fprintf(fout, "\e[0;0H"); // move to upper left
 	}
 
 	if ( html ) print_html_start(html_fontsize);
 	if ( border ) print_border(image.width);
 
-	print_image(&image, (int) strlen(ascii_palette) - 1);
+	print_image(&image, (int) strlen(ascii_palette) - 1, fout);
 
 	if ( border ) print_border(image.width);
 	if ( html ) print_html_end();
