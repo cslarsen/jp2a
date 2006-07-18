@@ -128,24 +128,25 @@ void parse_options(int argc, char** argv) {
 			++files; continue;
 		}
 	
-		IF_OPT("-")					{ ++files; continue; }
-		IF_OPTS("-h", "--help")		{ help(); exit(0); }
-		IF_OPTS("-v", "--verbose")	{ verbose = 1; continue; }
-		IF_OPTS("-d", "--debug")	{ debug = 1; continue; }
-		IF_OPT("--clear")			{ clearscr = 1; continue; }
-		IF_OPT("--html") 			{ html = 1; continue; }
-		IF_OPTS("-b", "--border") 	{ border = 1; continue; }
-		IF_OPTS("-i", "--invert") 	{ invert = 1; continue; }
-		IF_OPTS("-x", "--flipx") 	{ flipx = 1; continue; }
-		IF_OPTS("-y", "--flipy") 	{ flipy = 1; continue; }
-		IF_OPTS("-V", "--version")	{ print_version(); exit(0); }
-		IF_VAR("--width=%d", &width)	{ auto_height += 1; continue; }
-		IF_VAR("--height=%d", &height)	{ auto_width += 1; continue; }
-		IF_VAR("--html-fontsize=%d", &html_fontsize) { continue; }
-		IF_VAR("--red=%f", &redweight)	{ continue; }
-		IF_VAR("--green=%f", &greenweight) { continue; }
-		IF_VAR("--blue=%f", &blueweight) { continue; }
-		IF_VARS("--size=%dx%d", &width, &height) {
+                IF_OPT("-")                        { ++files; continue; }
+                IF_OPTS("-h", "--help")            { help(); exit(0); }
+                IF_OPTS("-v", "--verbose")         { verbose = 1; continue; }
+                IF_OPTS("-d", "--debug")           { debug = 1; continue; }
+                IF_OPT("--clear")                  { clearscr = 1; continue; }
+                IF_OPT("--html")                   { html = 1; continue; }
+                IF_OPTS("-b", "--border")          { border = 1; continue; }
+                IF_OPTS("-i", "--invert")          { invert = 1; continue; }
+                IF_OPTS("-x", "--flipx")           { flipx = 1; continue; }
+                IF_OPTS("-y", "--flipy")           { flipy = 1; continue; }
+                IF_OPTS("-V", "--version")         { print_version(); exit(0); }
+                IF_VAR("--width=%d", &width)       { auto_height += 1; continue; }
+                IF_VAR("--height=%d", &height)     { auto_width += 1; continue; }
+                IF_VAR("--red=%f", &redweight)     { continue; }
+                IF_VAR("--green=%f", &greenweight) { continue; }
+                IF_VAR("--blue=%f", &blueweight)   { continue; }
+                IF_VAR("--html-fontsize=%d",
+			&html_fontsize)            { continue; }
+                IF_VARS("--size=%dx%d",&width, &height) {
 			auto_width = auto_height = 0; continue;
 		}
 		
