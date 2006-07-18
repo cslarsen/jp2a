@@ -225,7 +225,7 @@ void init_image(Image *i, const struct jpeg_decompress_struct *jpg) {
 
 	int dst_x;
 	for ( dst_x=0; dst_x < i->width; ++dst_x ) {
-		i->lookup_resx[dst_x] = ROUND((float) dst_x * i->resize_x);
+		i->lookup_resx[dst_x] = (int) ( (float) dst_x * i->resize_x );
 		i->lookup_resx[dst_x] *= jpg->out_color_components;
 	}
 }
