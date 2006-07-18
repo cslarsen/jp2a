@@ -129,7 +129,7 @@ void normalize(Image* i) {
 }
 
 void print_progress(const struct jpeg_decompress_struct* jpg) {
-	#define BARLEN 64
+	#define BARLEN 56
 
 	static char s[BARLEN];
 	s[BARLEN-1] = 0;
