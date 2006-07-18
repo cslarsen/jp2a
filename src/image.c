@@ -82,7 +82,7 @@ void print_border(const int width) {
 
 void print_image(const Image* const i, const int chars) {
 	#ifdef WIN32
-	char *line = (char*) malloc(w+1);
+	char *line = (char*) malloc(i->width + 1);
 	#else
 	char line[i->width + 1];
 	#endif
