@@ -72,20 +72,23 @@ void help() {
 #endif
 	"OPTIONS\n"
 	"  -                Read JPEG image from standard input.\n"
+	"      --blue=N.N   Set RGB to grayscale conversion weight, default is 0.114\n"
 	"  -b, --border     Print a border around the output image.\n"
 	"      --chars=...  Select character palette used to paint the image.\n"
 	"                   Leftmost character corresponds to black pixel, right-\n"
 	"                   most to white.  Minimum two characters must be specified.\n"
 	"      --clear      Clears screen before drawing each output image.\n"
 	"  -d, --debug      Print additional debug information.\n"
-	"      --flipx      Flip image in X direction.\n"
-	"      --flipy      Flip image in Y direction.\n"
+	"  -x, --flipx      Flip image in X direction.\n"
+	"  -y, --flipy      Flip image in Y direction.\n"
+	"      --green=N.N  Set RGB to grayscale conversion weight, default is 0.587\n"
 	"      --height=N   Set output height, calculate width from aspect ratio.\n"
 	"  -h, --help       Print program help.\n"
 	"      --html       Produce strict XHTML 1.0 output.\n"
 	"      --html-fontsize=N  Set fontsize to N pt when using --html, default is 4.\n"
 	"  -i, --invert     Invert output image.  Use if your display has a dark\n"
 	"                   background.\n"
+	"      --red=N.N    Set RGB to grayscale conversion weight, default 0.299f.\n"
 	"      --size=WxH   Set output width and height.\n"
 	"  -v, --verbose    Verbose output.\n"
 	"  -V, --version    Print program version.\n"
@@ -131,13 +134,16 @@ void parse_options(int argc, char** argv) {
 		IF_OPT("--html") 		{ html = 1; continue; }
 		IF_OPTS("-b", "--border") 	{ border = 1; continue; }
 		IF_OPTS("-i", "--invert") 	{ invert = 1; continue; }
-		IF_OPT("--flipx") 		{ flipx = 1; continue; }
-		IF_OPT("--flipy") 		{ flipy = 1; continue; }
+		IF_OPTS("-x", "--flipx") 	{ flipx = 1; continue; }
+		IF_OPTS("-y", "--flipy") 	{ flipy = 1; continue; }
 		IF_OPTS("-V", "--version")	{ print_version(); exit(0); }
 		IF_VAR("--width=%d", &width)	{ auto_height += 1; continue; }
 		IF_VAR("--height=%d", &height)	{ auto_width += 1; continue; }
 		IF_VAR("--html-fontsize=%d", &html_fontsize) { continue; }
 		IF_VARS("--size=%dx%d", &width, &height) { auto_width = auto_height = 0; continue; }
+		IF_VAR("--red=%f", &redweight)	{ continue; }
+		IF_VAR("--green=%f", &greenweight) { continue; }
+		IF_VAR("--blue=%f", &blueweight) { continue; }
 
 		if ( !strncmp(s, "--chars=", 8) ) {
 
@@ -178,6 +184,11 @@ void parse_options(int argc, char** argv) {
 	
 	if ( (width < 1 && !auto_width) || (height < 1 && !auto_height) ) {
 		fputs("Invalid width or height specified.\n", stderr);
+		exit(1);
+	}
+
+	if ( (redweight + greenweight + blueweight) != 1.0f ) {
+		fputs("Red, green and blue weights must add up to exactly 1.0\n", stderr);
 		exit(1);
 	}
 

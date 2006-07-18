@@ -22,17 +22,17 @@
        <B>-b</B> <B>--border</B>
               Frame output image in a border
 
-       <B>--chars=</B><I>....</I>
+       <B>--chars=</B><I>...</I>
               Use the given characters when producing the output ASCII image
 
        <B>-d</B> <B>--debug</B>
               Print debugging  information  when  using  libcurl  to  download
               images from the net.
 
-       <B>--flipx</B>
+       <B>-x</B> <B>--flipx</B>
               Flip output image horizontally
 
-       <B>--flipy</B>
+       <B>-y</B> <B>--flipy</B>
               Flip output image vertically
 
        <B>--height=</B><I>N</I>
@@ -44,35 +44,31 @@
               Display a short help text
 
        <B>--html</B> Make ASCII output in strict XHTML 1.0, suitable for viewing with
-              web browsers.
-
-              This is useful with big output dimensions, and you want to check
-              the result with a browser with small font.
-
-              See also --html-fontsize.
+              web browsers.  This is useful with big  output  dimensions,  and
+              you want to check the result with a browser with small font.
 
        <B>--html-fontsize=</B><I>N</I>
               Set fontsize when using --html output.  Default is 4.
 
        <B>-i</B> <B>--invert</B>
-              Invert  output  image.   This  is very useful for example if you
-              view a picture where white is the background color,  and  you're
-              using light characters on a dark (black) display.
+              Invert  output  image.   If  you view a picture with white back-
+              ground, but you are using a display with light characters  on  a
+              dark background, you shoudl invert the image.
 
-       <B>--size=</B><I>WIDTHxHEIGHT</I>
-       If  you  have compiled jp2a with <B>libcurl(3)</B>, you can download images by
-       specifying URLs:
+       <B>--red=</B><I>...</I>
 
-              <B>jp2a</B> https://user:pass@foo.com/bar.jpg
+       <B>--green=</B><I>...</I>
 
-       The protocols recognized are ftp, ftps, file, http, https and tftp.
+       <B>--blue=</B><I>...</I>
+              will be calculated automatically.  Default mode is --width=78.
 
-       If  you need more control of the downloading, you should use <B>curl(1)</B> or
-       <B>wget(1)</B> and jp2a read the image from standard input.
+       <B>-V</B> <B>--version</B>
+              Print program version.
 
-       jp2a uses pipe and fork to download images using libcurl (i.e., no exec
-       or  system  calls) and therefore does not worry about malevolently for-
-       matted URLs.
+
+</PRE>
+<H2>RETURN VALUES</H2><PRE>
+       jp2a returns 1 when errors are encountered, zero for no errors.
 
 
 </PRE>
@@ -80,46 +76,54 @@
        Convert and print imagefile.jpg using ASCII characters  in  40  columns
        and 20 rows:
 
-              <B>jp2a</B> --size=40x20 imagefile.jpg
+       <B>jp2a</B> --size=40x20 imagefile.jpg
 
        Download an image off the net, convert and print:
 
-              <B>jp2a</B> http://www.google.com/intl/en/logos/easter_logo.jpg
+       <B>jp2a</B> http://www.google.com/intl/en/logos/easter_logo.jpg
 
-       Output picture.jpg and picture2.jpg, each 80x25 characters,  using  the
+       Output  picture.jpg  and picture2.jpg, each 80x25 characters, using the
        characters " ...ooxx@@" for output:
 
-              <B>jp2a</B> --size=80x25 --chars=" ...ooxx@@" picture.jpg picture2.jpg
+       <B>jp2a</B> --size=80x25 --chars=" ...ooxx@@" picture.jpg picture2.jpg
 
        Output image.jpg using 76 columns, height is  automatically  calculated
        from aspect ratio of image.jpg
 
-              cat image.jpg | <B>jp2a</B> --width=76 -
+       cat image.jpg | <B>jp2a</B> --width=76 -
 
-       If you use jp2a together with ImageMagick's  <B>convert(1)</B>  then  you  can
+       If  you  use  jp2a  together with ImageMagick's <B>convert(1)</B> then you can
        make good use of pipes, and have ImageMagick do all sorts of image con-
        versions and effects on the source image.  For example:
 
-              <B>convert</B> somefile.png jpg:- | <B>jp2a</B> - --width=80
+       <B>convert</B> somefile.png jpg:- | <B>jp2a</B> - --width=80
 
-       Check out <B>convert(1)</B> options to see what you can do.  Convert can  han-
-       dle  almost  any image format, so with this combination you can convert
+       Check  out <B>convert(1)</B> options to see what you can do.  Convert can han-
+       dle almost any image format, so with this combination you  can  convert
        images in e.g. PDF or AVI files to ASCII.
 
-       Although the default build of jp2a includes  automatic  downloading  of
-       files specified by URLs, you can explicitly
-              download them by using <B>curl(1)</B> or <B>wget(1)</B>, for example:
+       Although  the  default  build of jp2a includes automatic downloading of
+       files specified by URLs, you can  explicitly  download  them  by  using
+       <B>curl(1)</B> or <B>wget(1)</B>, for example:
 
-              <B>curl</B> -s http://foo.bar/image.jpg | <B>convert</B> - jpg:- | <B>jp2a</B> -
+       <B>curl</B> -s http://foo.bar/image.jpg | <B>convert</B> - jpg:- | <B>jp2a</B> -
 
 
 </PRE>
-<H2>EXIT STATUS</H2><PRE>
-       jp2a returns zero for normal operations, 1 when errors are encountered.
-       The program does not interpolate when resizing the JPEG image, and thus
-       big output dimensions will not give very accurate looking results.   If
-       you want better quality, you might be able to use <B>convert(1)</B> to convert
-       the source image to the exact ASCII output dimensions of jp2a.
+<H2>DOWNLOADING IMAGES FROM THE NET</H2><PRE>
+       If  you  have compiled jp2a with <B>libcurl(3)</B>, you can download images by
+       specifying URLs:
+
+       <B>jp2a</B> https://user:pass@foo.com/bar.jpg
+
+       The protocols recognized are ftp, ftps, file, http, https and tftp.
+
+
+
+</PRE>
+<H2>PROJECT HOMEPAGE</H2><PRE>
+       The  latest  version  of  jp2a  and  news  is  always  available   from
+       http://jp2a.sourceforge.net
 
 
 </PRE>
@@ -127,8 +131,28 @@
        <B>cjpeg(1)</B>, <B>djpeg(1)</B>, <B>jpegtran(1)</B>, <B>convert(1)</B>
 
 
+</PRE>
+<H2>BUGS</H2><PRE>
+       jp2a  does  not interpolate when resizing.  If you want better quality,
+       try using <B>convert(1)</B> and convert the source image to the  exact  output
+       dimensions before using jp2a.
 
-version 0.9.17                   July 13, 2006                         <B>jp2a(1)</B>
+
+</PRE>
+<H2>AUTHOR</H2><PRE>
+       Christian Stigen Larsen &lt;csl@sublevel3.org&gt; -- http://csl.sublevel3.org
+
+       jp2a uses jpeglib to read JPEG files.  jpeglib is made by The  Indepen-
+       dent JPEG Group (IJG), who have a page at http://www.ijg.org
+
+
+</PRE>
+<H2>LICENSE</H2><PRE>
+       jp2a is distributed under the GNU General Public License v2 or later.
+
+
+
+version 0.9.18                   July 18, 2006                         <B>jp2a(1)</B>
 </PRE>
 <HR>
 <ADDRESS>

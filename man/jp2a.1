@@ -1,6 +1,6 @@
-.TH jp2a 1  "July 17, 2006" "version 0.9.18" "USER COMMANDS"
+.TH jp2a 1  "July 18, 2006" "version 0.9.18" "USER COMMANDS"
 .SH NAME
-jp2a \- convert JPEG images to ASCII characters
+jp2a \- convert JPEG images to ASCII
 .SH SYNOPSIS
 .B jp2a
 [
@@ -20,16 +20,16 @@ Read JPEG image from standard input
 .B \-b \-\-border
 Frame output image in a border
 .TP
-.BI \-\-chars= ....
+.BI \-\-chars= ...
 Use the given characters when producing the output ASCII image
 .TP
 .B \-d \-\-debug
 Print debugging information when using libcurl to download images from the net.
 .TP
-.B \-\-flipx
+.B \-x \-\-flipx
 Flip output image horizontally
 .TP
-.B \-\-flipy
+.B \-y \-\-flipy
 Flip output image vertically
 .TP
 .BI \-\-height= N
@@ -41,19 +41,23 @@ Display a short help text
 .TP
 .B \-\-html
 Make ASCII output in strict XHTML 1.0, suitable for viewing with web browsers.
-
-This is useful with big output dimensions, and you want to check the result
-with a browser with small font.
-
-See also \-\-html-fontsize.
+This is useful with big output dimensions, and you want to check the result with a browser with small font.
 .TP
 .BI \-\-html\-fontsize= N
 Set fontsize when using \-\-html output.  Default is 4.
 .TP
 .B \-i \-\-invert
-Invert output image.  This is very useful for example if you view a picture
-where white is the background color, and you're using light characters on a
-dark (black) display.
+Invert output image.  If you view a picture with white background, but you are using
+a display with light characters on a dark background, you shoudl invert the image.
+.TP
+.BI \-\-red= ...
+.TP
+.BI \-\-green= ...
+.TP
+.BI \-\-blue= ...
+When converting from RGB to grayscale, use the given weights to calculate luminance.
+These three floating point values must add up to exactly 1.0.
+The default is red=0.299, green=0.587 and blue=0.114.
 .TP
 .BI \-\-size= WIDTHxHEIGHT
 Set output dimension.
@@ -67,54 +71,43 @@ calculated automatically.  Default mode is --width=78.
 .TP
 .B \-V \-\-version
 Print program version.
-.SH DOWNLOADING IMAGES FROM THE NET
-.TP
-If you have compiled jp2a with libcurl(3), you can download images by specifying URLs:
-
-.B jp2a
-https://user:pass@foo.com/bar.jpg
-.PP
-The protocols recognized are ftp, ftps, file, http, https and tftp.
-.PP
-If you need more control of the downloading, you should use curl(1) or wget(1) and jp2a
-read the image from standard input.
-.PP
-jp2a uses pipe and fork to download images using libcurl (i.e., no exec or system calls) 
-and therefore does not worry about malevolently formatted URLs.
+.SH RETURN VALUES
+jp2a returns 1 when errors are encountered, zero for no errors.
 .SH EXAMPLES
-.TP
 Convert and print imagefile.jpg using ASCII characters in 40 columns and 20 rows:
 
 .B jp2a
 \-\-size=40x20 imagefile.jpg
-.TP
+
 Download an image off the net, convert and print:
 
 .B jp2a
 http://www.google.com/intl/en/logos/easter_logo.jpg
-.TP
+
 Output picture.jpg and picture2.jpg, each 80x25 characters, using the characters " ...ooxx@@" for output:
 
 .B jp2a
 \-\-size=80x25 --chars=" ...ooxx@@" picture.jpg picture2.jpg
-.TP
+
 Output image.jpg using 76 columns, height is automatically calculated from aspect ratio of image.jpg
 
 cat image.jpg |
 .B jp2a
 \-\-width=76 \-
-.TP
-If you use jp2a together with ImageMagick's convert(1) then you can make good use of pipes, and have ImageMagick do all sorts of image conversions and effects on the source image.  For example:
+
+If you use jp2a together with ImageMagick's convert(1) then you can make good use of pipes,
+and have ImageMagick do all sorts of image conversions and effects on the source image.  For example:
 
 .B convert
 somefile.png jpg:\- |
 .B jp2a
 \- \-\-width=80
-.TP
-Check out convert(1) options to see what you can do.  Convert can handle almost any image format, so with this combination you can convert images in e.g. PDF or AVI files to ASCII.
-.TP
-Although the default build of jp2a includes automatic downloading of files specified by URLs, you can explicitly
-download them by using curl(1) or wget(1), for example:
+
+Check out convert(1) options to see what you can do.  Convert can handle almost any image format,
+so with this combination you can convert images in e.g. PDF or AVI files to ASCII.
+
+Although the default build of jp2a includes automatic downloading of files specified by URLs,
+you can explicitly download them by using curl(1) or wget(1), for example:
 
 .B curl
 \-s
@@ -123,22 +116,38 @@ http://foo.bar/image.jpg |
 \- jpg:- |
 .B jp2a
 \-
-.SH EXIT STATUS
-jp2a returns zero for normal operations, 1 when errors are encountered.
-.SH PROJECT HOMEPAGE
-The latest version of jp2a and news is always available from
+.SH DOWNLOADING IMAGES FROM THE NET
+If you have compiled jp2a with libcurl(3), you can download images by specifying URLs:
 
-http://jp2a.sf.net
+.B jp2a
+https://user:pass@foo.com/bar.jpg
+
+The protocols recognized are ftp, ftps, file, http, https and tftp.
+
+If you need more control of the downloading, you should use curl(1) or wget(1) and jp2a
+read the image from standard input.
+
+jp2a uses pipe and fork to download images using libcurl (i.e., no exec or system calls) 
+and therefore does not worry about malevolently formatted URLs.
+.SH GRAYSCALE CONVERSION
+You can extract the red channel by doing this:
+
+.B jp2a
+somefile.jpg --red=1.0 --green=0.0 --blue=0.0
+
+This will calculate luminance based on Y = R*1.0 + G*0.0 + B*0.0.  The default
+values is to use Y = R*0.299 + G*0.587 + B*0.114.
+.SH PROJECT HOMEPAGE
+The latest version of jp2a and news is always available from http://jp2a.sourceforge.net
+.SH SEE ALSO
+cjpeg(1), djpeg(1), jpegtran(1), convert(1)
+.SH BUGS
+jp2a does not interpolate when resizing.  If you want better quality, try using convert(1)
+and convert the source image to the exact output dimensions before using jp2a.
 .SH AUTHOR
 Christian Stigen Larsen <csl@sublevel3.org> -- http://csl.sublevel3.org
 
 jp2a uses jpeglib to read JPEG files.  jpeglib is made by The Independent JPEG Group (IJG),
 who have a page at http://www.ijg.org
-
-.SH BUGS
-The program does not interpolate when resizing the JPEG image, and thus
-big output dimensions will not give very accurate looking results.  If you
-want better quality, you might be able to use convert(1) to convert the source
-image to the exact ASCII output dimensions of jp2a.
-.SH SEE ALSO
-cjpeg(1), djpeg(1), jpegtran(1), convert(1)
+.SH LICENSE
+jp2a is distributed under the GNU General Public License v2 or later.

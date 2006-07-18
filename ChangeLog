@@ -1,7 +1,8 @@
 CHANGES SINCE 0.9.17
-- Much better conversion from RGB to grayscale (using color channel weights).
-- Improved code clarity.
-- Some speed optimizations (best evident in large images).
+- New options: --red, --green, --blue.
+- New options: -x for shorthand --flipx, and -y for --flipy.
+- More natural RGB to Grayscale calculation.
+- Cleaner and faster code (most evident in large images).
 
 CHANGES SINCE 0.9.16
 - New feature: Download-support on win32 binary builds.
