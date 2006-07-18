@@ -40,9 +40,9 @@ int clearscr = 0;
 char ascii_palette[ASCII_PALETTE_SIZE + 1] = "   ...',;:clodxkO0KXNWM";
 
 // Default weights, must add up to 1.0
-float redweight = 0.299f;
-float greenweight = 0.587f;
-float blueweight = 0.114f;
+float redweight = 0.2989f;
+float greenweight = 0.5866f;
+float blueweight = 0.1145;
 
 // calculated in parse_options
 float RED[256], GREEN[256], BLUE[256];
@@ -74,7 +74,7 @@ void help() {
 #endif
 "OPTIONS\n"
 "  -                Read JPEG image from standard input.\n"
-"      --blue=N.N   Set RGB to grayscale conversion weight, default is 0.114\n"
+"      --blue=N.N   Set RGB to grayscale conversion weight, default is 0.1145\n"
 "  -b, --border     Print a border around the output image.\n"
 "      --chars=...  Select character palette used to paint the image.\n"
 "                   Leftmost character corresponds to black pixel, right-\n"
@@ -83,7 +83,7 @@ void help() {
 "  -d, --debug      Print additional debug information.\n"
 "  -x, --flipx      Flip image in X direction.\n"
 "  -y, --flipy      Flip image in Y direction.\n"
-"      --green=N.N  Set RGB to grayscale conversion weight, default is 0.587\n"
+"      --green=N.N  Set RGB to grayscale conversion weight, default is 0.5866\n"
 "      --height=N   Set output height, calculate width from aspect ratio.\n"
 "  -h, --help       Print program help.\n"
 "      --html       Produce strict XHTML 1.0 output.\n"
@@ -91,7 +91,7 @@ void help() {
 "  -i, --invert     Invert output image.  Use if your display has a dark\n"
 "                   background.\n"
 "      --output=... Write output to file.\n"
-"      --red=N.N    Set RGB to grayscale conversion weight, default 0.299f.\n"
+"      --red=N.N    Set RGB to grayscale conversion weight, default 0.2989f.\n"
 "      --size=WxH   Set output width and height.\n"
 "  -v, --verbose    Verbose output.\n"
 "  -V, --version    Print program version.\n"

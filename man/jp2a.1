@@ -60,7 +60,7 @@ a display with light characters on a dark background, you shoudl invert the imag
 .BI \-\-blue= ...
 When converting from RGB to grayscale, use the given weights to calculate luminance.
 These three floating point values must add up to exactly 1.0.
-The default is red=0.299, green=0.587 and blue=0.114.
+The default is red=0.2989, green=0.5866 and blue=0.1145.
 .TP
 .BI \-\-size= WIDTHxHEIGHT
 Set output dimension.
@@ -139,7 +139,7 @@ You can extract the red channel by doing this:
 somefile.jpg --red=1.0 --green=0.0 --blue=0.0
 
 This will calculate luminance based on Y = R*1.0 + G*0.0 + B*0.0.  The default
-values is to use Y = R*0.299 + G*0.587 + B*0.114.
+values is to use Y = R*0.2989 + G*0.5866 + B*0.1145.
 .SH PROJECT HOMEPAGE
 The latest version of jp2a and news is always available from http://jp2a.sourceforge.net
 .SH SEE ALSO
