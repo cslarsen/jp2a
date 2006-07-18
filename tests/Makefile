@@ -21,6 +21,7 @@ flip-xy-invert \
 normal-verbose \
 normal-output \
 normal-clear \
+logo-30 \
 logo \
 dalsnuten-normal \
 dalsnuten-invert \
@@ -54,6 +55,9 @@ normal-clear:
 
 normal-b:
 	$(JP) -b jp2a.jpg | $(DIFF) normal-b.txt
+
+logo-30:
+	$(JP) logo-40x25-gray.jpg --height=30 | $(DIFF) logo-30.txt
 
 dalsnuten-jp2a-2000x2000:
 	$(JP) --size=2000x2000 dalsnuten-640x480-gray-low.jpg jp2a.jpg | tr -d '\r' | wc -c | tr -d ' ' | $(DIFF) dalsnuten-jp2a-2000x2000-md5.txt
