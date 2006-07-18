@@ -95,3 +95,5 @@ CHANGES SINCE 0.9.0
 - Fixed buffer overrun bug when using big output dimensions
 - Minor code cleanup
 - Note that to_dst_x and to_dst_y in code might be wrong
+
+$Id$
