@@ -200,8 +200,8 @@ void parse_options(int argc, char** argv) {
 		exit(1);
 	}
 
-	if ( (redweight + greenweight + blueweight) != 1.0f ) {
-		fputs("Red, green and blue must add up to 1.0\n", stderr);
+	if ( (int)((redweight + greenweight + blueweight)*10000000.0f) != 10000000 ) {
+		fputs("Weights RED + GREEN + BLUE must equal 1.0\n", stderr);
 		exit(1);
 	}
 
