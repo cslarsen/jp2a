@@ -42,7 +42,7 @@ char ascii_palette[ASCII_PALETTE_SIZE + 1] = "   ...',;:clodxkO0KXNWM";
 // Default weights, must add up to 1.0
 float redweight = 0.2989f;
 float greenweight = 0.5866f;
-float blueweight = 0.1145;
+float blueweight = 0.1145f;
 
 // calculated in parse_options
 float RED[256], GREEN[256], BLUE[256];
