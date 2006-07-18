@@ -23,6 +23,10 @@ normal-output \
 normal-clear \
 logo-30 \
 logo \
+grind \
+grind-red \
+grind-green \
+grind-blue \
 dalsnuten-normal \
 dalsnuten-invert \
 dalsnuten-80x49-inv \
@@ -58,6 +62,18 @@ normal-b:
 
 logo-30:
 	$(JP) logo-40x25-gray.jpg --height=30 | $(DIFF) logo-30.txt
+
+grind:
+	$(JP) grind.jpg -i --size=80x30 | $(DIFF) grind.txt
+	
+grind-red:
+	$(JP) grind.jpg -i --size=80x30 --red=1.0 --green=0.0 --blue=0.0 | $(DIFF) grind-red.txt
+
+grind-green:
+	$(JP) grind.jpg -i --size=80x30 --red=0.0 --green=1.0 --blue=0.0 | $(DIFF) grind-green.txt
+
+grind-blue:
+	$(JP) grind.jpg -i --size=80x30 --red=0.0 --green=0.0 --blue=1.0 | $(DIFF) grind-blue.txt
 
 dalsnuten-jp2a-2000x2000:
 	$(JP) --size=2000x2000 dalsnuten-640x480-gray-low.jpg jp2a.jpg | tr -d '\r' | wc -c | tr -d ' ' | $(DIFF) dalsnuten-jp2a-2000x2000-md5.txt
