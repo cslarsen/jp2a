@@ -107,19 +107,18 @@ void help() {
 void precalc_rgb(const float red, const float green, const float blue) {
 	int n;
 	for ( n=0; n<256; ++n ) {
-		RED[n] = ((float) n) * red / 255.0f;
+		RED[n]   = ((float) n) * red / 255.0f;
 		GREEN[n] = ((float) n) * green / 255.0f;
-		BLUE[n] = ((float) n) * blue / 255.0f;
+		BLUE[n]  = ((float) n) * blue / 255.0f;
 	}
 }
 
 void parse_options(int argc, char** argv) {
-
-	// define some shorthand defines
-	#define IF_OPTS(sopt, lopt) if ( !strcmp(s, sopt) || !strcmp(s, lopt) )
-	#define IF_OPT(sopt) if ( !strcmp(s, sopt) )
+	// make code more readable
+	#define IF_OPTS(sopt, lopt)     if ( !strcmp(s, sopt) || !strcmp(s, lopt) )
+	#define IF_OPT(sopt)            if ( !strcmp(s, sopt) )
 	#define IF_VARS(format, v1, v2) if ( sscanf(s, format, v1, v2) == 2 )
-	#define IF_VAR(format, v1) if ( sscanf(s, format, v1) == 1 )
+	#define IF_VAR(format, v1)      if ( sscanf(s, format, v1) == 1 )
 
 	int n, files;
 	for ( n=1, files=0; n<argc; ++n ) {
@@ -129,12 +128,12 @@ void parse_options(int argc, char** argv) {
 			++files; continue;
 		}
 	
-		IF_OPT("-")			{ ++files; continue; }
+		IF_OPT("-")					{ ++files; continue; }
 		IF_OPTS("-h", "--help")		{ help(); exit(0); }
 		IF_OPTS("-v", "--verbose")	{ verbose = 1; continue; }
 		IF_OPTS("-d", "--debug")	{ debug = 1; continue; }
-		IF_OPT("--clear")		{ clearscr = 1; continue; }
-		IF_OPT("--html") 		{ html = 1; continue; }
+		IF_OPT("--clear")			{ clearscr = 1; continue; }
+		IF_OPT("--html") 			{ html = 1; continue; }
 		IF_OPTS("-b", "--border") 	{ border = 1; continue; }
 		IF_OPTS("-i", "--invert") 	{ invert = 1; continue; }
 		IF_OPTS("-x", "--flipx") 	{ flipx = 1; continue; }
@@ -143,12 +142,12 @@ void parse_options(int argc, char** argv) {
 		IF_VAR("--width=%d", &width)	{ auto_height += 1; continue; }
 		IF_VAR("--height=%d", &height)	{ auto_width += 1; continue; }
 		IF_VAR("--html-fontsize=%d", &html_fontsize) { continue; }
-		IF_VARS("--size=%dx%d", &width, &height) {
-			auto_width = auto_height = 0; continue;
-		}
 		IF_VAR("--red=%f", &redweight)	{ continue; }
 		IF_VAR("--green=%f", &greenweight) { continue; }
 		IF_VAR("--blue=%f", &blueweight) { continue; }
+		IF_VARS("--size=%dx%d", &width, &height) {
+			auto_width = auto_height = 0; continue;
+		}
 		
 		if ( !strncmp(s, "--output=", 9) ) {
 			fileout = s+9;
