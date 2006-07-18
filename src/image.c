@@ -141,6 +141,7 @@ void print_progress(const struct jpeg_decompress_struct* jpg) {
 	memset(s, '#', pos);
 
 	fprintf(stderr, "Decompressing image [%s]\r", s);
+	fflush(stderr);
 }
 
 void print_info(const struct jpeg_decompress_struct* jpg) {
