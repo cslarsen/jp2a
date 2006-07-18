@@ -1,7 +1,7 @@
 CHANGES SINCE 0.9.17
 - New option: --output=file, send output to given file
-- New options: --red, --green, --blue.
 - New options: -x for shorthand --flipx, and -y for --flipy.
+- New options: --red, --green, --blue.
 - More natural RGB to Grayscale calculation.
 - Updated manuals.
 - Cleaner code.
