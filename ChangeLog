@@ -3,6 +3,7 @@ CHANGES SINCE 0.9.17
 - New options: --red, --green, --blue.
 - New options: -x for shorthand --flipx, and -y for --flipy.
 - More natural RGB to Grayscale calculation.
+- Updated manuals.
 - Cleaner and faster code (most evident in large images).
 
 CHANGES SINCE 0.9.16

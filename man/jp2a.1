@@ -75,40 +75,40 @@ Print program version.
 jp2a returns 1 when errors are encountered, zero for no errors.
 .SH EXAMPLES
 Convert and print imagefile.jpg using ASCII characters in 40 columns and 20 rows:
-
+.PP
 .B jp2a
 \-\-size=40x20 imagefile.jpg
-
+.PP
 Download an image off the net, convert and print:
-
+.PP
 .B jp2a
 http://www.google.com/intl/en/logos/easter_logo.jpg
-
+.PP
 Output picture.jpg and picture2.jpg, each 80x25 characters, using the characters " ...ooxx@@" for output:
-
+.PP
 .B jp2a
 \-\-size=80x25 --chars=" ...ooxx@@" picture.jpg picture2.jpg
-
+.PP
 Output image.jpg using 76 columns, height is automatically calculated from aspect ratio of image.jpg
-
+.PP
 cat image.jpg |
 .B jp2a
 \-\-width=76 \-
-
+.PP
 If you use jp2a together with ImageMagick's convert(1) then you can make good use of pipes,
 and have ImageMagick do all sorts of image conversions and effects on the source image.  For example:
-
+.PP
 .B convert
 somefile.png jpg:\- |
 .B jp2a
 \- \-\-width=80
-
+.PP
 Check out convert(1) options to see what you can do.  Convert can handle almost any image format,
 so with this combination you can convert images in e.g. PDF or AVI files to ASCII.
-
+.PP
 Although the default build of jp2a includes automatic downloading of files specified by URLs,
 you can explicitly download them by using curl(1) or wget(1), for example:
-
+.PP
 .B curl
 \-s
 http://foo.bar/image.jpg |

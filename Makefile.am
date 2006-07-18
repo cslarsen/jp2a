@@ -4,11 +4,13 @@ SUBDIRS = src
 man_MANS = man/jp2a.1
 EXTRA_DIST = tests/*.txt tests/*.html tests/Makefile tests/*.jpg include/*.h man/jp2a.1
 
+all: man/jp2a.html
+
 test: all
 	cd tests/; make test
 
 man/jp2a.html: man/jp2a.1
-	nroff -man $< | man2html > $@
+	groff -T html -man $< > $@
 
 jp2a-0.9.18-win32-bin.zip: jp2a.exe man/jp2a.html
 	upx win32-dist/$<
