@@ -144,6 +144,9 @@ cjpeg(1), djpeg(1), jpegtran(1), convert(1)
 .SH BUGS
 jp2a does not interpolate when resizing.  If you want better quality, try using convert(1)
 and convert the source image to the exact output dimensions before using jp2a.
+.PP
+Another issue is that jp2a skips some X-pixels along each scanline.  This gives a less
+precise output image, and will probably be corrected in future versions.
 .SH AUTHOR
 Christian Stigen Larsen <csl@sublevel3.org> -- http://csl.sublevel3.org
 
