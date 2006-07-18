@@ -98,12 +98,12 @@ void help() {
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
 }
 
-void calc_weights(const float red, const float green, const float blue) {
+void precalc_rgb(const float red, const float green, const float blue) {
 	int n;
 	for ( n=0; n<256; ++n ) {
-		RED[n] = red * (float) n;
-		GREEN[n] = green * (float) n;
-		BLUE[n] = blue * (float) n;
+		RED[n] = ((float) n) * red / 255.0f;
+		GREEN[n] = ((float) n) * green / 255.0f;
+		BLUE[n] = ((float) n) * blue / 255.0f;
 	}
 }
 
@@ -181,5 +181,5 @@ void parse_options(int argc, char** argv) {
 		exit(1);
 	}
 
-	calc_weights(redweight, greenweight, blueweight);
+	precalc_rgb(redweight, greenweight, blueweight);
 }

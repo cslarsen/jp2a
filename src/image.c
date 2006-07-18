@@ -169,7 +169,7 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 			for ( x=0; x < i->width; ++x ) {
 				const JSAMPLE *src = &scanline[i->lookup_resx[x]];
 
-				pixel[x] += ( RED[src[0]] + GREEN[src[1]] + BLUE[src[2]] ) * ( 1.0f / 255.0f );
+				pixel[x] += RED[src[0]] + GREEN[src[1]] + BLUE[src[2]];
 			}
 
 		} else {
