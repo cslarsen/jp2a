@@ -54,13 +54,19 @@ int get_termsize(int* _width, int* _height, char** err) {
 
 	int i = tgetent(term_buffer, termtype);
 
-	if ( i == 0 ) {
+	// There seems to be some confusion regarding the tgetent return
+	// values.  The following two values should be swapped, according
+	// to the man-pages, but on Mac OS X at least, they are like this.
+	// I've also seen some indication of a bug in curses on USENET, so
+	// I leave this one like this.
+
+	if ( i < 0 ) {
 		snprintf(errstr, sizeof(errstr)/sizeof(char) - 1,
 			"Terminal type '%s' not defined.", termtype);
 		return 0;
 	}
 
-	if ( i < 0 ) {
+	if ( i == 0 ) {
 		strcpy(errstr, "Could not access the termcap database.");
 		return -1;
 	}
