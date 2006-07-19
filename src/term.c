@@ -36,13 +36,13 @@
  *          -2  environment variable TERM not set
  */
 int get_termsize(int* _width, int* _height, char** err) {
-
-#ifdef FEAT_TERMLIB
 	static char errstr[1024];
 	errstr[0] = 0;
 
 	if ( err != NULL )
 		*err = errstr;
+
+#ifdef FEAT_TERMLIB
 
 	char *termtype = getenv("TERM");
 	char term_buffer[2048];
@@ -70,6 +70,8 @@ int get_termsize(int* _width, int* _height, char** err) {
 
 	return 1;
 #else
+	strcpy(errstr, "Compiled without termlib support.");
 	return 0;
+
 #endif
 }
