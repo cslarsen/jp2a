@@ -21,13 +21,16 @@
 #include <stdlib.h>
 #endif
 
+#include <curses.h>
+#include <term.h>
+
 // Default options
 int verbose = 0;
 int auto_height = 1;
 int auto_width = 0;
 int width = 78;
 int height = 0;
-int border = 0;
+int use_border = 0;
 int invert = 0;
 int flipx = 0;
 int flipy = 0;
@@ -35,6 +38,7 @@ int html = 0;
 int html_fontsize = 4;
 int debug = 0;
 int clearscr = 0;
+int full = 0;
 
 #define ASCII_PALETTE_SIZE 256
 char ascii_palette[ASCII_PALETTE_SIZE + 1] = "   ...',;:clodxkO0KXNWM";
@@ -83,6 +87,7 @@ void help() {
 "  -d, --debug      Print additional debug information.\n"
 "  -x, --flipx      Flip image in X direction.\n"
 "  -y, --flipy      Flip image in Y direction.\n"
+"      --full       Set output dimensions to your terminal window size.\n"
 "      --green=N.N  Set RGB to grayscale conversion weight, default is 0.5866\n"
 "      --height=N   Set output height, calculate width from aspect ratio.\n"
 "  -h, --help       Print program help.\n"
@@ -134,7 +139,7 @@ void parse_options(int argc, char** argv) {
 		IF_OPTS("-d", "--debug")           { debug = 1; continue; }
 		IF_OPT("--clear")                  { clearscr = 1; continue; }
 		IF_OPT("--html")                   { html = 1; continue; }
-		IF_OPTS("-b", "--border")          { border = 1; continue; }
+		IF_OPTS("-b", "--border")          { use_border = 1; continue; }
 		IF_OPTS("-i", "--invert")          { invert = 1; continue; }
 		IF_OPTS("-x", "--flipx")           { flipx = 1; continue; }
 		IF_OPTS("-y", "--flipy")           { flipy = 1; continue; }
@@ -148,6 +153,33 @@ void parse_options(int argc, char** argv) {
 			&html_fontsize)            { continue; }
 		IF_VARS("--size=%dx%d",&width, &height) {
 			auto_width = auto_height = 0; continue;
+		}
+		IF_OPT("--full") {
+			char *termtype = getenv ("TERM");
+			char term_buffer[2048];
+
+			if ( termtype == 0 ) {
+				fputs("Environment variable TERM not set. (--full)\n", stderr);
+				exit(1);
+			}
+
+			int i = tgetent(term_buffer, termtype);
+
+			if ( i == 0 ) {
+				fprintf(stderr, "Terminal type '%s' not defined (--full).\n", termtype);
+				exit(1);
+			}
+
+			if ( i < 0 ) {
+				fputs("Could not access the termcap database (--full).\n", stderr);
+				exit(1);
+			}
+
+			height = tgetnum ("li");
+			width = tgetnum ("co");
+			auto_width = auto_height = 0;
+			full = 1;
+			continue;
 		}
 				
 		if ( !strncmp(s, "--output=", 9) ) {
@@ -181,6 +213,12 @@ void parse_options(int argc, char** argv) {
 		exit(1);
 	}
 
+	// adjust fullscreen size if border specified
+	if ( full && use_border ) {
+		width -= 2;
+		height -= 2;
+	}
+
 	// only --width specified, calc width
 	if ( auto_width==1 && auto_height == 1 )
 		auto_height = 0;
@@ -196,7 +234,7 @@ void parse_options(int argc, char** argv) {
 	}
 	
 	if ( (width < 1 && !auto_width) || (height < 1 && !auto_height) ) {
-		fputs("Invalid width or height specified.\n", stderr);
+		fputs("Invalid width or height specified\n", stderr);
 		exit(1);
 	}
 

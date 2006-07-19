@@ -1,5 +1,5 @@
 CHANGES SINCE 0.9.18
-- None yet.
+- New option: Can use --full screen output.
 
 CHANGES SINCE 0.9.17
 - Bugfix:  No more crashes when reading non-JPEG files on Windows.

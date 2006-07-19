@@ -13,7 +13,7 @@ extern int auto_height;
 extern int auto_width;
 extern int width;
 extern int height;
-extern int border;
+extern int use_border;
 extern int invert;
 extern int flipx;
 extern int flipy;

@@ -100,7 +100,7 @@ void print_image(const Image* const i, const int chars, FILE *f) {
 			line[flipx? i->width - x - 1 : x] = ascii_palette[invert? pos : chars - pos];
 		}
 
-		fprintf(f, !border? "%s\n" : "|%s|\n", line);
+		fprintf(f, !use_border? "%s\n" : "|%s|\n", line);
 	}
 
 	#ifdef WIN32
@@ -275,11 +275,11 @@ void decompress(FILE *fp, FILE *fout) {
 	}
 
 	if ( html ) print_html_start(html_fontsize);
-	if ( border ) print_border(image.width);
+	if ( use_border ) print_border(image.width);
 
 	print_image(&image, (int) strlen(ascii_palette) - 1, fout);
 
-	if ( border ) print_border(image.width);
+	if ( use_border ) print_border(image.width);
 	if ( html ) print_html_end();
 
 	free_image(&image);

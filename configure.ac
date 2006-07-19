@@ -86,6 +86,26 @@ if test "x$enable_curl" = "xyes" ; then
 		[ AC_MSG_WARN([required header file curl/curl.h not found, libcurl will be disabled (see --help)]) ])
 fi
 
+AC_CHECK_HEADERS([fcntl.h curses.h term.h])
+
+# Some GNU/Linux systems (e.g., SuSE 4.3, 1996) don't have curses, but
+# rather ncurses.  So we check for it.
+TERMLIBS=
+# Check for termlib before termcap because Solaris termcap needs libucb.
+TERMLIB_VARIANTS="ncurses curses termlib termcap terminfo"
+for termlib in ${TERMLIB_VARIANTS}; do
+  AC_CHECK_LIB(${termlib}, tgetent,
+     [TERMLIBS="${TERMLIBS} -l${termlib}"; break])
+done
+# don't bother warning on djgpp, it doesn't have a term library, it
+# ports each termcap-needing program separately according to its needs.
+if test -z "$TERMLIBS" && echo "$build" | grep -v djgpp >/dev/null; then
+  AC_MSG_WARN([probably need a terminal library, one of: ${TERMLIB_VARIANTS}])
+else
+  LIBS="$LIBS $TERMLIBS"
+fi
+
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_TYPE_SIZE_T
