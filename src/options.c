@@ -21,8 +21,13 @@
 #include <stdlib.h>
 #endif
 
+#ifdef HAVE_CURSES_H
 #include <curses.h>
+#endif
+
+#ifdef HAVE_TERM_H
 #include <term.h>
+#endif
 
 // Default options
 int verbose = 0;
@@ -88,6 +93,7 @@ void help() {
 "  -x, --flipx      Flip image in X direction.\n"
 "  -y, --flipy      Flip image in Y direction.\n"
 "      --full       Set output dimensions to your terminal window size.\n"
+"      --full-fit   As --full, but keep aspect ratio.\n"
 "      --green=N.N  Set RGB to grayscale conversion weight, default is 0.5866\n"
 "      --height=N   Set output height, calculate width from aspect ratio.\n"
 "  -h, --help       Print program help.\n"
@@ -155,28 +161,14 @@ void parse_options(int argc, char** argv) {
 			auto_width = auto_height = 0; continue;
 		}
 		IF_OPT("--full") {
-			char *termtype = getenv ("TERM");
-			char term_buffer[2048];
 
-			if ( termtype == 0 ) {
-				fputs("Environment variable TERM not set. (--full)\n", stderr);
+			char* err = "";
+			if ( get_termsize(&width, &height, &err) <= 0 ) {
+				fputs(err, stderr);
+				fputc('\n', stderr);
 				exit(1);
 			}
 
-			int i = tgetent(term_buffer, termtype);
-
-			if ( i == 0 ) {
-				fprintf(stderr, "Terminal type '%s' not defined (--full).\n", termtype);
-				exit(1);
-			}
-
-			if ( i < 0 ) {
-				fputs("Could not access the termcap database (--full).\n", stderr);
-				exit(1);
-			}
-
-			height = tgetnum ("li");
-			width = tgetnum ("co");
 			auto_width = auto_height = 0;
 			full = 1;
 			continue;

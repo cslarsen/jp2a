@@ -22,3 +22,6 @@ void decompress(FILE *fin, FILE *fout);
 
 // options.c
 void parse_options(int argc, char** argv);
+
+// term.c
+int get_termsize(int* width_, int* height_, char** error);
