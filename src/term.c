@@ -36,6 +36,8 @@
  *          -2  environment variable TERM not set
  */
 int get_termsize(int* _width, int* _height, char** err) {
+
+#ifdef FEAT_TERMLIB
 	static char errstr[1024];
 	errstr[0] = 0;
 
@@ -52,7 +54,7 @@ int get_termsize(int* _width, int* _height, char** err) {
 
 	int i = tgetent(term_buffer, termtype);
 
-	if ( !i ) {
+	if ( i == 0 ) {
 		snprintf(errstr, sizeof(errstr)/sizeof(char) - 1,
 			"Terminal type '%s' not defined.", termtype);
 		return 0;
@@ -67,4 +69,7 @@ int get_termsize(int* _width, int* _height, char** err) {
 	*_height = tgetnum("li");
 
 	return 1;
+#else
+	return 0;
+#endif
 }

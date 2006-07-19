@@ -46,6 +46,9 @@ int html_fontsize = 4;
 int debug = 0;
 int clearscr = 0;
 int full = 0;
+#define FULL_ZOOM 1
+#define FULL_WIDTH 2
+#define FULL_HEIGHT 3
 
 #define ASCII_PALETTE_SIZE 256
 char ascii_palette[ASCII_PALETTE_SIZE + 1] = "   ...',;:clodxkO0KXNWM";
@@ -147,73 +150,34 @@ void parse_options(int argc, char** argv) {
 			++files; continue;
 		}
 	
-		IF_OPT("-")                        { ++files; continue; }
-		IF_OPTS("-h", "--help")            { help(); exit(0); }
-		IF_OPTS("-v", "--verbose")         { verbose = 1; continue; }
-		IF_OPTS("-d", "--debug")           { debug = 1; continue; }
-		IF_OPT("--clear")                  { clearscr = 1; continue; }
-		IF_OPT("--html")                   { html = 1; continue; }
-		IF_OPTS("-b", "--border")          { use_border = 1; continue; }
-		IF_OPTS("-i", "--invert")          { invert = 1; continue; }
-		IF_OPTS("-x", "--flipx")           { flipx = 1; continue; }
-		IF_OPTS("-y", "--flipy")           { flipy = 1; continue; }
-		IF_OPTS("-V", "--version")         { print_version(); exit(0); }
-		IF_VAR("--width=%d", &width)       { auto_height += 1; continue; }
-		IF_VAR("--height=%d", &height)     { auto_width += 1; continue; }
-		IF_VAR("--red=%f", &redweight)     { continue; }
-		IF_VAR("--green=%f", &greenweight) { continue; }
-		IF_VAR("--blue=%f", &blueweight)   { continue; }
-		IF_VAR("--html-fontsize=%d",
-			&html_fontsize)            { continue; }
+		IF_OPT ("-")                        { ++files; continue; }
+		IF_OPTS("-h", "--help")             { help(); exit(0); }
+		IF_OPTS("-v", "--verbose")          { verbose = 1; continue; }
+		IF_OPTS("-d", "--debug")            { debug = 1; continue; }
+		IF_OPT ("--clear")                  { clearscr = 1; continue; }
+		IF_OPT ("--html")                   { html = 1; continue; }
+		IF_OPTS("-b", "--border")           { use_border = 1; continue; }
+		IF_OPTS("-i", "--invert")           { invert = 1; continue; }
+		IF_OPTS("-x", "--flipx")            { flipx = 1; continue; }
+		IF_OPTS("-y", "--flipy")            { flipy = 1; continue; }
+		IF_OPTS("-V", "--version")          { print_version(); exit(0); }
+		IF_VAR ("--width=%d", &width)       { auto_height += 1; continue; }
+		IF_VAR ("--height=%d", &height)     { auto_width += 1; continue; }
+		IF_VAR ("--red=%f", &redweight)     { continue; }
+		IF_VAR ("--green=%f", &greenweight) { continue; }
+		IF_VAR ("--blue=%f", &blueweight)   { continue; }
+		IF_VAR ("--html-fontsize=%d",
+			&html_fontsize)             { continue; }
 
 		IF_VARS("--size=%dx%d",&width, &height) {
 			auto_width = auto_height = 0; continue;
 		}
 
 #ifdef FEAT_TERMLIB
-		IF_OPT("--zoom") {
-			char* err = "";
-			if ( get_termsize(&width, &height, &err) <= 0 ) {
-				fputs(err, stderr);
-				fputc('\n', stderr);
-				exit(1);
-			}
-
-			full = 1;
-			auto_width = auto_height = 0;
-			--height; // make room for command prompt
-			continue;
-		}
-
-		IF_OPTS("--fit-height", "--full") {
-			char* err = "";
-			if ( get_termsize(&width, &height, &err) <= 0 ) {
-				fputs(err, stderr);
-				fputc('\n', stderr);
-				exit(1);
-			}
-
-			full = 1;
-			width = 0;
-			auto_width += 1;
-			--height; // make room for command prompt
-			continue;
-		}
-
-		IF_OPT("--fit-width") {
-			char* err = "";
-			if ( get_termsize(&width, &height, &err) <= 0 ) {
-				fputs(err, stderr);
-				fputc('\n', stderr);
-				exit(1);
-			}
-
-			full = 1;
-			height = 0;
-			auto_height += 1;
-			continue;
-		}
-#endif // FEAT_TERMLIB
+		IF_OPT ("--zoom")                  { full = FULL_ZOOM; continue; }
+		IF_OPTS("--fit-height", "--full")  { full = FULL_HEIGHT; continue; }
+		IF_OPT ("--fit-width")             { full = FULL_WIDTH; continue; }
+#endif
 
 		if ( !strncmp(s, "--output=", 9) ) {
 			fileout = s+9;
@@ -244,6 +208,33 @@ void parse_options(int argc, char** argv) {
 		fputs("No files specified.\n\n", stderr);
 		help();
 		exit(1);
+	}
+
+	if ( full ) {
+		char* err = "";
+		if ( get_termsize(&width, &height, &err) <= 0 ) {
+			fputs(err, stderr);
+			fputc('\n', stderr);
+			exit(1);
+		}
+
+		switch ( full ) {
+		case FULL_ZOOM:
+			auto_width = auto_height = 0;
+			--height; // make room for command prompt
+			break;
+
+		case FULL_WIDTH:
+			height = 0;
+			auto_height += 1;
+			break;
+
+		case FULL_HEIGHT:
+			width = 0;
+			auto_width += 1;
+			--height; // make room for command prompt
+			break;
+		}
 	}
 
 	// adjust fullscreen size if border specified
