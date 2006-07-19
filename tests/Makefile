@@ -27,7 +27,6 @@ grind \
 grind-red \
 grind-green \
 grind-blue \
-test-term \
 dalsnuten-normal \
 dalsnuten-invert \
 dalsnuten-80x49-inv \

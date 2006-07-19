@@ -78,13 +78,13 @@ int get_termsize(int* _width, int* _height, char** err) {
 	// I've also seen some indication of a bug in curses on USENET, so
 	// I leave this one like this.
 
-	if ( i < 0 ) {
+	if ( i == 0 ) {
 		snprintf(errstr, sizeof(errstr)/sizeof(char) - 1,
 			"Terminal type '%s' not recognized.", termtype);
 		return 0;
 	}
 
-	if ( i == 0 ) {
+	if ( i < 0 ) {
 		strcpy(errstr, "Could not access the termcap database.");
 		return -1;
 	}
