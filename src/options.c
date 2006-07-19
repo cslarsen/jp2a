@@ -98,11 +98,11 @@ void help() {
 "  -x, --flipx       Flip image in X direction.\n"
 "  -y, --flipy       Flip image in Y direction.\n"
 #ifdef FEAT_TERMLIB
-"  -f, --term-fit    Use the largest dimension that makes an aspect correct\n"
-"                    image fit into the terminal display.\n"
-"      --term-height Print image to your terminal height, keep aspect ratio.\n"
-"      --term-width  Print image to your terminal width, keep aspect ratio.\n"
-"  -z, --term-zoom   Print image in your entire terminal window.\n"
+"  -f, --term-fit    Use the largest image dimension that fits in your terminal\n"
+"                    display with correct aspect ratio.\n"
+"      --term-height Use terminal display height.\n"
+"      --term-width  Use terminal display width.\n"
+"  -z, --term-zoom   Use terminal display dimension for output.\n"
 #endif
 "      --green=N.N   Set RGB to grayscale conversion weight, default is 0.5866\n"
 "      --height=N    Set output height, calculate width from aspect ratio.\n"
