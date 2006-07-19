@@ -250,7 +250,6 @@ void parse_options(int argc, char** argv) {
 			width = 0;
 			height = term_height - 1 - use_border*2;
 			auto_width += 1;
-			--height; // make room for command prompt
 			break;
 		}
 	}
