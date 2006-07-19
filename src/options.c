@@ -237,7 +237,6 @@ void parse_options(int argc, char** argv) {
 			auto_width = auto_height = 0;
 			width = term_width - use_border*2;
 			height = term_height - 1 - use_border*2;
-			--height; // make room for command prompt
 			break;
 
 		case TERM_FIT_WIDTH:
