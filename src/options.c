@@ -46,7 +46,7 @@ int width =
 
 int height = 0;
 int use_border = 0;
-int invert = 0;
+int invert = 1;
 int flipx = 0;
 int flipy = 0;
 int html = 0;
@@ -121,9 +121,15 @@ void help() {
 "      --height=N    Set output height, calculate width from aspect ratio.\n"
 "  -h, --help        Print program help.\n"
 "      --html        Produce strict XHTML 1.0 output.\n"
-"      --html-fontsize=N  Set fontsize to N pt, default is 4.\n"
+"      --html-fontsize=N\n"
+"                    Set fontsize to N pt, default is 4.\n"
 "  -i, --invert      Invert output image.  Use if your display has a dark\n"
 "                    background.\n"
+"      --background=dark\n"
+"      --background=light\n"
+"                    These are just mnemonics whether to use --invert or not.\n"
+"                    If your console has white characters on black background,\n"
+"                    then use --background=dark, and vice versa.\n"
 "      --output=...  Write output to file.\n"
 "      --red=N.N     Set RGB to grayscale conversion weight, default 0.2989f.\n"
 "      --size=WxH    Set output width and height.\n"
@@ -132,11 +138,11 @@ void help() {
 "      --width=N     Set output width, calculate height from ratio.\n"
 "\n"
 #ifdef FEAT_TERMLIB
-"  The default running mode is `jp2a --term-fit'.  See the man page for jp2a\n"
+"  The default mode is `jp2a --term-fit --background=dark'.\n"
 #else
-"  The default running mode is `jp2a --width=78'.  See the man page for jp2a\n"
+"  The default mode is `jp2a --width=78 --background=dark'.\n"
 #endif
-"  to see detailed usage examples.\n\n" , stderr);
+"  See `man jp2a' for usage examples.\n\n" , stderr);
 
 	fprintf(stderr, "Project homepage on %s\n", url);
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);
@@ -174,7 +180,9 @@ void parse_options(int argc, char** argv) {
 		IF_OPT ("--clear")                  { clearscr = 1; continue; }
 		IF_OPT ("--html")                   { html = 1; continue; }
 		IF_OPTS("-b", "--border")           { use_border = 1; continue; }
-		IF_OPTS("-i", "--invert")           { invert = 1; continue; }
+		IF_OPTS("-i", "--invert")           { invert = !invert; continue; }
+		IF_OPT("--background=dark")         { invert = 1; continue; }
+		IF_OPT("--background=light")        { invert = 0; continue; }
 		IF_OPTS("-x", "--flipx")            { flipx = 1; continue; }
 		IF_OPTS("-y", "--flipy")            { flipy = 1; continue; }
 		IF_OPTS("-V", "--version")          { print_version(); exit(0); }
