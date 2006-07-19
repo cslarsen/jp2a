@@ -171,8 +171,9 @@ void parse_options(int argc, char** argv) {
 				exit(1);
 			}
 
-			auto_width = auto_height = 0;
 			full = 1;
+			auto_width = auto_height = 0;
+			--height; // make room for command prompt
 			continue;
 		}
 				
