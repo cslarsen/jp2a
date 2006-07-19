@@ -184,42 +184,23 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 		// there is no test for this, so stuff will look incorrect with
 		// other bit-depths.
 
-		if ( jpg->out_color_components == 3 ) {
+		for ( x=0; x < i->width; ++x ) {
+			const JSAMPLE *src = &scanline[i->lookup_resx[x]];
+			const JSAMPLE *src_end = &scanline[i->lookup_resx[x+1]];
 
-			// RGB -> Grayscale, calculate luminance based on weights
-			for ( x=0; x < i->width; ++x ) {
-				const JSAMPLE *src = &scanline[i->lookup_resx[x]];
-				const JSAMPLE *src_end = &scanline[i->lookup_resx[x+1]];
+			int adds = 0;
+			float v = 0.0f;
+			while ( src <= src_end ) {
 
-				int adds = 0;
-				float v = 0.0f;
-				while ( src <= src_end ) {
-					v += RED[src[0]] + GREEN[src[1]] + BLUE[src[2]];
-					++adds;
-					src += jpg->out_color_components;
-				}
+				v += jpg->out_color_components==3 ?
+					  RED[src[0]] + GREEN[src[1]] + BLUE[src[2]]
+					: GRAY[src[0]];
 
-				pixel[x] += adds>1 ? v / (float) adds : v;
+				++adds;
+				src += jpg->out_color_components;
 			}
 
-		} else {
-
-			// Grayscale
-			for ( x=0; x < i->width; ++x ) {
-				const JSAMPLE *src = &scanline[i->lookup_resx[x]];
-				const JSAMPLE *src_end = &scanline[i->lookup_resx[x+1]];
-
-				int adds = 0;
-				float v = 0.0f;
-				while ( src <= src_end ) {
-					v += (float) GRAY[src[0]];
-					++adds;
-					++src;
-				}
-
-				pixel[x] += adds>1 ? v / (float) adds : v;
-			}
-
+			pixel[x] += adds>1 ? v / (float) adds : v;
 		}
 
 		++i->yadds[lasty++];
