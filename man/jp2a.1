@@ -26,11 +26,23 @@ Use the given characters when producing the output ASCII image
 .B \-d \-\-debug
 Print debugging information when using libcurl to download images from the net.
 .TP
+.B \-\-fit\-height
+Sets output dimensions so that the image fits in your terminal window, calculating
+width as needed to keep aspect ratio.  This is the same as \-\-full.
+.TP
+.B \-\-fit\-width
+Print output image with your terminal window width.  Height is calculated based
+on source image aspect ratio.
+.TP
 .B \-x \-\-flipx
 Flip output image horizontally
 .TP
 .B \-y \-\-flipy
 Flip output image vertically
+.TP
+.B \-\-full
+The same as \-\-fit\-width.  This is the default "fullscreen mode", which makes the
+output images fit nicely in your terminal window, while keeping aspect ratio.
 .TP
 .BI \-\-height= N
 Set output height.  If only --height is specified, then output width will
@@ -74,6 +86,10 @@ calculated automatically.  Default mode is --width=78.
 .TP
 .B \-V \-\-version
 Print program version.
+.TP
+.B \-\-zoom
+Sets output dimensions to your entire terminal window, disregarding source image
+aspect ratio.
 .SH RETURN VALUES
 jp2a returns 1 when errors are encountered, zero for no errors.
 .SH EXAMPLES

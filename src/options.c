@@ -94,8 +94,9 @@ void help() {
 "  -d, --debug      Print additional debug information.\n"
 "  -x, --flipx      Flip image in X direction.\n"
 "  -y, --flipy      Flip image in Y direction.\n"
-"      --full       Set output dimensions to your terminal window size.\n"
-"      --full-fit   As --full, but keep aspect ratio.\n"
+"      --fit-height Print image to your terminal height, keep aspect ratio.\n"
+"      --fit-width  Print image to your terminal width, keep aspect ratio.\n"
+"      --full       Same as --fit-height.\n"
 "      --green=N.N  Set RGB to grayscale conversion weight, default is 0.5866\n"
 "      --height=N   Set output height, calculate width from aspect ratio.\n"
 "  -h, --help       Print program help.\n"
@@ -108,7 +109,8 @@ void help() {
 "      --size=WxH   Set output width and height.\n"
 "  -v, --verbose    Verbose output.\n"
 "  -V, --version    Print program version.\n"
-"      --width=N    Set output width, calculate height from ratio.\n\n"
+"      --width=N    Set output width, calculate height from ratio.\n"
+"      --zoom       Print image in your entire terminal window.\n\n"
 
 "  The default running mode is `jp2a --width=78'.  See the man page for jp2a\n"
 "  to see detailed usage examples.\n\n" , stderr);
@@ -159,11 +161,12 @@ void parse_options(int argc, char** argv) {
 		IF_VAR("--blue=%f", &blueweight)   { continue; }
 		IF_VAR("--html-fontsize=%d",
 			&html_fontsize)            { continue; }
+
 		IF_VARS("--size=%dx%d",&width, &height) {
 			auto_width = auto_height = 0; continue;
 		}
-		IF_OPT("--full") {
 
+		IF_OPT("--zoom") {
 			char* err = "";
 			if ( get_termsize(&width, &height, &err) <= 0 ) {
 				fputs(err, stderr);
@@ -176,6 +179,36 @@ void parse_options(int argc, char** argv) {
 			--height; // make room for command prompt
 			continue;
 		}
+
+		IF_OPTS("--fit-height", "--full") {
+			char* err = "";
+			if ( get_termsize(&width, &height, &err) <= 0 ) {
+				fputs(err, stderr);
+				fputc('\n', stderr);
+				exit(1);
+			}
+
+			full = 1;
+			width = 0;
+			auto_width += 1;
+			--height; // make room for command prompt
+			continue;
+		}
+
+		IF_OPT("--fit-width") {
+			char* err = "";
+			if ( get_termsize(&width, &height, &err) <= 0 ) {
+				fputs(err, stderr);
+				fputc('\n', stderr);
+				exit(1);
+			}
+
+			full = 1;
+			height = 0;
+			auto_height += 1;
+			continue;
+		}
+
 				
 		if ( !strncmp(s, "--output=", 9) ) {
 			fileout = s+9;
