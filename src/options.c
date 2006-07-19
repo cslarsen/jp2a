@@ -173,7 +173,7 @@ void parse_options(int argc, char** argv) {
 		}
 
 #ifdef FEAT_TERMLIB
-		IF_OPTS("-z", "--term-zoom")        { termfit = TERM_ZOOM; continue; }
+		IF_OPTS("-z", "--term-zoom")        { termfit = TERM_FIT_ZOOM; continue; }
 		IF_OPT ("--term-height")            { termfit = TERM_FIT_HEIGHT; continue; }
 		IF_OPT ("--term-width")             { termfit = TERM_FIT_WIDTH; continue; }
 		IF_OPTS("-f", "--term-fit")         { termfit = TERM_FIT_AUTO; continue; }
@@ -220,15 +220,18 @@ void parse_options(int argc, char** argv) {
 		}
 
 		switch ( termfit ) {
-		case TERM_ZOOM:
+		case TERM_FIT_ZOOM:
 			auto_width = auto_height = 0;
+			width = term_width;
+			height = term_height;
 			--height; // make room for command prompt
 			break;
 
 		case TERM_FIT_AUTO:
-			// use auto-width here, if that's too big,
+			// try first with TERM_FIT_WIDTH, if that's too big,
 			// then aspect_ratio() in image.c will reorient
 			// output dimensions.
+
 		case TERM_FIT_WIDTH:
 			width = term_width;
 			height = 0;

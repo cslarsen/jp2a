@@ -49,6 +49,10 @@ void aspect_ratio(const int jpeg_width, const int jpeg_height) {
 
 	// calc width
 	if ( auto_width && !auto_height ) {
+		if ( termfit==TERM_FIT_ZOOM && height==term_height ) {
+			height = use_border? term_height - 3 : term_height - 1;
+		}
+
 		width = CALC_WIDTH;
 
 		// adjust for too small dimensions	
