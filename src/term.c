@@ -29,6 +29,13 @@
 #include <term.h>
 #endif
 
+#ifdef FEAT_TERMLIB
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+#endif
+
 /*
  * Returns:  1  success
  *           0  terminal type not defined
@@ -43,6 +50,14 @@ int get_termsize(int* _width, int* _height, char** err) {
 		*err = errstr;
 
 #ifdef FEAT_TERMLIB
+
+#ifdef WIN32
+	CONSOLE_SCREEN_BUFFER_INFO i;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &i);
+	*_width = i.srWindow.Right - i.srWindow.Left;
+	*_height = i.srWindow.Bottom - i.srWindow.Top;
+	return 1;
+#else
 
 	char *termtype = getenv("TERM");
 	char term_buffer[2048];
@@ -75,9 +90,12 @@ int get_termsize(int* _width, int* _height, char** err) {
 	*_height = tgetnum("li");
 
 	return 1;
+
+#endif // non-WIN32
+
 #else
 	strcpy(errstr, "Compiled without termlib support.");
 	return 0;
 
-#endif
+#endif // FEAT_TERMLIB
 }
