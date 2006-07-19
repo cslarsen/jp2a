@@ -45,6 +45,11 @@ AC_ARG_ENABLE([curl],
 	[enable_curl=$enableval],
 	[enable_curl="yes"])
 
+AC_ARG_ENABLE([termlib],
+	[  --enable-termlib to use term/curses for detecting terminal dimensions (default: yes)],
+	[enable_termlib=$enableval],
+	[enable_termlib="yes"])
+
 AC_MSG_CHECKING([enable-curl])
 AC_MSG_RESULT([$enable_curl])
 
@@ -88,22 +93,26 @@ fi
 
 AC_CHECK_HEADERS([fcntl.h curses.h term.h])
 
-# Some GNU/Linux systems (e.g., SuSE 4.3, 1996) don't have curses, but
-# rather ncurses.  So we check for it.
-TERMLIBS=
-# Check for termlib before termcap because Solaris termcap needs libucb.
-TERMLIB_VARIANTS="ncurses curses termlib termcap terminfo"
-for termlib in ${TERMLIB_VARIANTS}; do
-  AC_CHECK_LIB(${termlib}, tgetent,
-     [TERMLIBS="${TERMLIBS} -l${termlib}"; break])
-done
-# don't bother warning on djgpp, it doesn't have a term library, it
-# ports each termcap-needing program separately according to its needs.
-if test -z "$TERMLIBS" && echo "$build" | grep -v djgpp >/dev/null; then
-  AC_MSG_WARN([probably need a terminal library, one of: ${TERMLIB_VARIANTS}])
-else
-  LIBS="$LIBS $TERMLIBS"
-  AC_DEFINE([FEAT_TERMLIB], [1], [Found working term/curses environment])
+if test "$enable_termlib" = "yes" ; then
+
+	# Some GNU/Linux systems (e.g., SuSE 4.3, 1996) don't have curses, but
+	# rather ncurses.  So we check for it.
+	TERMLIBS=
+	# Check for termlib before termcap because Solaris termcap needs libucb.
+	TERMLIB_VARIANTS="ncurses curses termlib termcap terminfo"
+	for termlib in ${TERMLIB_VARIANTS}; do
+	  AC_CHECK_LIB(${termlib}, tgetent,
+	     [TERMLIBS="${TERMLIBS} -l${termlib}"; break])
+	done
+	# don't bother warning on djgpp, it doesn't have a term library, it
+	# ports each termcap-needing program separately according to its needs.
+	if test -z "$TERMLIBS" && echo "$build" | grep -v djgpp >/dev/null; then
+	  AC_MSG_WARN([probably need a terminal library, one of: ${TERMLIB_VARIANTS}])
+	else
+	  LIBS="$LIBS $TERMLIBS"
+	  AC_DEFINE([FEAT_TERMLIB], [1], [Found working term/curses environment])
+	fi
+
 fi
 
 

@@ -1,6 +1,5 @@
 CHANGES SINCE 0.9.18
-- New options:  --full, --fit-width, --fit-height, --zoom to automatically
-  set output dimensions.
+- New options to fit image to terminal window (--term-fit, --term-height, --term-width, --term-zoom).
 
 CHANGES SINCE 0.9.17
 - Bugfix:  No more crashes when reading non-JPEG files on Windows.

@@ -30,6 +30,7 @@
 #endif
 
 #include "jp2a.h"
+#include "options.h"
 
 // Default options
 int verbose = 0;
@@ -45,10 +46,9 @@ int html = 0;
 int html_fontsize = 4;
 int debug = 0;
 int clearscr = 0;
-int full = 0;
-#define FULL_ZOOM 1
-#define FULL_WIDTH 2
-#define FULL_HEIGHT 3
+int termfit = 0;
+int term_width = 0;
+int term_height = 0;
 
 #define ASCII_PALETTE_SIZE 256
 char ascii_palette[ASCII_PALETTE_SIZE + 1] = "   ...',;:clodxkO0KXNWM";
@@ -87,37 +87,36 @@ void help() {
 "Convert files in JPEG format to ASCII.\n\n"
 #endif
 "OPTIONS\n"
-"  -                Read JPEG image from standard input.\n"
-"      --blue=N.N   Set RGB to grayscale conversion weight, default is 0.1145\n"
-"  -b, --border     Print a border around the output image.\n"
-"      --chars=...  Select character palette used to paint the image.\n"
-"                   Leftmost character corresponds to black pixel, right-\n"
-"                   most to white.  Minimum two characters must be specified.\n"
-"      --clear      Clears screen before drawing each output image.\n"
-"  -d, --debug      Print additional debug information.\n"
-"  -x, --flipx      Flip image in X direction.\n"
-"  -y, --flipy      Flip image in Y direction.\n"
+"  -                 Read JPEG image from standard input.\n"
+"      --blue=N.N    Set RGB to grayscale conversion weight, default is 0.1145\n"
+"  -b, --border      Print a border around the output image.\n"
+"      --chars=...   Select character palette used to paint the image.\n"
+"                    Leftmost character corresponds to black pixel, right-\n"
+"                    most to white.  Minimum two characters must be specified.\n"
+"      --clear       Clears screen before drawing each output image.\n"
+"  -d, --debug       Print additional debug information.\n"
+"  -x, --flipx       Flip image in X direction.\n"
+"  -y, --flipy       Flip image in Y direction.\n"
 #ifdef FEAT_TERMLIB
-"      --fit-height Print image to your terminal height, keep aspect ratio.\n"
-"      --fit-width  Print image to your terminal width, keep aspect ratio.\n"
-"      --full       Same as --fit-height.\n"
+"  -f, --term-fit    Use the largest dimension that makes an aspect correct\n"
+"                    image fit into the terminal display.\n"
+"      --term-height Print image to your terminal height, keep aspect ratio.\n"
+"      --term-width  Print image to your terminal width, keep aspect ratio.\n"
+"  -z, --term-zoom   Print image in your entire terminal window.\n"
 #endif
-"      --green=N.N  Set RGB to grayscale conversion weight, default is 0.5866\n"
-"      --height=N   Set output height, calculate width from aspect ratio.\n"
-"  -h, --help       Print program help.\n"
-"      --html       Produce strict XHTML 1.0 output.\n"
+"      --green=N.N   Set RGB to grayscale conversion weight, default is 0.5866\n"
+"      --height=N    Set output height, calculate width from aspect ratio.\n"
+"  -h, --help        Print program help.\n"
+"      --html        Produce strict XHTML 1.0 output.\n"
 "      --html-fontsize=N  Set fontsize to N pt, default is 4.\n"
-"  -i, --invert     Invert output image.  Use if your display has a dark\n"
-"                   background.\n"
-"      --output=... Write output to file.\n"
-"      --red=N.N    Set RGB to grayscale conversion weight, default 0.2989f.\n"
-"      --size=WxH   Set output width and height.\n"
-"  -v, --verbose    Verbose output.\n"
-"  -V, --version    Print program version.\n"
-"      --width=N    Set output width, calculate height from ratio.\n"
-#ifdef FEAT_TERMLIB
-"      --zoom       Print image in your entire terminal window.\n"
-#endif
+"  -i, --invert      Invert output image.  Use if your display has a dark\n"
+"                    background.\n"
+"      --output=...  Write output to file.\n"
+"      --red=N.N     Set RGB to grayscale conversion weight, default 0.2989f.\n"
+"      --size=WxH    Set output width and height.\n"
+"  -v, --verbose     Verbose output.\n"
+"  -V, --version     Print program version.\n"
+"      --width=N     Set output width, calculate height from ratio.\n"
 "\n"
 "  The default running mode is `jp2a --width=78'.  See the man page for jp2a\n"
 "  to see detailed usage examples.\n\n" , stderr);
@@ -174,9 +173,10 @@ void parse_options(int argc, char** argv) {
 		}
 
 #ifdef FEAT_TERMLIB
-		IF_OPT ("--zoom")                  { full = FULL_ZOOM; continue; }
-		IF_OPTS("--fit-height", "--full")  { full = FULL_HEIGHT; continue; }
-		IF_OPT ("--fit-width")             { full = FULL_WIDTH; continue; }
+		IF_OPTS("-z", "--term-zoom")        { termfit = TERM_ZOOM; continue; }
+		IF_OPT ("--term-height")            { termfit = TERM_FIT_HEIGHT; continue; }
+		IF_OPT ("--term-width")             { termfit = TERM_FIT_WIDTH; continue; }
+		IF_OPTS("-f", "--term-fit")         { termfit = TERM_FIT_AUTO; continue; }
 #endif
 
 		if ( !strncmp(s, "--output=", 9) ) {
@@ -210,27 +210,34 @@ void parse_options(int argc, char** argv) {
 		exit(1);
 	}
 
-	if ( full ) {
+	if ( termfit ) {
 		char* err = "";
-		if ( get_termsize(&width, &height, &err) <= 0 ) {
+
+		if ( get_termsize(&term_width, &term_height, &err) <= 0 ) {
 			fputs(err, stderr);
 			fputc('\n', stderr);
 			exit(1);
 		}
 
-		switch ( full ) {
-		case FULL_ZOOM:
+		switch ( termfit ) {
+		case TERM_ZOOM:
 			auto_width = auto_height = 0;
 			--height; // make room for command prompt
 			break;
 
-		case FULL_WIDTH:
+		case TERM_FIT_AUTO:
+			// use auto-width here, if that's too big,
+			// then aspect_ratio() in image.c will reorient
+			// output dimensions.
+		case TERM_FIT_WIDTH:
+			width = term_width;
 			height = 0;
 			auto_height += 1;
 			break;
 
-		case FULL_HEIGHT:
+		case TERM_FIT_HEIGHT:
 			width = 0;
+			height = term_height;
 			auto_width += 1;
 			--height; // make room for command prompt
 			break;
@@ -238,7 +245,7 @@ void parse_options(int argc, char** argv) {
 	}
 
 	// adjust fullscreen size if border specified
-	if ( full && use_border ) {
+	if ( termfit && use_border ) {
 		width -= 2;
 		height -= 2;
 	}

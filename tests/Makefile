@@ -65,7 +65,7 @@ logo-30:
 	$(JP) logo-40x25-gray.jpg --height=30 | $(DIFF) logo-30.txt
 
 test-term:
-	TERM=dummy-term $(JP) --full jp2a.jpg 2>&1 | $(DIFF) test-term.txt
+	TERM=dummy-term $(JP) --fit jp2a.jpg 2>&1 | $(DIFF) test-term.txt
 grind:
 	$(JP) grind.jpg -i --size=80x30 | $(DIFF) grind.txt
 	

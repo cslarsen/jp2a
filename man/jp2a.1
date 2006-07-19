@@ -26,23 +26,23 @@ Use the given characters when producing the output ASCII image
 .B \-d \-\-debug
 Print debugging information when using libcurl to download images from the net.
 .TP
-.B \-\-fit\-height
-Sets output dimensions so that the image fits in your terminal window, calculating
-width as needed to keep aspect ratio.  This is the same as \-\-full.
+.B \-f \-\-term\-fit
+Use the largest dimension that makes the image fit in your terminal display.
 .TP
-.B \-\-fit\-width
-Print output image with your terminal window width.  Height is calculated based
-on source image aspect ratio.
+.B \-\-term\-height
+Use terminal display height and calculate width based on image aspect ratio.
+.TP
+.B \-\-term\-width
+Use terminal display width and calculate height based on image aspect ratio.
+.TP
+.B \-z \-\-term\-zoom
+Use terminal display width and height.
 .TP
 .B \-x \-\-flipx
 Flip output image horizontally
 .TP
 .B \-y \-\-flipy
 Flip output image vertically
-.TP
-.B \-\-full
-The same as \-\-fit\-width.  This is the default "fullscreen mode", which makes the
-output images fit nicely in your terminal window, while keeping aspect ratio.
 .TP
 .BI \-\-height= N
 Set output height.  If only --height is specified, then output width will

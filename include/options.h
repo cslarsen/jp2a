@@ -25,3 +25,10 @@ extern char ascii_palette[];
 extern float redweight, greenweight, blueweight;
 extern float RED[256], GREEN[256], BLUE[256];
 extern const char *fileout;
+extern int termfit;
+extern int term_width;
+extern int term_height;
+#define TERM_ZOOM 1
+#define TERM_FIT_WIDTH 2
+#define TERM_FIT_HEIGHT 3
+#define TERM_FIT_AUTO 4

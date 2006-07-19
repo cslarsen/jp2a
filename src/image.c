@@ -38,27 +38,56 @@ typedef struct Image_ {
 	int *lookup_resx;
 } Image;
 
+// Calculate width or height, but not both
 void aspect_ratio(const int jpeg_width, const int jpeg_height) {
 
-	// Calculate width or height, but not both
+	// the 2.0f and 0.5f factors are used for text displays that (usually) have characters
+	// that are taller than they are wide.
 
+	#define CALC_WIDTH ROUND(2.0f * (float) height * (float) jpeg_width / (float) jpeg_height)
+	#define CALC_HEIGHT ROUND(0.5f * (float) width * (float) jpeg_height / (float) jpeg_width)
+
+	// calc width
 	if ( auto_width && !auto_height ) {
-		width = ROUND(2.0f * (float) height * (float) jpeg_width / (float) jpeg_height);
+		width = CALC_WIDTH;
 
 		// adjust for too small dimensions	
 		while ( width==0 ) {
 			++height;
 			aspect_ratio(jpeg_width, jpeg_height);
 		}
+
+		// reorient output dimensions if needed
+		if ( termfit==TERM_FIT_AUTO && width>term_width ) {
+			width = term_width;
+			height = CALC_HEIGHT;
+
+			if ( use_border ) {
+				width -= 2;
+				height -= 2;
+			}
+		}
 	}
 
+	// calc height
 	if ( !auto_width && auto_height ) {
-		height = ROUND(0.5f * (float) width * (float) jpeg_height / (float) jpeg_width);
+		height = CALC_HEIGHT;
 
 		// adjust for too small dimensions
 		while ( height==0 ) {
 			++width;
 			aspect_ratio(jpeg_width, jpeg_height);
+		}
+
+		// reorient output dimensions if needed
+		if ( termfit==TERM_FIT_AUTO && height>term_height ) {
+			height = term_height;
+			width = CALC_WIDTH;
+
+			if ( use_border ) {
+				width -= 2;
+				height -= 2;
+			}
 		}
 	}
 }
