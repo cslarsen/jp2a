@@ -1,6 +1,4 @@
 SUGGESTIONS
-- Make --full to set --size=WxH to terminal width and height, if using -b then decrement by two so that it works fine with a border.
-- Make --full-width to set --width=TERMINAL-WIDTH.
 - Read all source pixels in process_scanline.  Better conversions, but a bit slower.
 - Consider using Bresenham scaling (search for "Image scanling with Bresenham" on DDJ.com)
 - Consider using other libs for image conversions, e.g. would be nice to read GIF and PNG.  (See libpng, gdlib.)
