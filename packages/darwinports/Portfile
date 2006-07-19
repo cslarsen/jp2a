@@ -1,7 +1,7 @@
 # $Id: Portfile,v 1.1 2006/06/29 06:39:03 mww Exp $
 PortSystem        1.0
 name              jp2a
-version           0.9.18
+version           0.9.19
 categories        graphics
 maintainers       csl@sublevel3.org
 description       converts JPEG images to ASCII
@@ -11,9 +11,9 @@ long_description  The jp2a program will read JPEG images and print them \
 use_bzip2         yes
 homepage          http://jp2a.sourceforge.net/
 master_sites      sourceforge
-checksums         md5 8dbc2d73e20afba14af6c436967dadbc \
-                  sha1 8ed724cffc4095968c22a3ef5f1ba471aa36f292 \
-                  rmd160 d307cd65d4e7b5ee566b069ac3ec9926fce52e8f 
+checksums         md5 a140ca34b81cb4f978c0d5e8d57e410c \
+                  sha1 97153342e5e9ee1f769c1db708f85b15a24f9575 \
+                  rmd160 6263bc4cff91092ec77059070a82aaec70878409 
 depends_lib       port:jpeg port:curl
 configure.args    --with-jpeg-prefix=${prefix} --enable-curl \
                   --with-curl-config=${prefix}/bin --mandir=\\\${prefix}/share/man
