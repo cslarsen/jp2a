@@ -58,7 +58,10 @@ void aspect_ratio(const int jpeg_width, const int jpeg_height) {
 		}
 		
 		while ( termfit==TERM_FIT_AUTO && (width + use_border*2)>term_width ) {
-			--height;
+			width = term_width - use_border*2;
+			height = 0;
+			auto_height = 1;
+			auto_width = 0;
 			aspect_ratio(jpeg_width, jpeg_height);
 		}
 
@@ -234,12 +237,12 @@ void malloc_image(Image* i) {
 }
 
 void init_image(Image *i, const struct jpeg_decompress_struct *jpg) {
-	i->resize_y = (float) (i->height - 1) / (float) (jpg->output_height-1);
-	i->resize_x = (float) jpg->output_width / (float) i->width;
+	i->resize_y = (float) (i->height - 1) / (float) (jpg->output_height - 1);
+	i->resize_x = (float) (jpg->output_width - 1) / (float) (i->width - 1);
 
 	int dst_x;
 	for ( dst_x=0; dst_x < i->width; ++dst_x ) {
-		i->lookup_resx[dst_x] = (int) ( (float) dst_x * i->resize_x );
+		i->lookup_resx[dst_x] = ROUND( (float) dst_x * i->resize_x );
 		i->lookup_resx[dst_x] *= jpg->out_color_components;
 	}
 }

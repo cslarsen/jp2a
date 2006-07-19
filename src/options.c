@@ -235,30 +235,24 @@ void parse_options(int argc, char** argv) {
 		switch ( fit_to_use ) {
 		case TERM_FIT_ZOOM:
 			auto_width = auto_height = 0;
-			width = term_width;
-			height = term_height;
+			width = term_width - use_border*2;
+			height = term_height - 1 - use_border*2;
 			--height; // make room for command prompt
 			break;
 
 		case TERM_FIT_WIDTH:
-			width = term_width;
+			width = term_width - use_border*2;
 			height = 0;
 			auto_height += 1;
 			break;
 
 		case TERM_FIT_HEIGHT:
 			width = 0;
-			height = term_height;
+			height = term_height - 1 - use_border*2;
 			auto_width += 1;
 			--height; // make room for command prompt
 			break;
 		}
-	}
-
-	// adjust fullscreen size if border specified
-	if ( termfit && use_border ) {
-		width -= 2;
-		height -= 2;
 	}
 
 	// only --width specified, calc width
