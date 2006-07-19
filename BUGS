@@ -4,5 +4,5 @@ SUGGESTIONS
 - Consider using other libs for image conversions, e.g. would be nice to read GIF and PNG.  (See libpng, gdlib.)
 
 BUGS
+- Program assumes that color channels use 8 bits, this should be detected.
 - Some conversions are not 100% equal across platforms.  Investigate this (maybe it has something to do with floating point precision?)
-- Using --term-fit will in some rare cases miss the space for the commandline prompt.

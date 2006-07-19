@@ -180,6 +180,10 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 
 	while ( lasty <= y ) {
 
+		// we always assume 8-bits per channel
+		// there is no test for this, so stuff will look incorrect with
+		// other bit-depths.
+
 		if ( jpg->out_color_components == 3 ) {
 
 			// RGB -> Grayscale, calculate luminance based on weights
