@@ -62,7 +62,7 @@ int get_termsize(int* _width, int* _height, char** err) {
 
 	if ( i < 0 ) {
 		snprintf(errstr, sizeof(errstr)/sizeof(char) - 1,
-			"Terminal type '%s' not defined.", termtype);
+			"Terminal type '%s' not recognized.", termtype);
 		return 0;
 	}
 

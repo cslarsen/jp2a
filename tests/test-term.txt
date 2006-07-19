@@ -1,1 +1,1 @@
-Terminal type 'dummy-term' not defined.
+Terminal type 'dummy-term' not recognized.
