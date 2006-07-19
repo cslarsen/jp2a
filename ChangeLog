@@ -1,10 +1,9 @@
 CHANGES SINCE 0.9.18
-- New options: Can automatically fit image to terminal display using --term-* options.
-- Enhancement: Now reads each and every source image pixel.  A bit slower, but much better output quality.
-- configure now accepts --enable-termlib (default) or --disable-termlib.
+- New options --term-fit, --term-width, --term-height to automatically fit image to terminal display.
+- MUCH better output quality as all source pixels are now read.
+- Configure now accepts --enable-termlib (default) or --disable-termlib.
 - Bugfix: In some cases, the last pixel(s) of the source images were not read.
-- jp2a will now exit if jpeg color precision is not 8 bits, though I don't know if
-  other bit-depths are used in jpeg.
+- Will now gracefully exit if jpeg color precision is other than 8 bits per channels.
 
 CHANGES SINCE 0.9.17
 - Bugfix:  No more crashes when reading non-JPEG files on Windows.
