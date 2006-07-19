@@ -94,9 +94,11 @@ void help() {
 "  -d, --debug      Print additional debug information.\n"
 "  -x, --flipx      Flip image in X direction.\n"
 "  -y, --flipy      Flip image in Y direction.\n"
+#ifdef FEAT_TERMLIB
 "      --fit-height Print image to your terminal height, keep aspect ratio.\n"
 "      --fit-width  Print image to your terminal width, keep aspect ratio.\n"
 "      --full       Same as --fit-height.\n"
+#endif
 "      --green=N.N  Set RGB to grayscale conversion weight, default is 0.5866\n"
 "      --height=N   Set output height, calculate width from aspect ratio.\n"
 "  -h, --help       Print program help.\n"
@@ -110,8 +112,10 @@ void help() {
 "  -v, --verbose    Verbose output.\n"
 "  -V, --version    Print program version.\n"
 "      --width=N    Set output width, calculate height from ratio.\n"
-"      --zoom       Print image in your entire terminal window.\n\n"
-
+#ifdef FEAT_TERMLIB
+"      --zoom       Print image in your entire terminal window.\n"
+#endif
+"\n"
 "  The default running mode is `jp2a --width=78'.  See the man page for jp2a\n"
 "  to see detailed usage examples.\n\n" , stderr);
 
@@ -166,6 +170,7 @@ void parse_options(int argc, char** argv) {
 			auto_width = auto_height = 0; continue;
 		}
 
+#ifdef FEAT_TERMLIB
 		IF_OPT("--zoom") {
 			char* err = "";
 			if ( get_termsize(&width, &height, &err) <= 0 ) {
@@ -208,8 +213,8 @@ void parse_options(int argc, char** argv) {
 			auto_height += 1;
 			continue;
 		}
+#endif // FEAT_TERMLIB
 
-				
 		if ( !strncmp(s, "--output=", 9) ) {
 			fileout = s+9;
 			continue;

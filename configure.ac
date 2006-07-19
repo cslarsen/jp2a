@@ -103,6 +103,7 @@ if test -z "$TERMLIBS" && echo "$build" | grep -v djgpp >/dev/null; then
   AC_MSG_WARN([probably need a terminal library, one of: ${TERMLIB_VARIANTS}])
 else
   LIBS="$LIBS $TERMLIBS"
+  AC_DEFINE([FEAT_TERMLIB], [1], [Found working term/curses environment])
 fi
 
 
