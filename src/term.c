@@ -53,7 +53,10 @@ int get_termsize(int* _width, int* _height, char** err) {
 
 #ifdef WIN32
 	CONSOLE_SCREEN_BUFFER_INFO i;
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &i);
+	if ( !GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &i) ) {
+		strcpy(errstr, "Could not determine console window size.");
+		return -1;
+	}
 	*_width = i.srWindow.Right - i.srWindow.Left;
 	*_height = i.srWindow.Bottom - i.srWindow.Top;
 	return 1;
