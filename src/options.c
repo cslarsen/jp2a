@@ -29,6 +29,8 @@
 #include <term.h>
 #endif
 
+#include "jp2a.h"
+
 // Default options
 int verbose = 0;
 int auto_height = 1;

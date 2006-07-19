@@ -11,6 +11,16 @@
 #include "config.h"
 #endif
 
+#include <stdio.h>
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+
 #ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
@@ -24,23 +34,13 @@
  *           0  terminal type not defined
  *          -1  termcap database inaccessible
  *          -2  environment variable TERM not set
- *
- * Usage:
- *
- *       char* error;
- *       int width, height;
- *
- *       if ( get_termsize(&width, &height, &error) != 1 ) {
- *           fprintf(stderr, "%s\n", error);
- *           exit(1);
- *       }
- *
- *       printf("Your terminal has %d columns and %d lines\n", width, height);
  */
 int get_termsize(int* _width, int* _height, char** err) {
 	static char errstr[1024];
 	errstr[0] = 0;
-	*err = errstr;
+
+	if ( err != NULL )
+		*err = errstr;
 
 	char *termtype = getenv("TERM");
 	char term_buffer[2048];

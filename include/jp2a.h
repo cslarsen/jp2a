@@ -7,6 +7,8 @@
  * $Id$
  */
 
+#include <stdio.h>
+
 // curl.c
 #ifdef FEAT_CURL
 extern int is_url(const char* s);
