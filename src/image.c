@@ -172,7 +172,7 @@ void print_info(const struct jpeg_decompress_struct* jpg) {
 void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* i) {
 	static int lasty = 0;
 	const int y = ROUND( i->resize_y * (float) (jpg->output_scanline-1) );
-	int x;
+	int x=0;
 
 	// include all scanlines since last call
 
@@ -189,15 +189,36 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 			// RGB -> Grayscale, calculate luminance based on weights
 			for ( x=0; x < i->width; ++x ) {
 				const JSAMPLE *src = &scanline[i->lookup_resx[x]];
+				const JSAMPLE *src_end = &scanline[i->lookup_resx[x+1]];
 
-				pixel[x] += RED[src[0]] + GREEN[src[1]] + BLUE[src[2]];
+				int adds = 0;
+				float v = 0.0f;
+				while ( src <= src_end ) {
+					v += RED[src[0]] + GREEN[src[1]] + BLUE[src[2]];
+					++adds;
+					src += jpg->out_color_components;
+				}
+
+				pixel[x] += adds>1 ? v / (float) adds : v;
 			}
 
 		} else {
 
 			// Grayscale
-			for ( x=0; x < i->width; ++x )
-				pixel[x] += (float) scanline[i->lookup_resx[x]] * ( 1.0f / 255.0f );
+			for ( x=0; x < i->width; ++x ) {
+				const JSAMPLE *src = &scanline[i->lookup_resx[x]];
+				const JSAMPLE *src_end = &scanline[i->lookup_resx[x+1]];
+
+				int adds = 0;
+				float v = 0.0f;
+				while ( src <= src_end ) {
+					v += (float) GRAY[src[0]];
+					++adds;
+					++src;
+				}
+
+				pixel[x] += adds>1 ? v / (float) adds : v;
+			}
 
 		}
 
@@ -233,7 +254,8 @@ void malloc_image(Image* i) {
 		exit(1);
 	}
 
-	if ( (i->lookup_resx = (int*) malloc(width * sizeof(int))) == NULL ) {
+	// we allocate one extra pixel for resx because of the src .. src_end stuff in process_scanline
+	if ( (i->lookup_resx = (int*) malloc( (1 + width) * sizeof(int))) == NULL ) {
 		fprintf(stderr, "Not enough memory for given output dimension (lookup_resx)\n");
 		free_image(i);
 		exit(1);
@@ -242,10 +264,10 @@ void malloc_image(Image* i) {
 
 void init_image(Image *i, const struct jpeg_decompress_struct *jpg) {
 	i->resize_y = (float) (i->height - 1) / (float) (jpg->output_height - 1);
-	i->resize_x = (float) (jpg->output_width - 1) / (float) (i->width - 1);
+	i->resize_x = (float) (jpg->output_width - 1) / (float) (i->width );
 
 	int dst_x;
-	for ( dst_x=0; dst_x < i->width; ++dst_x ) {
+	for ( dst_x=0; dst_x <= i->width; ++dst_x ) {
 		i->lookup_resx[dst_x] = ROUND( (float) dst_x * i->resize_x );
 		i->lookup_resx[dst_x] *= jpg->out_color_components;
 	}
