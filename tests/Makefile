@@ -46,6 +46,9 @@ intro:
 	@echo "      see for yourself if jp2a is completely broken.  If not,"
 	@echo "      you can safely install it."
 	@echo
+	@echo "      I have also not taken into account the different build"
+	@echo "      options;  ALL OPTIONS are tested here."
+	@echo
 	@echo TESTING VARIOUS JP2A RUNS
 
 normal:
