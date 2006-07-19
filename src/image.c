@@ -261,6 +261,13 @@ void decompress(FILE *fp, FILE *fout) {
 	jpeg_read_header(&jpg, TRUE);
 	jpeg_start_decompress(&jpg);
 
+	if ( jpg.data_precision != 8 ) {
+		fprintf(stderr,
+			"Image has %d bits color channels, we only support 8-bit.\n",
+			jpg.data_precision);
+		exit(1);
+	}
+
 	int row_stride = jpg.output_width * jpg.output_components;
 
 	JSAMPARRAY buffer = (*jpg.mem->alloc_sarray)
