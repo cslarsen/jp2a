@@ -219,18 +219,26 @@ void parse_options(int argc, char** argv) {
 			exit(1);
 		}
 
-		switch ( termfit ) {
+
+		int fit_to_use = termfit;
+
+		if ( termfit == TERM_FIT_AUTO ) {
+			// use the smallest of terminal width or height 
+			// to guarantee that image fits in display.
+
+			if ( term_width <= term_height )
+				fit_to_use = TERM_FIT_WIDTH;
+			else
+				fit_to_use = TERM_FIT_HEIGHT;
+		}
+
+		switch ( fit_to_use ) {
 		case TERM_FIT_ZOOM:
 			auto_width = auto_height = 0;
 			width = term_width;
 			height = term_height;
 			--height; // make room for command prompt
 			break;
-
-		case TERM_FIT_AUTO:
-			// try first with TERM_FIT_WIDTH, if that's too big,
-			// then aspect_ratio() in image.c will reorient
-			// output dimensions.
 
 		case TERM_FIT_WIDTH:
 			width = term_width;

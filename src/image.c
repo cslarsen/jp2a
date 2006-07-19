@@ -49,10 +49,6 @@ void aspect_ratio(const int jpeg_width, const int jpeg_height) {
 
 	// calc width
 	if ( auto_width && !auto_height ) {
-		if ( termfit==TERM_FIT_ZOOM && height==term_height ) {
-			height = use_border? term_height - 3 : term_height - 1;
-		}
-
 		width = CALC_WIDTH;
 
 		// adjust for too small dimensions	
@@ -60,17 +56,12 @@ void aspect_ratio(const int jpeg_width, const int jpeg_height) {
 			++height;
 			aspect_ratio(jpeg_width, jpeg_height);
 		}
-
-		// reorient output dimensions if needed
-		if ( termfit==TERM_FIT_AUTO && width>term_width ) {
-			width = term_width;
-			height = CALC_HEIGHT - 1; // this actually breaks aspect ratio
-
-			if ( use_border ) {
-				width -= 2;
-				height -= 2;
-			}
+		
+		while ( termfit==TERM_FIT_AUTO && (width + use_border*2)>term_width ) {
+			--height;
+			aspect_ratio(jpeg_width, jpeg_height);
 		}
+
 	}
 
 	// calc height
@@ -81,17 +72,6 @@ void aspect_ratio(const int jpeg_width, const int jpeg_height) {
 		while ( height==0 ) {
 			++width;
 			aspect_ratio(jpeg_width, jpeg_height);
-		}
-
-		// reorient output dimensions if needed
-		if ( termfit==TERM_FIT_AUTO && height>term_height ) {
-			height = term_height - 1;
-			width = CALC_WIDTH;
-
-			if ( use_border ) {
-				width -= 2;
-				height -= 2;
-			}
 		}
 	}
 }
