@@ -64,7 +64,7 @@ void aspect_ratio(const int jpeg_width, const int jpeg_height) {
 		// reorient output dimensions if needed
 		if ( termfit==TERM_FIT_AUTO && width>term_width ) {
 			width = term_width;
-			height = CALC_HEIGHT;
+			height = CALC_HEIGHT - 1; // this actually breaks aspect ratio
 
 			if ( use_border ) {
 				width -= 2;
@@ -85,7 +85,7 @@ void aspect_ratio(const int jpeg_width, const int jpeg_height) {
 
 		// reorient output dimensions if needed
 		if ( termfit==TERM_FIT_AUTO && height>term_height ) {
-			height = term_height;
+			height = term_height - 1;
 			width = CALC_WIDTH;
 
 			if ( use_border ) {

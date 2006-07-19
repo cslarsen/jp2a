@@ -5,3 +5,5 @@ SUGGESTIONS
 
 BUGS
 - Some conversions are not 100% equal across platforms.  Investigate this (maybe it has something to do with floating point precision?)
+- When using --term-fit, if height is then calculated from width, the height is decremented by one so that commandline prompt will fit.
+  This breaks aspect ratio.
