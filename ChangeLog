@@ -1,6 +1,7 @@
 CHANGES SINCE 0.9.18
+- Default running mode is now "jp2a --term-fit" if you have --enable-termlib (which is also default).
 - New options --term-fit, --term-width, --term-height to automatically fit image to terminal display.
-- MUCH better output quality as all source pixels are now read.
+- Much better output quality as all source pixels are now read.
 - Configure now accepts --enable-termlib (default) or --disable-termlib.
 - Bugfix: In some cases, the last pixel(s) of the source images were not read.
 - Will now gracefully exit if jpeg color precision is other than 8 bits per channels.

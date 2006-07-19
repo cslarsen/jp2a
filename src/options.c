@@ -36,7 +36,14 @@
 int verbose = 0;
 int auto_height = 1;
 int auto_width = 0;
-int width = 78;
+
+int width =
+#ifdef FEAT_TERMLIB
+ 0;
+#else
+ 78;
+#endif
+
 int height = 0;
 int use_border = 0;
 int invert = 0;
@@ -46,9 +53,15 @@ int html = 0;
 int html_fontsize = 4;
 int debug = 0;
 int clearscr = 0;
-int termfit = 0;
 int term_width = 0;
 int term_height = 0;
+
+int termfit =
+#ifdef FEAT_TERMLIB
+ TERM_FIT_AUTO;
+#else
+ 0;
+#endif
 
 #define ASCII_PALETTE_SIZE 256
 char ascii_palette[ASCII_PALETTE_SIZE + 1] = "   ...',;:clodxkO0KXNWM";
@@ -118,7 +131,11 @@ void help() {
 "  -V, --version     Print program version.\n"
 "      --width=N     Set output width, calculate height from ratio.\n"
 "\n"
+#ifdef FEAT_TERMLIB
+"  The default running mode is `jp2a --term-fit'.  See the man page for jp2a\n"
+#else
 "  The default running mode is `jp2a --width=78'.  See the man page for jp2a\n"
+#endif
 "  to see detailed usage examples.\n\n" , stderr);
 
 	fprintf(stderr, "Project homepage on %s\n", url);
@@ -210,6 +227,13 @@ void parse_options(int argc, char** argv) {
 		help();
 		exit(1);
 	}
+
+#ifdef FEAT_TERMLIB
+	if ( (width || height) && termfit==TERM_FIT_AUTO ) {
+		// disable default --term-fit if dimensions are given
+		termfit = 0;
+	}
+#endif
 
 	if ( termfit ) {
 		char* err = "";
