@@ -172,7 +172,6 @@ void print_info(const struct jpeg_decompress_struct* jpg) {
 void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* scanline, Image* i) {
 	static int lasty = 0;
 	const int y = ROUND( i->resize_y * (float) (jpg->output_scanline-1) );
-	int x=0;
 
 	// include all scanlines since last call
 
@@ -180,53 +179,18 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 
 	while ( lasty <= y ) {
 
-		// we always assume 8-bits per channel
-		// there is no test for this, so stuff will look incorrect with
-		// other bit-depths.
-
-		int w = i->width;
-
-		float *pRED = RED;
-		float *pGREEN = GREEN;
-		float *pBLUE = BLUE;
-
-		if ( jpg->out_color_components != 3 ) {
-			// assume grayscale, only use first component
-			pRED = GRAY;
-			pGREEN = pBLUE = ZERO_CHN;
-			w -= 2; // last two components
-		}
-
-		for ( x=0; x < w; ++x ) {
+		int x;
+		for ( x=0; x < i->width; ++x ) {
 			const JSAMPLE *src = &scanline[i->lookup_resx[x]];
 			const JSAMPLE *src_end = &scanline[i->lookup_resx[x+1]];
 
 			int adds = 0;
 			float v = 0.0f;
 			while ( src <= src_end ) {
-/*
 				v += jpg->out_color_components==3 ?
 					  RED[src[0]] + GREEN[src[1]] + BLUE[src[2]]
 					: GRAY[src[0]];
-*/
-				v += pRED[src[0]] + pGREEN[src[1]] + pBLUE[src[2]];
 
-				++adds;
-				src += jpg->out_color_components;
-			}
-
-			pixel[x] += adds>1 ? v / (float) adds : v;
-		}
-
-		// add lost grayscale pixels
-		for ( ; x < i->width; ++x ) {
-			const JSAMPLE *src = &scanline[i->lookup_resx[x]];
-			const JSAMPLE *src_end = &scanline[i->lookup_resx[x+1]];
-
-			int adds = 0;
-			float v = 0.0f;
-			while ( src <= src_end ) {
-				v += GRAY[src[0]];
 				++adds;
 				src += jpg->out_color_components;
 			}
