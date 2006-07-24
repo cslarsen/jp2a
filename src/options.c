@@ -72,7 +72,7 @@ float greenweight = 0.5866f;
 float blueweight = 0.1145f;
 
 // calculated in parse_options
-float RED[256], GREEN[256], BLUE[256], GRAY[256];
+float RED[256], GREEN[256], BLUE[256], GRAY[256], ZERO_CHN[256];
 
 const char *fileout = "-"; // stdout
 
@@ -155,6 +155,7 @@ void precalc_rgb(const float red, const float green, const float blue) {
 		GREEN[n] = ((float) n) * green / 255.0f;
 		BLUE[n]  = ((float) n) * blue / 255.0f;
 		GRAY[n]  = ((float) n) / 255.0f;
+		ZERO_CHN[n] = 0.0f;
 	}
 }
 
