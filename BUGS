@@ -1,4 +1,4 @@
-SUGGESTIONS
+TODO
 - Consider using Bresenham scaling (search for "Image scanling with Bresenham" on DDJ.com)
 - Consider using other libs for image conversions, e.g. would be nice to read GIF and PNG.  (See libpng, gdlib.)
 
