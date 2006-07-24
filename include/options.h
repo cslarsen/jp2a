@@ -23,7 +23,7 @@ extern int debug;
 extern int clearscr;
 extern char ascii_palette[];
 extern float redweight, greenweight, blueweight;
-extern float RED[256], GREEN[256], BLUE[256], GRAY[256], IGNORE_CHN[256];
+extern float RED[256], GREEN[256], BLUE[256], GRAY[256];
 extern const char *fileout;
 extern int termfit;
 extern int term_width;
