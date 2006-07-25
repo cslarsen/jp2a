@@ -1,6 +1,6 @@
 Package: jp2a
 Version: 0.9.19
-Revision: 8
+Revision: 1
 Depends: libjpeg-shlibs, curl-shlibs, ncurses-shlibs | libncurses5-shlibs
 Description: Converts JPEG images to ASCII
 DescDetail: <<
