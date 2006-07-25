@@ -1,0 +1,23 @@
+Package: jp2a
+Version: 0.9
+Revision: 19
+Depends: curl libjpeg
+Description: Converts JPEG to ASCII
+DescDetail: <<
+  jp2a converts JPEG images to ASCII characters.  It accepts
+  several output options, and can download files right off the net.
+<<
+Source: http://superb-west.dl.sourceforge.net/sourceforge/jp2a/jp2a-%v.tar.bz2
+Source-MD5: a140ca34b81cb4f978c0d5e8d57e410c
+SourceDirectory: 
+Patch: 
+CompileScript: <<
+<<
+InstallScript: <<
+<<
+DocFiles: README INSTALL AUTHORS COPYING LICENCES
+DescPort: <<
+<<
+License: GPL
+Homepage: http://jp2a.sourceforge.net
+Maintainer: Christian Stigen Larsen <csl@sublevel3.org>
