@@ -7,6 +7,10 @@ DescDetail: <<
   jp2a converts JPEG images to ASCII characters.  It accepts
   several output options, and can download files right off the net.
 <<
+DescUsage: <<
+  To convert a JPEG image, use jp2a filename.jpg.  Use jp2a -h to see
+  the options available.
+<<
 CompileScript: <<
 ./configure --prefix=%p --with-jpeg-prefix=%p --with-curl-config=%p/bin --mandir=%p/share/man
 make
