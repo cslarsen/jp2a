@@ -15,7 +15,7 @@
 JP=../src/jp2a
 UNAME=`uname -a`
 
-if test "`echo $(UNAME) | cut -c6`" == "CYGWIN" ; then
+if test "`echo $(UNAME) | cut -c1-6`" == "CYGWIN" ; then
 	JP=../src/jp2a.exe
 fi
 
