@@ -12,7 +12,7 @@
 
     You can read the full license in the file COPYING.  jp2a also
     uses other libraries.  These licenses can be found in the file
-    LICENSE.
+    LICENSES.
 
     The latest version is available from http://jp2a.sf.net
 
@@ -87,25 +87,47 @@
     (Don't use Gnuwin32's version, it completely broke on my system).
     
     Fire up MS Visual Studio, you should select C++ compilation, because
-    (at least with my setup) the C compiler gave some extremely strange
-    warnings.
+    (at least with my MSVC version) the C compiler gave some strange
+    warnings and errors, probably due to the fact that i use some C99
+    code.
     
-    Since config.h is not there, you need to add defines:
-    
+    Since config.h is not generated for MSVC, you need to add some
+    preprocessor definitions:
+   
+    WIN32
+    NDEBUG
+    _CONSOLE
     PACKAGE_STRING=\"jp2a x.x.x-win32\"
     PACKAGE_BUGREPORT=\"csl@sublevel3.org\"
+    HAVE_STRING_H
+    HAVE_STDLIB_H
+    FEAT_CURL
+    HAVE_CURL_CURL_H
+    CURL_STATICLIB
+    FEAT_TERMLIB
     
     Add the jpeg.lib file provided by above URL in the search directory
     and in the linker input, and then everything should compile without
-    any errors.
+    any errors.  If you want CURL support, you can find a good win32
+    version for development from
+
+    http://my.guardpuppy.com/libcurl-7.15.1-msvc-win32-ssl-0.9.8a-zlib-1.2.3.zip
+
+    (that is, go to http://curl.haxx.se, select DOWNLOAD and look for the
+    MSVC SSL libcurl versions.)
+
 
     BUILDING ON WINDOWS (MINGW32)
 
     Using mingw32 is straight-forward if you have a working (non-MSVC)
-    jpeglib.  You do something along these lines:
+    jpeglib.  On Mac OS X, you do something along these lines to
+    cross-compile:
 
     ./configure --host=i386-mingw32
     make test
+
+    I currently use MS Visual C++ to compile the Win32 binaries for jp2a,
+    but I am going to swith to using mingw32.
     
 
 $Id$
