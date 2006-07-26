@@ -37,7 +37,7 @@ function test_failed() {
 
 function test_jp2a() {
 	CMD="${JP} ${2}"
-	echo -n "test ($((RESULT_OK+RESULT_FAILED+1))) (${1}) ... "
+	printf "test (%2s) %32s  ...  " "$((RESULT_OK+RESULT_FAILED+1))" "(${1})"
 	eval ${CMD} | diff --brief --strip-trailing-cr - ${3} 1>/dev/null && test_ok || test_failed ${3} "${CMD}"
 	echo ""
 }

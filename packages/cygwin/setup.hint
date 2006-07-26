@@ -1,11 +1,7 @@
 # $Id$
-@ jp2a
 sdesc: "converts JPEG images to ASCII"
 ldesc: "converts JPEG images to ASCII with given output options.  Accepts URLs, filenames or standard input."
 skip:
-curr: 0.9.20
-prev: 0.9.20
-test: 0.9.20
-category: Graphics
-requires: libjpeg6b curl-devel libncurses5
+category: Graphics Text
+requires: libjpeg6b curl-devel libncurses5 cygwin
 external-source: jp2a
