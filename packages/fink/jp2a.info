@@ -1,7 +1,8 @@
 Package: jp2a
-Version: 0.9.19
+Version: 0.9.20
 Revision: 1
 Depends: libjpeg-shlibs, curl-shlibs, ncurses-shlibs | libncurses5-shlibs
+BuildDepends: libjpeg-shlibs, curl-shlibs, ncurses-shlibs | libncurses5-shlibs
 Description: Converts JPEG images to ASCII
 DescDetail: <<
   jp2a converts JPEG images to ASCII characters.  It accepts
@@ -11,15 +12,12 @@ DescUsage: <<
   To convert a JPEG image, use jp2a filename.jpg.  Use jp2a -h to see
   the options available.
 <<
-CompileScript: <<
-./configure --prefix=%p --with-jpeg-prefix=%p --with-curl-config=%p/bin --mandir=%p/share/man
-make
-<<
+ConfigureParams: --with-jpeg-prefix=%p --with-curl-config=%p/bin --mandir=%i/share/man
 InstallScript: <<
 make install
 <<
 Source: mirror:sourceforge:/jp2a/jp2a-%v.tar.bz2
-Source-MD5: a140ca34b81cb4f978c0d5e8d57e410c
+Source-MD5: ab4c61905a10938db5a8e9df05b30d79
 DocFiles: README INSTALL AUTHORS COPYING LICENSES
 License: GPL
 Homepage: http://jp2a.sourceforge.net
