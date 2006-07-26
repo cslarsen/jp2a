@@ -139,6 +139,7 @@ void help() {
 #else
 "  The default mode is `jp2a --width=78 --background=dark'.\n"
 #endif
+"  See the man-page for jp2a for more detailed help text.\n"
 "\n", stderr);
 
 	fprintf(stderr, "Project homepage on %s\n", url);
