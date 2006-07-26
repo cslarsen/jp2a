@@ -100,7 +100,7 @@ void help() {
 "Convert files in JPEG format to ASCII.\n\n"
 #endif
 "OPTIONS\n"
-"  -                 Read JPEG image from standard input.\n"
+"  -                 Read images from standard input.\n"
 "      --blue=N.N    Set RGB to grayscale conversion weight, default is 0.1145\n"
 "  -b, --border      Print a border around the output image.\n"
 "      --chars=...   Select character palette used to paint the image.\n"
@@ -121,15 +121,12 @@ void help() {
 "      --height=N    Set output height, calculate width from aspect ratio.\n"
 "  -h, --help        Print program help.\n"
 "      --html        Produce strict XHTML 1.0 output.\n"
-"      --html-fontsize=N\n"
-"                    Set fontsize to N pt, default is 4.\n"
+"      --html-fontsize=N   Set fontsize to N pt, default is 4.\n"
 "  -i, --invert      Invert output image.  Use if your display has a dark\n"
 "                    background.\n"
-"      --background=dark\n"
-"      --background=light\n"
-"                    These are just mnemonics whether to use --invert or not.\n"
-"                    If your console has white characters on black background,\n"
-"                    then use --background=dark, and vice versa.\n"
+"      --background=dark   These are just mnemonics whether to use --invert\n"
+"      --background=light  or not.  If your console has light characters on\n"
+"                          a dark background, use --backgorund=dark.\n"
 "      --output=...  Write output to file.\n"
 "      --red=N.N     Set RGB to grayscale conversion weight, default 0.2989f.\n"
 "      --size=WxH    Set output width and height.\n"
@@ -142,7 +139,7 @@ void help() {
 #else
 "  The default mode is `jp2a --width=78 --background=dark'.\n"
 #endif
-"  See `man jp2a' for usage examples.\n\n" , stderr);
+"\n", stderr);
 
 	fprintf(stderr, "Project homepage on %s\n", url);
 	fprintf(stderr, "Report bugs to <%s>\n", PACKAGE_BUGREPORT);

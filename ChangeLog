@@ -1,3 +1,9 @@
+CHANGES SINCE 0.9.19
+- Looks for term.h in ncurses/term.h also now (for Cygwin support).
+- Package update sent to darwinports.
+- Package submitted to fink.
+- Shrunk help text.
+
 CHANGES SINCE 0.9.18
 - Default running mode is now "jp2a --term-fit" if you have --enable-termlib (which is also default).
 - New options --term-fit, --term-width, --term-height to automatically fit image to terminal display.

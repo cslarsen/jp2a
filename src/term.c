@@ -25,11 +25,15 @@
 #include <curses.h>
 #endif
 
+#ifdef FEAT_TERMLIB
 #ifdef HAVE_TERM_H
 #include <term.h>
+#else
+ #ifdef HAVE_NCURSES_TERM_H
+ #include <ncurses/term.h>
+ #endif
 #endif
 
-#ifdef FEAT_TERMLIB
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
