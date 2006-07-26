@@ -249,6 +249,11 @@ void parse_options(int argc, char** argv) {
 			exit(1);
 		}
 
+#ifdef __CYGWIN__
+	// On Cygwin, if I don't decrement term_width, then you'll get extra
+	// blank lines for some window sizes, hence we decrease by one.
+	--term_width;
+#endif
 
 		int fit_to_use = termfit;
 
