@@ -12,11 +12,11 @@
 #####
 
 ## PATH TO EXECUTABLE jp2a
-JP=../src/jp2a
+JP=../win32-dist/jp2a
 UNAME=`uname -a`
 
 if test "`echo $(UNAME) | cut -c1-6`" == "CYGWIN" ; then
-	JP=../src/jp2a.exe
+	JP=../win32-dist/jp2a.exe
 fi
 
 ## INITIALIZE VARS
