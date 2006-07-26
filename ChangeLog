@@ -1,4 +1,5 @@
 CHANGES SINCE 0.9.19
+- Bugfix (win32): Can now read images from standard input.
 - Using BASH script for testing now.
 - Updated tests to use --width=78 (the old default) where appropriate.
 - Cygwin support.
