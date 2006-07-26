@@ -12,7 +12,7 @@
 #####
 
 ## PATH TO EXECUTABLE jp2a
-JP=../win32-dist/jp2a
+JP=../src/jp2a
 UNAME=`uname -a`
 
 if test "`echo $(UNAME) | cut -c1-6`" == "CYGWIN" ; then
