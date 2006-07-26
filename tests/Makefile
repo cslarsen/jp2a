@@ -51,17 +51,17 @@ intro:
 	@echo TESTING VARIOUS JP2A RUNS
 
 normal:
-	$(JP) jp2a.jpg | $(DIFF) normal.txt
+	$(JP) --width=78 jp2a.jpg | $(DIFF) normal.txt
 
 normal-output:
-	$(JP) jp2a.jpg --output=/tmp/jp2a-test.txt && diff --brief /tmp/jp2a-test.txt normal.txt
+	$(JP) --width=78 jp2a.jpg --output=/tmp/jp2a-test.txt && diff --brief /tmp/jp2a-test.txt normal.txt
 	rm -f /tmp/jp2a-test.txt
 
 normal-clear:
-	$(JP) jp2a.jpg --clear | $(DIFF) normal-clear.txt
+	$(JP) --width=78 jp2a.jpg --clear | $(DIFF) normal-clear.txt
 
 normal-b:
-	$(JP) -b jp2a.jpg | $(DIFF) normal-b.txt
+	$(JP) -b --width=78 jp2a.jpg | $(DIFF) normal-b.txt
 
 logo-30:
 	$(JP) logo-40x25-gray.jpg --height=30 | $(DIFF) logo-30.txt
@@ -84,10 +84,10 @@ dalsnuten-jp2a-2000x2000:
 	$(JP) --size=2000x2000 dalsnuten-640x480-gray-low.jpg jp2a.jpg | tr -d '\r' | wc -c | tr -d ' ' | $(DIFF) dalsnuten-jp2a-2000x2000-md5.txt
 
 dalsnuten-normal:
-	$(JP) dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-normal.txt
+	$(JP) --width=78 dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-normal.txt
 
 dalsnuten-invert:
-	$(JP) --invert dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-invert.txt
+	$(JP) --invert --width=78 dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-invert.txt
 
 dalsnuten-80x49-inv:
 	$(JP) --invert --size=80x49 dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-80x49-inv.txt
@@ -99,17 +99,17 @@ dalsnuten-640x480-low:
 	$(JP) dalsnuten-640x480-gray-low.jpg --size=80x25 --invert --border --size=150x45 | $(DIFF) dalsnuten-640x480-gray-low.txt
 
 2xnormal-b:
-	$(JP) -b jp2a.jpg jp2a.jpg | $(DIFF) 2xnormal-b.txt
+	$(JP) --width=78 -b jp2a.jpg jp2a.jpg | $(DIFF) 2xnormal-b.txt
 
 stdin-normal:
 	@echo -e "\nTESTING STANDARD INPUT"
-	cat jp2a.jpg | $(JP) - | $(DIFF) normal.txt
+	cat jp2a.jpg | $(JP) --width=78 - | $(DIFF) normal.txt
 
 stdin-40x40:
 	cat jp2a.jpg | $(JP) - --width=40 --height=40 | $(DIFF) 40x40.txt
 
 normal-verbose:
-	$(JP) --verbose jp2a.jpg 2>&1 | tr -d '\r' | $(DIFF) normal-verbose.txt
+	$(JP) --verbose --width=78 jp2a.jpg 2>&1 | tr -d '\r' | $(DIFF) normal-verbose.txt
 
 160x49:
 	$(JP) --width=160x49 jp2a.jpg | $(DIFF) 160x49.txt
@@ -130,7 +130,7 @@ logo:
 	$(JP) --size=80x50 --html --html-fontsize=7 jp2a.jpg | $(DIFF) logo.html
 
 flip-xy-invert:
-	$(JP) --flipx --flipy --invert jp2a.jpg | $(DIFF) flip-xy-invert.txt
+	$(JP) --width=78 --flipx --flipy --invert jp2a.jpg | $(DIFF) flip-xy-invert.txt
 
 dalsnuten-640x480-gray-low:
 	$(JP) --invert dalsnuten-640x480-gray-low.jpg | $(DIFF) dalsnuten-640x480-gray-low.txt

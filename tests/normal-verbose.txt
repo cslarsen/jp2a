@@ -2,30 +2,31 @@ File: jp2a.jpg
 Source width: 80
 Source height: 50
 Source color components: 1
-Output width: 74
-Output height: 23
+Output width: 78
+Output height: 24
 Output palette (23 chars): '   ...',;:clodxkO0KXNWM'
 Decompressing image [##....................................................]Decompressing image [###...................................................]Decompressing image [####..................................................]Decompressing image [#####.................................................]Decompressing image [######................................................]Decompressing image [########..............................................]Decompressing image [#########.............................................]Decompressing image [##########............................................]Decompressing image [###########...........................................]Decompressing image [############..........................................]Decompressing image [#############.........................................]Decompressing image [##############........................................]Decompressing image [###############.......................................]Decompressing image [################......................................]Decompressing image [#################.....................................]Decompressing image [##################....................................]Decompressing image [###################...................................]Decompressing image [#####################.................................]Decompressing image [######################................................]Decompressing image [#######################...............................]Decompressing image [########################..............................]Decompressing image [#########################.............................]Decompressing image [##########################............................]Decompressing image [###########################...........................]Decompressing image [############################..........................]Decompressing image [#############################.........................]Decompressing image [##############################........................]Decompressing image [###############################.......................]Decompressing image [################################......................]Decompressing image [#################################.....................]Decompressing image [###################################...................]Decompressing image [####################################..................]Decompressing image [#####################################.................]Decompressing image [######################################................]Decompressing image [#######################################...............]Decompressing image [########################################..............]Decompressing image [#########################################.............]Decompressing image [##########################################............]Decompressing image [###########################################...........]Decompressing image [############################################..........]Decompressing image [#############################################.........]Decompressing image [##############################################........]Decompressing image [################################################......]Decompressing image [#################################################.....]Decompressing image [##################################################....]Decompressing image [###################################################...]Decompressing image [####################################################..]Decompressing image [#####################################################.]Decompressing image [######################################################]Decompressing image [#######################################################]
-MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-MMMMMMWWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWWWWWMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-MMMMNd'.c0MMMMMMMMMMMMMMMMMMMMMMMMMMKdl;'....';cdKWMMMMMMMMMMMMMMMMMMMMMMM
-MMMMX:  .kMMMMMMMMMMMMMMMMMMMMMMMMMW,            .dWMMMMMMMMMMMMMMMMMMMMMM
-MMMMNOolkXWMMWNKKKKKNMX000KNWMMMMMMN' .;cc:.      .0MMMMMMWNXK0000XWMMMMMM
-MMMWo....:KMMXc.....;c.   .':dXMMMMNdkNMMMMX:      OMMMXkl;'..    .;oKMMMM
-MMMWc    '0MMK,               'xWMMMWMMMMMMMd.    .KMMWl    ....     .kMMM
-MMMWc    '0MMK,     'okko'     .dWMMMMMMMMM0,    .xWMMNo,lk0XNNKd.    :NMM
-MMMWc    '0MMK,     lWMMM0'     ,KMMMMMMMNx.    :KMMMMMWWWKkdc;..     ;XMM
-MMMWc    '0MMK,     lWMMM0'     ,KMMMMMWO;    .dNMMMMMMXd;.   .:l'    ;XMM
-MMMWc    '0MMK,     :XWWK:      lWMMMMKl.    .cdxxxxXMK;     cXMN:    :NMM
-MMMWc    '0MMK,      .''.     .oXMMMKc.             xMO.     ;do:.    .;c0
-MMMWc    '0MMK,     .'.    .;dXMMMMK:...............kMWO;.     .:c.   ..:0
-MMMX;    ,KMMK,     lN0OOO0XWMMMMMMNKKKKKKKKKKKKKKKXWMMMWXOOOO0XWMKOOO0NWM
-MNx,     :NMMK,     lWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-MNc     ,0MMMK,     lWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-MMNo,,:xNMMMMXo,,,,,xMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMWWWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWWWWWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMWk:';oXMMMMMMMMMMMMMMMMMMMMMMMMMMMWKxl;,''';cdKWMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMK,   .dMMMMMMMMMMMMMMMMMMMMMMMMMMWo.          .cKMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMWx;',oXMMMMMMMMMMMMMMMMMMMMMMMMMMN'    .        ,KMMMMMMMMMMMMMMMMMMMMMMMM
+MMMWOllcllxNMMNklllllOKxlc:cldONMMMMMN;;dO0KOo.      dMMMMMWKkdoc:::clokXWMMMM
+MMMWc     '0MMK,               .cOWMMWXWMMMMMMd     .kMMMWx'.   ...     .:0MMM
+MMMWc     '0MMK,     .:oxd:.     .xMMMMMMMMMMN:     oWMMMNc.,ok0XXXx.     :NMM
+MMMWc     '0MMK,     lWMMMWx.     :XMMMMMMMMXc    .dNMMMMW00WMWNKkdc.     ;XMM
+MMMWc     '0MMK,     lWMMMMK,     ,KMMMMMMWO,    'OWMMMMMMMXkl;..  ..     ;XMM
+MMMWc     '0MMK,     lWMMMMk.     :NMMMMM0c.   .cKWWWWWMMWx.    .oOK:     ;XMM
+MMMWc     '0MMK,     .oxOkl.     .kMMMMXo.     .'''''';OMO.    .xMMK;     ,0NN
+MMMWc     '0MMK,                .kWMMM0,              .xM0'     .c:.       .,k
+MMMNc     '0MMK,     'c;,''',:okNMMMMXo;;;;;;;;;;;;;;;c0MW0o;,''',:odc,'',;:oK
+MMNx.     ,KMMK,     lWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MXc      .dWMMK,     lWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMk.    'xNMMMK,     lWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMWk::okNMMMMMNd::::cOMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM

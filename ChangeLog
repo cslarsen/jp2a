@@ -1,4 +1,5 @@
 CHANGES SINCE 0.9.19
+- Updated tests to use --width=78 (the old default) where appropriate.
 - Cygwin support.
 - Looks for term.h in ncurses/term.h also now (for Cygwin support).
 - Package update sent to darwinports.
