@@ -29,6 +29,7 @@
 #include <io.h>
 #define close _close
 #endif
+#include <fcntl.h>
 #endif
 
 int main(int argc, char** argv) {
@@ -52,6 +53,11 @@ int main(int argc, char** argv) {
 
 		// read from stdin
 		if ( argv[n][0]=='-' && !argv[n][1] ) {
+			#ifdef _WIN32
+			// Good news, everyone!
+			_setmode( _fileno( stdin ), _O_BINARY );
+			#endif
+
 			decompress(stdin, fout);
 			continue;
 		}
