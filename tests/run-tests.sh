@@ -44,9 +44,8 @@ function test_results() {
 	echo "TEST RESULTS FOR JP2A"
 	echo ""
 	echo "Total tests : $((RESULT_OK + RESULT_FAILED))"
-	echo "OK tests    : $((RESULT_OK))"
-	echo "Failed tests: $((RESULT_FAILED))"
-	echo "Percent OK  : $(( 100 * RESULT_OK / (RESULT_OK + RESULT_FAILED) ))%"
+	echo "OK tests    : $((RESULT_OK)) ($((100*RESULT_OK/(RESULT_OK+RESULT_FAILED)))%)"
+	echo "Failed tests: $((RESULT_FAILED)) ($((100*RESULT_FAILED/(RESULT_OK+RESULT_FAILED)))%)"
 }
 
 echo "-------------------------------------------------------------"
