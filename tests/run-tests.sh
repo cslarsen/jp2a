@@ -45,7 +45,7 @@ function test_results() {
 	echo ""
 	echo "Total tests : $((RESULT_OK + RESULT_FAILED))"
 	echo "OK tests    : $((RESULT_OK))"
-	echo "FAILED tests: $((RESULT_FAILED))"
+	echo "Failed tests: $((RESULT_FAILED))"
 	echo "Percent OK  : $(( 100 * RESULT_OK / (RESULT_OK + RESULT_FAILED) ))%"
 }
 
