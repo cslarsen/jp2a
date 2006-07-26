@@ -1,6 +1,6 @@
 Package: jp2a
 Version: 0.9.20
-Revision: 1
+Revision: 3
 Depends: libjpeg-shlibs, curl-shlibs, ncurses-shlibs
 BuildDepends: libjpeg-shlibs, curl-shlibs, ncurses-shlibs
 Description: Converts JPEG images to ASCII
@@ -12,7 +12,7 @@ DescUsage: <<
   To convert a JPEG image, use jp2a filename.jpg.  Use jp2a -h to see
   the options available.
 <<
-ConfigureParams: --with-jpeg-prefix=%p --with-curl-config=%p/bin --mandir=%i/share/man
+ConfigureParams: --with-jpeg-prefix=%p --with-curl-config=%p/bin --mandir=%p/share/man
 InstallScript: <<
 make install
 <<
