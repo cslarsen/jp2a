@@ -16,7 +16,7 @@ JP=../src/jp2a
 UNAME=`uname -a`
 
 if test "`echo $(UNAME) | cut -c1-6`" == "CYGWIN" ; then
-	JP=../win32-dist/jp2a.exe
+	JP=../src/jp2a.exe
 fi
 
 ## INITIALIZE VARS
