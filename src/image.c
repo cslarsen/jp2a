@@ -128,17 +128,26 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 
 			float t = 0.125f;
 			if ( !html ) {
-				if ( lum>0.65f ) fprintf(f, "\e[1m");
-				if ( red-t>green && red-t>blue ) fprintf(f, "\e[31m"); // red
-				else if ( green-t>red && green-t>blue ) fprintf(f, "\e[32m"); // green
-				else if ( red-t>blue && green-t>blue && red+green>0.8f ) fprintf(f, "\e[33m"); // yellow
-				else if ( blue-t>red && blue-t>green ) fprintf(f, "\e[34m"); // blue
-				else if ( red-t>green && blue-t>green && red+blue>0.8f ) fprintf(f, "\e[35m"); // magenta
-				else if ( green-t>red && blue-t>red && blue+green>0.8f ) fprintf(f, "\e[36m"); // cyan
 
-				fprintf(f, "%c", ch);
-				fprintf(f, "\e[0m");
-			} else {
+				int colr = 0;
+				int highl = 0;
+				if ( lum>=0.95f && red<0.01f && green<0.01f && blue<0.01f ) highl = 1; // intensity
+				if ( red-t>green && red-t>blue )                         colr = 31; // red
+				else if ( green-t>red && green-t>blue )                  colr = 32; // green
+				else if ( red-t>blue && green-t>blue && red+green>0.8f ) colr = 33; // yellow
+				else if ( blue-t>red && blue-t>green )                   colr = 34; // blue
+				else if ( red-t>green && blue-t>green && red+blue>0.8f ) colr = 35; // magenta
+				else if ( green-t>red && blue-t>red && blue+green>0.8f ) colr = 36; // cyan
+					
+				if ( !colr )
+					fprintf(f, !highl? "%c" : "\e[1m%c\e[0m", ch);
+				else {
+					fprintf(f, "\e[%dm%c", colr, ch);
+					fprintf(f, "\e[0m"); // reset
+				}
+
+			} else { // HTML output
+				
 				char chr[10];
 				chr[0] = ch;
 				chr[1] = 0;
