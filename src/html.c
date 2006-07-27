@@ -8,6 +8,7 @@
  */
 
 #include <stdio.h>
+#include "options.h"
 
 void print_html_start(const int fontsize) {
 	
@@ -24,10 +25,17 @@ void print_html_start(const int fontsize) {
 		"</style>\n"
 		"</head>\n"
 		"<body>\n"
-		"<div class='ascii'>\n"
-		"<pre>");
+		"<div class='ascii'>\n");
+	if ( !usecolors )
+		puts("<pre>");
+	else
+		puts("<div style='font-family: courier;'>");
 }
 
 void print_html_end() {
-	puts("</pre>\n</div>\n</body>\n</html>");
+	if ( !usecolors )
+		puts("</pre>");
+	else
+		puts("</div>");
+	puts("\n</div>\n</body>\n</html>");
 }

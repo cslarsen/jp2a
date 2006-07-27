@@ -55,6 +55,7 @@ int debug = 0;
 int clearscr = 0;
 int term_width = 0;
 int term_height = 0;
+int usecolors = 0;
 
 int termfit =
 #ifdef FEAT_TERMLIB
@@ -107,6 +108,7 @@ void help() {
 "                    Leftmost character corresponds to black pixel, right-\n"
 "                    most to white.  Minimum two characters must be specified.\n"
 "      --clear       Clears screen before drawing each output image.\n"
+"      --colors      Use ANSI colors in output.\n"
 "  -d, --debug       Print additional debug information.\n"
 "  -x, --flipx       Flip image in X direction.\n"
 "  -y, --flipy       Flip image in Y direction.\n"
@@ -176,6 +178,7 @@ void parse_options(int argc, char** argv) {
 		IF_OPTS("-v", "--verbose")          { verbose = 1; continue; }
 		IF_OPTS("-d", "--debug")            { debug = 1; continue; }
 		IF_OPT ("--clear")                  { clearscr = 1; continue; }
+		IF_OPTS("--color", "--colors")      { usecolors = 1; continue; }
 		IF_OPT ("--html")                   { html = 1; continue; }
 		IF_OPTS("-b", "--border")           { use_border = 1; continue; }
 		IF_OPTS("-i", "--invert")           { invert = !invert; continue; }

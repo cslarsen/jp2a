@@ -31,7 +31,8 @@
 typedef struct Image_ {
 	int width;
 	int height;
-	float *pixel;
+	float *pixel; // luminosity
+	float *red, *green, *blue;
 	int *yadds;
 	float resize_y;
 	float resize_x;
@@ -96,6 +97,72 @@ void print_border(const int width) {
 	#endif
 }
 
+void print_image_colors(const Image* const i, const int chars, FILE* f) {
+
+	int x, y;
+	for ( y=0;  y < i->height; ++y ) {
+
+		if ( use_border ) fprintf(f, "|");
+
+		int xstart=0;
+		int xend=i->width;
+		int xincr = 1;
+
+		if ( flipx ) {
+			xstart = i->width - 1;
+			xend = -1;
+			xincr = -1;
+		}
+
+		for ( x=xstart; x != xend; x += xincr ) {
+
+			float lum   = i->pixel[x + (flipy? i->height - y - 1 : y) * i->width];
+			float red   = i->red  [x + (flipy? i->height - y - 1 : y ) * i->width];
+			float green = i->green[x + (flipy? i->height - y - 1 : y ) * i->width];
+			float blue  = i->blue [x + (flipy? i->height - y - 1 : y ) * i->width];
+
+			if ( !invert ) lum = 1.0f - lum;
+
+			const int pos = ROUND((float)chars * lum);
+			char ch = ascii_palette[pos];
+
+			float t = 0.125f;
+			if ( !html ) {
+				if ( lum>0.65f ) fprintf(f, "\e[1m");
+				if ( red-t>green && red-t>blue ) fprintf(f, "\e[31m"); // red
+				else if ( green-t>red && green-t>blue ) fprintf(f, "\e[32m"); // green
+				else if ( red-t>blue && green-t>blue && red+green>0.8f ) fprintf(f, "\e[33m"); // yellow
+				else if ( blue-t>red && blue-t>green ) fprintf(f, "\e[34m"); // blue
+				else if ( red-t>green && blue-t>green && red+blue>0.8f ) fprintf(f, "\e[35m"); // magenta
+				else if ( green-t>red && blue-t>red && blue+green>0.8f ) fprintf(f, "\e[36m"); // cyan
+
+				fprintf(f, "%c", ch);
+				fprintf(f, "\e[0m");
+			} else {
+				char chr[10];
+				chr[0] = ch;
+				chr[1] = 0;
+
+				if ( ch==' ' ) strcpy(chr, "&nbsp;");
+				fprintf(f, "<b style='background-color: #%02x%02x%02x; color: #%02x%02x%02x;'>%s</b>",
+					ROUND(255.0f*red),
+					ROUND(255.0f*green),
+					ROUND(255.0f*blue),
+					ROUND(255.0f*lum*red),
+					ROUND(255.0f*lum*green),
+					ROUND(255.0f*lum*blue),
+					chr
+				);
+			}
+		}
+
+		if ( !html )
+			fprintf(f, !use_border? "\n" : "|\n");
+		else
+			fprintf(f, !use_border? "<br/>" : "|<br/>");
+	}
+}
+
 void print_image(const Image* const i, const int chars, FILE *f) {
 	#ifdef WIN32
 	char *line = (char*) malloc(i->width + 1);
@@ -125,22 +192,48 @@ void print_image(const Image* const i, const int chars, FILE *f) {
 }
 
 void clear(Image* i) {
-	memset(i->pixel, 0, i->width * i->height * sizeof(float));
 	memset(i->yadds, 0, i->height * sizeof(int) );
+	memset(i->pixel, 0, i->width * i->height * sizeof(float));
+	memset(i->lookup_resx, 0, (1 + i->width) * sizeof(int) );
+
+	if ( usecolors ) {
+		memset(i->red, 0, i->width * i->height * sizeof(float));
+		memset(i->green, 0, i->width * i->height * sizeof(float));
+		memset(i->blue, 0, i->width * i->height * sizeof(float));
+	}
 }
 
 void normalize(Image* i) {
 
 	float *pixel = i->pixel;
+	float *red   = i->red;
+	float *green = i->green;
+	float *blue  = i->blue;
+
 	int x, y;
 
-	for ( y=0; y < i->height; ++y, pixel += i->width ) {
+	for ( y=0; y < i->height; ++y ) {
 
 		if ( i->yadds[y] <= 1 )
 			continue;
 
-		for ( x=0; x < i->width; ++x )
+		for ( x=0; x < i->width; ++x ) {
 			pixel[x] /= i->yadds[y];
+
+			if ( usecolors ) {
+				red[x]   /= i->yadds[y];
+				green[x] /= i->yadds[y];
+				blue[x]  /= i->yadds[y];
+			}
+		}
+
+		pixel += i->width;
+
+		if ( usecolors ) {
+			red += i->width;
+			green += i->width;
+			blue += i->width;
+		}
 	}
 }
 
@@ -175,31 +268,64 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 
 	// include all scanlines since last call
 
-	float *pixel = &i->pixel[lasty * i->width];
+	float *pixel, *red, *green, *blue;
+	
+	pixel  = &i->pixel[lasty * i->width];
+
+	if ( usecolors ) {
+		red   = &i->red  [lasty * i->width];
+		green = &i->green[lasty * i->width];
+		blue  = &i->blue [lasty * i->width];
+	} else
+		red = green = blue = NULL;
 
 	while ( lasty <= y ) {
 
 		int x;
 		for ( x=0; x < i->width; ++x ) {
-			const JSAMPLE *src = &scanline[i->lookup_resx[x]];
+			const JSAMPLE *src     = &scanline[i->lookup_resx[x]];
 			const JSAMPLE *src_end = &scanline[i->lookup_resx[x+1]];
 
 			int adds = 0;
-			float v = 0.0f;
+
+			float v, r, g, b;
+			v = r = g = b = 0.0f;
+
 			while ( src <= src_end ) {
 				v += jpg->out_color_components==3 ?
-					  RED[src[0]] + GREEN[src[1]] + BLUE[src[2]]
-					: GRAY[src[0]];
+					  RED  [src[0]]
+					+ GREEN[src[1]]
+					+ BLUE [src[2]]
+					: GRAY [src[0]];
+
+				if ( usecolors && jpg->out_color_components==3 ) {
+					r += (float)src[0]/255.0f;
+					g += (float)src[1]/255.0f;
+					b += (float)src[2]/255.0f;
+				}
 
 				++adds;
 				src += jpg->out_color_components;
 			}
 
 			pixel[x] += adds>1 ? v / (float) adds : v;
+
+			if ( usecolors ) {
+				red  [x] += adds>1 ? r / (float) adds : r;
+				green[x] += adds>1 ? g / (float) adds : g;
+				blue [x] += adds>1 ? b / (float) adds : b;
+			}
 		}
 
 		++i->yadds[lasty++];
+
 		pixel += i->width;
+
+		if ( usecolors ) {
+			red   += i->width;
+			green += i->width;
+			blue  += i->width;
+		}
 	}
 
 	lasty = y;
@@ -207,32 +333,37 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 
 void free_image(Image* i) {
 	if ( i->pixel ) free(i->pixel);
+	if ( i->red ) free(i->red);
+	if ( i->green ) free(i->green);
+	if ( i->blue ) free(i->blue);
 	if ( i->yadds ) free(i->yadds);
 	if ( i->lookup_resx ) free(i->lookup_resx);
 }
 
 void malloc_image(Image* i) {
-	i->pixel = NULL;
+	i->pixel = i->red = i->green = i->blue = NULL;
 	i->yadds = NULL;
 	i->lookup_resx = NULL;
 
 	i->width = width;
 	i->height = height;
 
-	if ( (i->pixel = (float*) malloc(width * height * sizeof(float))) == NULL ) {
-		fprintf(stderr, "Not enough memory for given output dimension\n");
-		exit(1);
-	}
+	i->yadds = malloc(height * sizeof(int));
+	i->pixel = malloc(width*height*sizeof(float));
 
-	if ( (i->yadds = (int*) malloc(height * sizeof(int))) == NULL ) {
-		fprintf(stderr, "Not enough memory for given output dimension (for yadds)\n");
-		free_image(i);
-		exit(1);
+	if ( usecolors ) {
+		i->red = malloc(width*height*sizeof(float));
+		i->green = malloc(width*height*sizeof(float));
+		i->blue = malloc(width*height*sizeof(float));
 	}
 
 	// we allocate one extra pixel for resx because of the src .. src_end stuff in process_scanline
-	if ( (i->lookup_resx = (int*) malloc( (1 + width) * sizeof(int))) == NULL ) {
-		fprintf(stderr, "Not enough memory for given output dimension (lookup_resx)\n");
+	i->lookup_resx = malloc( (1 + width) * sizeof(int));
+
+	if ( !(i->pixel && i->yadds && i->lookup_resx) ||
+	     (usecolors && !(i->red && i->green && i->blue)) )
+	{
+		fprintf(stderr, "Not enough memory for given output dimension\n");
 		free_image(i);
 		exit(1);
 	}
@@ -302,7 +433,7 @@ void decompress(FILE *fp, FILE *fout) {
 	if ( html ) print_html_start(html_fontsize);
 	if ( use_border ) print_border(image.width);
 
-	print_image(&image, (int) strlen(ascii_palette) - 1, fout);
+	(!usecolors? print_image : print_image_colors) (&image, (int) strlen(ascii_palette) - 1, fout);
 
 	if ( use_border ) print_border(image.width);
 	if ( html ) print_html_end();
