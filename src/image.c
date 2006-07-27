@@ -140,10 +140,13 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 				else if ( green-t>red && blue-t>red && blue+green>0.8f ) colr = 36; // cyan
 					
 				if ( !colr )
-					fprintf(f, !highl? "%c" : "%d[1m%c%d[0m", 27, ch, 27);
+					if ( !highl )
+						fprintf(f,"%c", ch);
+					else
+						fprintf(f, "%c[1m%c%c[0m", 27, ch, 27);
 				else {
-					fprintf(f, "%d[%dm%c", 27, colr, ch);
-					fprintf(f, "%d[0m", 27); // reset
+					fprintf(f, "%c[%dm%c", 27, colr, ch);
+					fprintf(f, "%c[0m", 27); // reset
 				}
 
 			} else { // HTML output
