@@ -153,15 +153,29 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 				chr[1] = 0;
 
 				if ( ch==' ' ) strcpy(chr, "&nbsp;");
-				fprintf(f, "<b style='background-color: #%02x%02x%02x; color: #%02x%02x%02x;'>%s</b>",
-					ROUND(255.0f*red),
-					ROUND(255.0f*green),
-					ROUND(255.0f*blue),
-					ROUND(255.0f*lum*red),
-					ROUND(255.0f*lum*green),
-					ROUND(255.0f*lum*blue),
-					chr
-				);
+
+				if ( red<0.01f && green<0.01f && blue<0.01f && lum>0.01f ) {
+					// grayscale image
+					fprintf(f, "<b style='background-color: #%02x%02x%02x; color: #%02x%02x%02x;'>%s</b>",
+						ROUND(255.0f*lum),
+						ROUND(255.0f*lum),
+						ROUND(255.0f*lum),
+						ROUND(255.0f*lum*0.5f),
+						ROUND(255.0f*lum*0.5f),
+						ROUND(255.0f*lum*0.5f),
+						chr
+					);
+				} else {
+					fprintf(f, "<b style='background-color: #%02x%02x%02x; color: #%02x%02x%02x;'>%s</b>",
+						ROUND(255.0f*red),
+						ROUND(255.0f*green),
+						ROUND(255.0f*blue),
+						ROUND(255.0f*lum*red),
+						ROUND(255.0f*lum*green),
+						ROUND(255.0f*lum*blue),
+						chr
+					);
+				}
 			}
 		}
 
