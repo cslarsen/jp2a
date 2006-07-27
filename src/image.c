@@ -197,9 +197,9 @@ void clear(Image* i) {
 	memset(i->lookup_resx, 0, (1 + i->width) * sizeof(int) );
 
 	if ( usecolors ) {
-		memset(i->red, 0, i->width * i->height * sizeof(float));
+		memset(i->red,   0, i->width * i->height * sizeof(float));
 		memset(i->green, 0, i->width * i->height * sizeof(float));
-		memset(i->blue, 0, i->width * i->height * sizeof(float));
+		memset(i->blue,  0, i->width * i->height * sizeof(float));
 	}
 }
 
@@ -221,18 +221,18 @@ void normalize(Image* i) {
 			pixel[x] /= i->yadds[y];
 
 			if ( usecolors ) {
-				red[x]   /= i->yadds[y];
+				red  [x] /= i->yadds[y];
 				green[x] /= i->yadds[y];
-				blue[x]  /= i->yadds[y];
+				blue [x] /= i->yadds[y];
 			}
 		}
 
 		pixel += i->width;
 
 		if ( usecolors ) {
-			red += i->width;
+			red   += i->width;
 			green += i->width;
-			blue += i->width;
+			blue  += i->width;
 		}
 	}
 }
@@ -269,15 +269,15 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 	// include all scanlines since last call
 
 	float *pixel, *red, *green, *blue;
-	
+
 	pixel  = &i->pixel[lasty * i->width];
+	red = green = blue = NULL;
 
 	if ( usecolors ) {
 		red   = &i->red  [lasty * i->width];
 		green = &i->green[lasty * i->width];
 		blue  = &i->blue [lasty * i->width];
-	} else
-		red = green = blue = NULL;
+	}
 
 	while ( lasty <= y ) {
 
@@ -298,7 +298,7 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 					+ BLUE [src[2]]
 					: GRAY [src[0]];
 
-				if ( usecolors && jpg->out_color_components==3 ) {
+				if ( usecolors==1 && jpg->out_color_components==3 ) {
 					r += (float)src[0]/255.0f;
 					g += (float)src[1]/255.0f;
 					b += (float)src[2]/255.0f;
@@ -352,9 +352,9 @@ void malloc_image(Image* i) {
 	i->pixel = malloc(width*height*sizeof(float));
 
 	if ( usecolors ) {
-		i->red = malloc(width*height*sizeof(float));
+		i->red   = malloc(width*height*sizeof(float));
 		i->green = malloc(width*height*sizeof(float));
-		i->blue = malloc(width*height*sizeof(float));
+		i->blue  = malloc(width*height*sizeof(float));
 	}
 
 	// we allocate one extra pixel for resx because of the src .. src_end stuff in process_scanline
