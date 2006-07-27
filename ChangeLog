@@ -1,5 +1,6 @@
 CHANGES SINCE 0.9.20
 - Added color output for text (ANSI colors) and HTML (CSS colors).
+- Changed default HTML fontsize from 4 to 8 pt.
 - Fixed a bug that produced incorrect output when using --output and --html.
 - Fixed a bug that gave incorret --term-fit when vieweing multiple files.
 
