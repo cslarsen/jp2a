@@ -1,5 +1,6 @@
 CHANGES SINCE 0.9.20
 - Added color output for both text (ANSI colors) and HTML.
+- Fixed a bug that produced incorrect output when using --output and --html.
 
 CHANGES SINCE 0.9.19
 - A bash script is used for testing now.

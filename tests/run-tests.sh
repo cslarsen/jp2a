@@ -32,7 +32,7 @@ function test_ok() {
 function test_failed() {
 	echo -e -n "\e[1mFAILED\e[0m"
 	RESULT_FAILED=$((RESULT_FAILED + 1))
-	FAILED_STR="${FAILED_STR}\n${2} | diff --strip-trailing-cr - ${1}"
+	FAILED_STR="${FAILED_STR}\n${2} | diff -u --strip-trailing-cr - ${1}"
 }
 
 function test_jp2a() {

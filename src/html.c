@@ -10,32 +10,29 @@
 #include <stdio.h>
 #include "options.h"
 
-void print_html_start(const int fontsize) {
+void print_html_start(const int fontsize, FILE *f) {
 	
-	puts(   "<?xml version='1.0' encoding='ISO-8859-1'?>\n"
+	fputs(   "<?xml version='1.0' encoding='ISO-8859-1'?>\n"
 		"<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'"
 		"  'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n"
 		"<html xmlns='http://www.w3.org/1999/xhtml' lang='en' xml:lang='en'>\n"
 		"<head>\n"
 		"<title>jp2a converted image</title>\n"
 		"<style type='text/css'>\n"
-		".ascii {");
-	printf( "   font-size:%dpt;\n", fontsize);
-	puts(   "}\n"
+		".ascii {\n", f);
+	fprintf(f,
+		"   font-size:%dpt;\n", fontsize);
+	fputs(   "}\n"
 		"</style>\n"
 		"</head>\n"
 		"<body>\n"
-		"<div class='ascii'>\n");
-	if ( !usecolors )
-		puts("<pre>");
-	else
-		puts("<div style='font-family: courier;'>");
+		"<div class='ascii'>\n", f);
+	fputs(!usecolors?
+		"<pre>\n" :
+		"<div style='font-family: courier;'>\n", f);
 }
 
-void print_html_end() {
-	if ( !usecolors )
-		puts("</pre>");
-	else
-		puts("</div>");
-	puts("\n</div>\n</body>\n</html>");
+void print_html_end(FILE *f) {
+	fputs(!usecolors? "</pre>" : "</div>", f);
+	fputs("\n</div>\n</body>\n</html>\n", f);
 }
