@@ -1,3 +1,10 @@
-See the README file for installation instructions.
+See the README file for building and installation instructions.
+
+WIN32 BINARY VERSION
+
+Copy the files in win32-dist/ to e.g. C:\PROGRAM FILES\JP2A\.
+
+The supplied DLLs must be either in the same directory as jp2a.exe,
+or must be in a searchable path, e.g. C:\WINNT\SYSTEM32\.
 
 $Id$
