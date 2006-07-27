@@ -140,10 +140,10 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 				else if ( green-t>red && blue-t>red && blue+green>0.8f ) colr = 36; // cyan
 					
 				if ( !colr )
-					fprintf(f, !highl? "%c" : "\e[1m%c\e[0m", ch);
+					fprintf(f, !highl? "%c" : "%d[1m%c%d[0m", 27, ch, 27);
 				else {
-					fprintf(f, "\e[%dm%c", colr, ch);
-					fprintf(f, "\e[0m"); // reset
+					fprintf(f, "%d[%dm%c", 27, colr, ch);
+					fprintf(f, "%d[0m", 27); // reset
 				}
 
 			} else { // HTML output
@@ -371,17 +371,17 @@ void malloc_image(Image* i) {
 	i->width = width;
 	i->height = height;
 
-	i->yadds = malloc(height * sizeof(int));
-	i->pixel = malloc(width*height*sizeof(float));
+	i->yadds = (int*) malloc(height * sizeof(int));
+	i->pixel = (float*) malloc(width*height*sizeof(float));
 
 	if ( usecolors ) {
-		i->red   = malloc(width*height*sizeof(float));
-		i->green = malloc(width*height*sizeof(float));
-		i->blue  = malloc(width*height*sizeof(float));
+		i->red   = (float*) malloc(width*height*sizeof(float));
+		i->green = (float*) malloc(width*height*sizeof(float));
+		i->blue  = (float*) malloc(width*height*sizeof(float));
 	}
 
 	// we allocate one extra pixel for resx because of the src .. src_end stuff in process_scanline
-	i->lookup_resx = malloc( (1 + width) * sizeof(int));
+	i->lookup_resx = (int*) malloc( (1 + width) * sizeof(int));
 
 	if ( !(i->pixel && i->yadds && i->lookup_resx) ||
 	     (usecolors && !(i->red && i->green && i->blue)) )
