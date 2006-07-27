@@ -35,6 +35,11 @@
 int main(int argc, char** argv) {
 	parse_options(argc, argv);
 
+	int store_width = width;
+	int store_height = height;
+	int store_autow = auto_width;
+	int store_autoh = auto_height;
+
 	FILE *fout = stdout;
 
 	if ( strcmp(fileout, "-") ) {
@@ -46,6 +51,11 @@ int main(int argc, char** argv) {
 
 	int n;
 	for ( n=1; n<argc; ++n ) {
+
+		width = store_width;
+		height = store_height;
+		auto_width = store_autow;
+		auto_height = store_autoh;
 
 		// skip options
 		if ( argv[n][0]=='-' && argv[n][1] )
