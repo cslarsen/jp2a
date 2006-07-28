@@ -134,19 +134,21 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 				int colr = 0;
 				int highl = 0;
 
-				     if ( Y>=0.95f && R<min && G<min && B<min ) highl = 1; // ANSI highlite
-				     if ( R-t>G && R-t>B )               colr = 31; // red
+			        if ( Y>=0.95f && R<min && G<min && B<min ) highl = 1; // ANSI highlite
+
+				     if ( R-t>G && R-t>B )          colr = 31; // red
 				else if ( G-t>R && G-t>B )          colr = 32; // green
 				else if ( R-t>B && G-t>B && R+G>i ) colr = 33; // yellow
 				else if ( B-t>R && B-t>G )          colr = 34; // blue
 				else if ( R-t>G && B-t>G && R+B>i ) colr = 35; // magenta
 				else if ( G-t>R && B-t>R && B+G>i ) colr = 36; // cyan
+				else if ( R+G+B>=3.0f*Y ) colr = 37; // white
 					
 				if ( !colr )
 					if ( !highl ) fprintf(f, "%c", ch);
 					else          fprintf(f, "%c[1m%c%c[0m", 27, ch, 27);
 				else {
-					fprintf(f, "%c[%dm%c", 27, colr, ch);
+					fprintf(f, "%c[%dm%c", 27, colr, ch); // ANSI color
 					fprintf(f, "%c[0m", 27); // ANSI reset
 				}
 
