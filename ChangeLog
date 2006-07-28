@@ -1,6 +1,7 @@
 CHANGES SINCE 0.9.21
 - HTML-output is now Firefox-friendly.
 - Text color output a bit more colorful.
+- Added --html-nobgcol.
 
 CHANGES SINCE 0.9.20
 - Added color output for text (ANSI colors) and HTML (CSS colors).

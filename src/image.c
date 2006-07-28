@@ -155,22 +155,25 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 			} else {  // HTML output
 				
 				if ( R<0.01f && G<0.01f && B<0.01f && Y>0.01f ) {
-					// grayscale image
-					print_html_char(f, ch,
-						ROUND(255.0f*Y*0.5f),
-						ROUND(255.0f*Y*0.5f),
-						ROUND(255.0f*Y*0.5f),
-						ROUND(255.0f*Y),
-						ROUND(255.0f*Y),
-						ROUND(255.0f*Y));
+					// Grayscale image
+					if ( !html_nobgcol )
+						print_html_char(f, ch,
+							ROUND(255.0f*Y*0.5f), ROUND(255.0f*Y*0.5f), ROUND(255.0f*Y*0.5f),
+							ROUND(255.0f*Y),      ROUND(255.0f*Y),      ROUND(255.0f*Y));
+					else
+						print_html_char(f, ch,
+							ROUND(255.0f*Y), ROUND(255.0f*Y), ROUND(255.0f*Y),
+							255, 255, 255);
 				} else {
-					print_html_char(f, ch,
-						ROUND(255.0f*Y*R),
-						ROUND(255.0f*Y*G),
-						ROUND(255.0f*Y*B),
-						ROUND(255.0f*R),
-						ROUND(255.0f*G),
-						ROUND(255.0f*B));
+					if ( !html_nobgcol ) {
+						print_html_char(f, ch,
+							ROUND(255.0f*Y*R), ROUND(255.0f*Y*G), ROUND(255.0f*Y*B),
+							ROUND(255.0f*R),   ROUND(255.0f*G),   ROUND(255.0f*B));
+					} else {
+						print_html_char(f, ch,
+							ROUND(255.0f*R), ROUND(255.0f*G), ROUND(255.0f*B),
+							255, 255, 255);
+}
 				}
 			}
 		}

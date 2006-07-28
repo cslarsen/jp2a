@@ -1,5 +1,5 @@
 TODO
-- Add ansi color support.
+- Recheck --invert stuff with colors, e.g. in HTML, one should change between black and white bg color (or not?).
 - Consider using Bresenham scaling (search for "Image scanling with Bresenham" on DDJ.com)
 - Consider using other libs for image conversions, e.g. would be nice to read GIF and PNG.  (See libpng, gdlib.)
 
