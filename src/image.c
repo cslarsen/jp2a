@@ -116,58 +116,58 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 
 		for ( x=xstart; x != xend; x += xincr ) {
 
-			float lum   = i->pixel[x + (flipy? i->height - y - 1 : y) * i->width];
-			float red   = i->red  [x + (flipy? i->height - y - 1 : y ) * i->width];
-			float green = i->green[x + (flipy? i->height - y - 1 : y ) * i->width];
-			float blue  = i->blue [x + (flipy? i->height - y - 1 : y ) * i->width];
+			float Y = i->pixel[x + (flipy? i->height - y - 1 : y) * i->width];
+			float R = i->red  [x + (flipy? i->height - y - 1 : y ) * i->width];
+			float G = i->green[x + (flipy? i->height - y - 1 : y ) * i->width];
+			float B = i->blue [x + (flipy? i->height - y - 1 : y ) * i->width];
 
-			if ( !invert ) lum = 1.0f - lum;
+			if ( !invert ) Y = 1.0f - Y;
 
-			const int pos = ROUND((float)chars * lum);
+			const int pos = ROUND((float)chars * Y);
 			char ch = ascii_palette[pos];
 
-			float t = 0.125f;
 			if ( !html ) {
+				const float t = 0.125f; // threshold
+				const float i = 1.0f - t;
+				const float min = 0.01f;
 
 				int colr = 0;
 				int highl = 0;
-				if ( lum>=0.95f && red<0.01f && green<0.01f && blue<0.01f ) highl = 1; // intensity
-				if ( red-t>green && red-t>blue )                         colr = 31; // red
-				else if ( green-t>red && green-t>blue )                  colr = 32; // green
-				else if ( red-t>blue && green-t>blue && red+green>0.8f ) colr = 33; // yellow
-				else if ( blue-t>red && blue-t>green )                   colr = 34; // blue
-				else if ( red-t>green && blue-t>green && red+blue>0.8f ) colr = 35; // magenta
-				else if ( green-t>red && blue-t>red && blue+green>0.8f ) colr = 36; // cyan
+				     if ( Y>=0.95f && R<min && G<min && B<min ) highl = 1; // ANSI highlite
+				     if ( R-t>G && R-t>B )               colr = 31; // red
+				else if ( G-t>R && G-t>B )          colr = 32; // green
+				else if ( R-t>B && G-t>B && R+G>i ) colr = 33; // yellow
+				else if ( B-t>R && B-t>G )          colr = 34; // blue
+				else if ( R-t>G && B-t>G && R+B>i ) colr = 35; // magenta
+				else if ( G-t>R && B-t>R && B+G>i ) colr = 36; // cyan
 					
 				if ( !colr )
-					if ( !highl )
-						fprintf(f,"%c", ch);
-					else
-						fprintf(f, "%c[1m%c%c[0m", 27, ch, 27);
+					if ( !highl ) fprintf(f, "%c", ch);
+					else          fprintf(f, "%c[1m%c%c[0m", 27, ch, 27);
 				else {
 					fprintf(f, "%c[%dm%c", 27, colr, ch);
-					fprintf(f, "%c[0m", 27); // reset
+					fprintf(f, "%c[0m", 27); // ANSI reset
 				}
 
-			} else { // HTML output
+			} else {  // HTML output
 				
-				if ( red<0.01f && green<0.01f && blue<0.01f && lum>0.01f ) {
+				if ( R<0.01f && G<0.01f && B<0.01f && Y>0.01f ) {
 					// grayscale image
 					print_html_char(f, ch,
-						ROUND(255.0f*lum*0.5f),
-						ROUND(255.0f*lum*0.5f),
-						ROUND(255.0f*lum*0.5f),
-						ROUND(255.0f*lum),
-						ROUND(255.0f*lum),
-						ROUND(255.0f*lum));
+						ROUND(255.0f*Y*0.5f),
+						ROUND(255.0f*Y*0.5f),
+						ROUND(255.0f*Y*0.5f),
+						ROUND(255.0f*Y),
+						ROUND(255.0f*Y),
+						ROUND(255.0f*Y));
 				} else {
 					print_html_char(f, ch,
-						ROUND(255.0f*lum*red),
-						ROUND(255.0f*lum*green),
-						ROUND(255.0f*lum*blue),
-						ROUND(255.0f*red),
-						ROUND(255.0f*green),
-						ROUND(255.0f*blue));
+						ROUND(255.0f*Y*R),
+						ROUND(255.0f*Y*G),
+						ROUND(255.0f*Y*B),
+						ROUND(255.0f*R),
+						ROUND(255.0f*G),
+						ROUND(255.0f*B));
 				}
 			}
 		}
