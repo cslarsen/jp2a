@@ -172,10 +172,9 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 			}
 		}
 
-		if ( !html )
-			fprintf(f, !use_border? "\n" : "|\n");
-		else
-			fprintf(f, !use_border? "<br/>" : "|<br/>");
+		if ( use_border ) fputc('|', f);
+		if ( html ) print_html_newline(f);
+		fputc('\n', f);
 	}
 }
 

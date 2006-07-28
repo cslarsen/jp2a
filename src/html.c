@@ -60,3 +60,7 @@ void print_html_char(FILE *f, const char ch,
 		r_bg, g_bg, b_bg,
 		s);
 }
+
+void print_html_newline(FILE *f) {
+	fputs("<br/>", f);
+}

@@ -21,6 +21,7 @@ void print_html_end(FILE *fout);
 void print_html_char(FILE *fout, const char ch,
 	const int red_fg, const int green_fg, const int blue_fg,
 	const int red_bg, const int green_bg, const int blue_bg);
+void print_html_newline(FILE *fout);
 
 // image.c
 void decompress(FILE *fin, FILE *fout);
