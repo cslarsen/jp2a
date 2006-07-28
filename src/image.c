@@ -127,7 +127,7 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 			char ch = ascii_palette[pos];
 
 			if ( !html ) {
-				const float t = 0.025f; // threshold
+				const float t = 0.1f; // threshold
 				const float i = 1.0f - t;
 				const float min = 0.01f;
 
