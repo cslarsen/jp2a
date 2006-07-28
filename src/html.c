@@ -19,7 +19,9 @@ void print_html_start(const int fontsize, FILE *f) {
 		"<head>\n"
 		"<title>jp2a converted image</title>\n"
 		"<style type='text/css'>\n"
-		".ascii {\n", f);
+		".ascii {\n"
+		"   font-family: Courier New;\n" // should be a monospaced font
+		, f);
 	fprintf(f,
 		"   font-size:%dpt;\n", fontsize);
 	fputs(   "}\n"
@@ -27,12 +29,11 @@ void print_html_start(const int fontsize, FILE *f) {
 		"</head>\n"
 		"<body>\n"
 		"<div class='ascii'>\n", f);
-	fputs(!usecolors?
-		"<pre>\n" :
-		"<div style='font-family: courier;'>\n", f);
+	if ( !usecolors )
+	fputs(  "<pre>\n", f);
 }
 
 void print_html_end(FILE *f) {
-	fputs(!usecolors? "</pre>" : "</div>", f);
+	if ( !usecolors ) fputs("</pre>", f);
 	fputs("\n</div>\n</body>\n</html>\n", f);
 }
