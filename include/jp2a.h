@@ -11,13 +11,16 @@
 
 // curl.c
 #ifdef FEAT_CURL
-extern int is_url(const char* s);
-extern int curl_download(const char* url, const int debug);
+int is_url(const char* s);
+int curl_download(const char* url, const int debug);
 #endif
 
 // html.c
-extern void print_html_start(const int fontsize, FILE *f);
-extern void print_html_end(FILE *f);
+void print_html_start(const int fontsize, FILE *fout);
+void print_html_end(FILE *fout);
+void print_html_char(FILE *fout, const char ch,
+	const int red_fg, const int green_fg, const int blue_fg,
+	const int red_bg, const int green_bg, const int blue_bg);
 
 // image.c
 void decompress(FILE *fin, FILE *fout);

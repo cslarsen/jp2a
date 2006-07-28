@@ -8,6 +8,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include "options.h"
 
 void print_html_start(const int fontsize, FILE *f) {
@@ -36,4 +37,26 @@ void print_html_start(const int fontsize, FILE *f) {
 void print_html_end(FILE *f) {
 	if ( !usecolors ) fputs("</pre>", f);
 	fputs("\n</div>\n</body>\n</html>\n", f);
+}
+
+void print_html_char(FILE *f, const char ch,
+	const int r_fg, const int g_fg, const int b_fg,
+	const int r_bg, const int g_bg, const int b_bg)
+{
+	char s[10];
+
+	switch ( ch ) {
+	case ' ': strcpy(s, "&nbsp;"); break;
+	case '<': strcpy(s, "&lt;"); break;
+	case '>': strcpy(s, "&gt;"); break;
+	case '&': strcpy(s, "&amp;"); break;
+	case '\'': strcpy(s, "&apos;"); break;
+	default:
+		s[0]=ch; s[1]=0; break;
+	}
+
+	fprintf(f, "<b style='color:#%02x%02x%02x; background-color:#%02x%02x%02x;'>%s</b>",
+		r_fg, g_fg, b_fg,
+		r_bg, g_bg, b_bg,
+		s);
 }
