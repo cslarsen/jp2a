@@ -116,7 +116,7 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 
 		for ( x=xstart; x != xend; x += xincr ) {
 
-			float Y = i->pixel[x + (flipy? i->height - y - 1 : y) * i->width];
+			float Y = i->pixel[x + (flipy? i->height - y - 1 : y ) * i->width];
 			float R = i->red  [x + (flipy? i->height - y - 1 : y ) * i->width];
 			float G = i->green[x + (flipy? i->height - y - 1 : y ) * i->width];
 			float B = i->blue [x + (flipy? i->height - y - 1 : y ) * i->width];
@@ -127,12 +127,13 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 			char ch = ascii_palette[pos];
 
 			if ( !html ) {
-				const float t = 0.125f; // threshold
+				const float t = 0.025f; // threshold
 				const float i = 1.0f - t;
 				const float min = 0.01f;
 
 				int colr = 0;
 				int highl = 0;
+
 				     if ( Y>=0.95f && R<min && G<min && B<min ) highl = 1; // ANSI highlite
 				     if ( R-t>G && R-t>B )               colr = 31; // red
 				else if ( G-t>R && G-t>B )          colr = 32; // green
