@@ -45,30 +45,31 @@ void print_html_end(FILE *f) {
 	fputs("\n</div>\n</body>\n</html>\n", f);
 }
 
+const char* html_entity(const char ch) {
+	static char s[2];
+	switch ( ch ) {
+	case ' ': return "&nbsp;"; break;
+	case '<': return "&lt;"; break;
+	case '>': return "&gt;"; break;
+	case '&': return "&amp;"; break;
+	case '\'': return "&apos;"; break;
+	default:
+		s[0]=ch; s[1]=0; return s; break;
+	}
+}
+
 void print_html_char(FILE *f, const char ch,
 	const int r_fg, const int g_fg, const int b_fg,
 	const int r_bg, const int g_bg, const int b_bg)
 {
-	char s[10];
-
-	switch ( ch ) {
-	case ' ': strcpy(s, "&nbsp;"); break;
-	case '<': strcpy(s, "&lt;"); break;
-	case '>': strcpy(s, "&gt;"); break;
-	case '&': strcpy(s, "&amp;"); break;
-	case '\'': strcpy(s, "&apos;"); break;
-	default:
-		s[0]=ch; s[1]=0; break;
-	}
-
 	if ( !html_nobgcol ) {
 		fprintf(f, "<b style='color:#%02x%02x%02x; background-color:#%02x%02x%02x;'>%s</b>",
 			r_fg, g_fg, b_fg,
 			r_bg, g_bg, b_bg,
-			s);
+			html_entity(ch));
 	} else
 		fprintf(f, "<b style='color:#%02x%02x%02x;'>%s</b>",
-			r_fg, g_fg, b_fg, s);
+			r_fg, g_fg, b_fg, html_entity(ch));
 }
 
 void print_html_newline(FILE *f) {

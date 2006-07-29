@@ -57,8 +57,8 @@ function test_results() {
 	echo ""
 	echo "TEST RESULTS FOR JP2A"
 	echo ""
-	printf "Tests OK    : %2d of %2d (%4s)\n" "$((RESULT_OK))" "$((RESULT_OK+RESULT_FAILED))" "$((100*RESULT_OK/(RESULT_OK+RESULT_FAILED)))%"
-	printf "Tests FAILED: %2d of %2d (%4s)\n" "$((RESULT_FAILED))" "$((RESULT_OK+RESULT_FAILED))" "$((100*RESULT_FAILED/(RESULT_OK+RESULT_FAILED)))%"
+	printf "Tests OK    : %2d of %2d  (%4s)\n" "$((RESULT_OK))" "$((RESULT_OK+RESULT_FAILED))" "$((100*RESULT_OK/(RESULT_OK+RESULT_FAILED)))%"
+	printf "Tests FAILED: %2d of %2d  (%4s)\n" "$((RESULT_FAILED))" "$((RESULT_OK+RESULT_FAILED))" "$((100*RESULT_FAILED/(RESULT_OK+RESULT_FAILED)))%"
 	echo ""
 
 	if test "x${FAILED_STR}" != "x" ; then
