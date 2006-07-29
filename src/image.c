@@ -121,7 +121,8 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 			float G = i->green[x + (flipy? i->height - y - 1 : y ) * i->width];
 			float B = i->blue [x + (flipy? i->height - y - 1 : y ) * i->width];
 
-			if ( !invert ) Y = 1.0f - Y;
+			// ignore invert in HTML mode
+			//if ( !invert ) Y = 1.0f - Y;
 
 			const int pos = ROUND((float)chars * Y);
 			char ch = ascii_palette[pos];

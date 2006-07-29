@@ -50,7 +50,7 @@ int invert = 1;
 int flipx = 0;
 int flipy = 0;
 int html = 0;
-int html_nobgcol = 0;
+int html_nobgcol = 1;
 int html_fontsize = 8;
 int debug = 0;
 int clearscr = 0;
@@ -125,7 +125,8 @@ void help() {
 "  -h, --help        Print program help.\n"
 "      --html        Produce strict XHTML 1.0 output.\n"
 "      --html-fontsize=N   Set fontsize to N pt, default is 4.\n"
-"      --html-nobgcol      When used with --color, do not color background.\n"
+"      --html-fill   When used with --color and --html, color each character's\n"
+"                    background color.\n"
 "  -i, --invert      Invert output image.  Use if your display has a dark\n"
 "                    background.\n"
 "      --background=dark   These are just mnemonics whether to use --invert\n"
@@ -182,7 +183,7 @@ void parse_options(int argc, char** argv) {
 		IF_OPT ("--clear")                  { clearscr = 1; continue; }
 		IF_OPTS("--color", "--colors")      { usecolors = 1; continue; }
 		IF_OPT ("--html")                   { html = 1; continue; }
-		IF_OPT ("--html-nobgcol")           { html_nobgcol = 1; continue; }
+		IF_OPT ("--html-fill")              { html_nobgcol = 0; continue; }
 		IF_OPTS("-b", "--border")           { use_border = 1; continue; }
 		IF_OPTS("-i", "--invert")           { invert = !invert; continue; }
 		IF_OPT("--background=dark")         { invert = 1; continue; }

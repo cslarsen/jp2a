@@ -20,9 +20,12 @@ void print_html_start(const int fontsize, FILE *f) {
 		"<head>\n"
 		"<title>jp2a converted image</title>\n"
 		"<style type='text/css'>\n"
+		"body {\n", f);
+	fputs(!invert?
+		"   background-color: white;\n" : "background-color: black;\n", f);
+	fputs(  "}\n"
 		".ascii {\n"
-		"   font-family: Courier New;\n" // should be a monospaced font
-		, f);
+		"   font-family: Courier New;\n", f); // should be a monospaced font
 	fprintf(f,
 		"   font-size:%dpt;\n", fontsize);
 	fputs(   "}\n"
@@ -55,10 +58,13 @@ void print_html_char(FILE *f, const char ch,
 		s[0]=ch; s[1]=0; break;
 	}
 
-	fprintf(f, "<b style='color:#%02x%02x%02x; background-color:#%02x%02x%02x;'>%s</b>",
-		r_fg, g_fg, b_fg,
-		r_bg, g_bg, b_bg,
-		s);
+	if ( !html_nobgcol ) {
+		fprintf(f, "<b style='color:#%02x%02x%02x; background-color:#%02x%02x%02x;'>%s</b>",
+			r_fg, g_fg, b_fg,
+			r_bg, g_bg, b_bg,
+			s);
+	} else
+		fprintf(f, "<b style='color:#%02x%02x%02x;'>%s</b>", r_fg, g_fg, b_fg, s);
 }
 
 void print_html_newline(FILE *f) {
