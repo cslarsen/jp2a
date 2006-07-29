@@ -1,4 +1,7 @@
-CHANGES SINCE 0.9.21
+CHANGES SINCE 0.9.22
+- None yet.
+
+CHANGES SINCE 0.9.21 (rev. 412)
 - Text color output is a bit more colorful.
 - HTML-output is now Firefox-friendly.
 - Added --html-fill to enable/disable background colors on HTML output.
