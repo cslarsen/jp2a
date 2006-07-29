@@ -67,7 +67,8 @@ void print_html_char(FILE *f, const char ch,
 			r_bg, g_bg, b_bg,
 			s);
 	} else
-		fprintf(f, "<b style='color:#%02x%02x%02x;'>%s</b>", r_fg, g_fg, b_fg, s);
+		fprintf(f, "<b style='color:#%02x%02x%02x;'>%s</b>",
+			r_fg, g_fg, b_fg, s);
 }
 
 void print_html_newline(FILE *f) {

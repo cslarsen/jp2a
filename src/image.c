@@ -139,7 +139,6 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 				// ANSI highlite, only use in grayscale
 			        if ( Y>=0.95f && R<min && G<min && B<min ) highl = 1; // ANSI highlite
 
-				if ( R>0.0f && G>0.0f && B>0.0f )
 				     if ( R-t>G && R-t>B )          colr = 31; // red
 				else if ( G-t>R && G-t>B )          colr = 32; // green
 				else if ( R-t>B && G-t>B && R+G>i ) colr = 33; // yellow
@@ -181,9 +180,13 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 			}
 		}
 
-		if ( use_border ) fputc('|', f);
-		if ( html ) print_html_newline(f);
-		fputc('\n', f);
+		if ( use_border )
+			fputc('|', f);
+
+		if ( html )
+			print_html_newline(f);
+		else
+			fputc('\n', f);
 	}
 }
 
