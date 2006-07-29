@@ -41,7 +41,9 @@ void print_html_start(const int fontsize, FILE *f) {
 }
 
 void print_html_end(FILE *f) {
-	if ( !usecolors ) fputs("</pre>", f);
+	if ( !usecolors )
+		fputs("</pre>", f);
+
 	fputs("\n</div>\n</body>\n</html>\n", f);
 }
 
