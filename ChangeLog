@@ -1,5 +1,5 @@
 
-CURRENT VERSION 0.9.22 (Revision $Rev$)
+CURRENT VERSION 0.9.22 (Revision $Rev: 400 $)
 
 CHANGES SINCE 0.9.21
 - HTML-output is now Firefox-friendly.
@@ -127,4 +127,4 @@ CHANGES SINCE 0.9.0
 - Minor code cleanup
 - Note that to_dst_x and to_dst_y in code might be wrong
 
-$Id: ChangeLog 398 2006-07-29 09:54:44Z csl $
+$Id$
