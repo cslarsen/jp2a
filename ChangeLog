@@ -1,6 +1,3 @@
-
-CURRENT VERSION 0.9.22 (Revision $Rev: 400 $)
-
 CHANGES SINCE 0.9.21
 - HTML-output is now Firefox-friendly.
 - Text color output is a bit more colorful.
