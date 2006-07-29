@@ -24,13 +24,17 @@ RESULT_OK=0
 RESULT_FAILED=0
 FAILED_STR=""
 
+function print_intense() {
+	echo -e -n "\e[1m${1}\e[0m"
+}
+
 function test_ok() {
-	echo -e -n "\e[1mOK\e[0m"
+	print_intense "OK"
 	RESULT_OK=$((RESULT_OK + 1))
 }
 
 function test_failed() {
-	echo -e -n "\e[1mFAILED\e[0m"
+	print_intense "FAILED"
 	RESULT_FAILED=$((RESULT_FAILED + 1))
 	FAILED_STR="${FAILED_STR}\n${2} | diff -u --strip-trailing-cr - ${1}"
 }
@@ -38,7 +42,14 @@ function test_failed() {
 function test_jp2a() {
 	CMD="${JP} ${2}"
 	printf "test (%2s) %-32s " "$((RESULT_OK+RESULT_FAILED+1))" "(${1})"
-	eval ${CMD} | diff --brief --strip-trailing-cr - ${3} 1>/dev/null && test_ok || test_failed ${3} "${CMD}"
+
+	if [ ! -e "${3}" ] ; then
+		print_intense "(missing ${3}) "
+		test_failed ${3} "${CMD}"
+	else
+		eval ${CMD} | diff --brief --strip-trailing-cr - ${3} 1>/dev/null && test_ok || test_failed ${3} "${CMD}"
+	fi
+
 	echo ""
 }
 
@@ -46,9 +57,8 @@ function test_results() {
 	echo ""
 	echo "TEST RESULTS FOR JP2A"
 	echo ""
-	echo "Total tests : $((RESULT_OK + RESULT_FAILED))"
-	echo "OK tests    : $((RESULT_OK)) ($((100*RESULT_OK/(RESULT_OK+RESULT_FAILED)))%)"
-	echo "Failed tests: $((RESULT_FAILED)) ($((100*RESULT_FAILED/(RESULT_OK+RESULT_FAILED)))%)"
+	printf "Tests OK    : %2d of %2d (%4s)\n" "$((RESULT_OK))" "$((RESULT_OK+RESULT_FAILED))" "$((100*RESULT_OK/(RESULT_OK+RESULT_FAILED)))%"
+	printf "Tests FAILED: %2d of %2d (%4s)\n" "$((RESULT_FAILED))" "$((RESULT_OK+RESULT_FAILED))" "$((100*RESULT_FAILED/(RESULT_OK+RESULT_FAILED)))%"
 	echo ""
 
 	if test "x${FAILED_STR}" != "x" ; then
@@ -83,7 +93,6 @@ rm -f ${TEMPFILE}
 
 test_jp2a "width, clear" "--width=78 jp2a.jpg --clear" normal-clear.txt
 test_jp2a "height, grayscale" "logo-40x25-gray.jpg --height=30" logo-30.txt
-test_jp2a "size, html" "--size=80x50 --html --html-fontsize=7 jp2a.jpg" logo.html
 test_jp2a "size, invert" "grind.jpg -i --size=80x30" grind.txt
 test_jp2a "size, invert, red channel" "grind.jpg -i --size=80x30 --red=1.0 --green=0.0 --blue=0.0" grind-red.txt
 test_jp2a "size, invert, blue channel" "grind.jpg -i --size=80x30 --red=0.0 --green=1.0 --blue=0.0" grind-green.txt
@@ -91,9 +100,13 @@ test_jp2a "size, invert, green channel" "grind.jpg -i --size=80x30 --red=0.0 --g
 test_jp2a "width, grayscale" "--width=78 dalsnuten-640x480-gray-low.jpg" dalsnuten-normal.txt
 test_jp2a "invert, width, grayscale" "--invert --width=78 dalsnuten-640x480-gray-low.jpg" dalsnuten-invert.txt
 test_jp2a "invert, size, grayscale" "--invert --size=80x49 dalsnuten-640x480-gray-low.jpg" dalsnuten-80x49-inv.txt
+test_jp2a "size, invert, border" "dalsnuten-640x480-gray-low.jpg --size=80x25 --invert --border --size=150x45" dalsnuten-640x480-gray-low.txt
+test_jp2a "size, html" "--size=80x50 --html --html-fontsize=7 jp2a.jpg" logo.html
+test_jp2a "size, color, html, flipx" "--size=80x50 --html --color --html-fontsize=8 --flipx grind.jpg" grind-flipx.html
+test_jp2a "size, color, html, flipy" "--size=80x50 --html --color --html-fontsize=8 --flipy grind.jpg" grind-flipy.html
+test_jp2a "size, color, html, flipxy" "--size=80x50 --html --color --html-fontsize=8 --flipx --flipy grind.jpg" grind-flipxy.html
 test_jp2a "width, html, gray, dark" "dalsnuten-640x480-gray-low.jpg --width=128 --html --html-fontsize=8" dalsnuten-256.html
 test_jp2a "width, html, gray, light" "dalsnuten-640x480-gray-low.jpg --width=128 --background=light --html --html-fontsize=8" dalsnuten-256-light.html
-test_jp2a "size, invert, border" "dalsnuten-640x480-gray-low.jpg --size=80x25 --invert --border --size=150x45" dalsnuten-640x480-gray-low.txt
 test_jp2a "color, html, dark" "grind.jpg --color --background=dark --width=60 --html --html-fontsize=8" grind-color-dark.html
 test_jp2a "color, html, dark fill" "grind.jpg --color --html-fill --background=dark --width=60 --html --html-fontsize=8" grind-color-dark-fill.html
 test_jp2a "color, html, light" "grind.jpg --color --html-fill --background=light --width=60 --html --html-fontsize=8" grind-color.html
