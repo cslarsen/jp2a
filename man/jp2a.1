@@ -62,9 +62,18 @@ Display a short help text
 .B \-\-html
 Make ASCII output in strict XHTML 1.0, suitable for viewing with web browsers.
 This is useful with big output dimensions, and you want to check the result with a browser with small font.
-.Tp
+.TP
 .BI \-\-html\-fill
-When used with \-\-html and \-\-color, then color each output character's background color.
+When used with \-\-html and \-\-color, then color each output character's background color.  For instance,
+if you want to use fill-output on a light background, do
+
+jp2a --color --html --html-fill --background=light somefile.jpg --output=dark.html
+
+To do the same on a light background:
+
+jp2a --color --html --html-fill --background=dark somefile.jpg --output=light.html
+
+The default is to have fill disabled.
 .TP
 .BI \-\-html\-fontsize= N
 Set fontsize when using \-\-html output.  Default is 4.
