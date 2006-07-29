@@ -26,6 +26,9 @@ void print_html_start(const int fontsize, FILE *f) {
 	fputs(  "}\n"
 		".ascii {\n"
 		"   font-family: Courier New;\n", f); // should be a monospaced font
+	if ( !usecolors )
+	fputs(!invert?
+		"   color: black;\n" : "   color: white;\n", f);
 	fprintf(f,
 		"   font-size:%dpt;\n", fontsize);
 	fputs(   "}\n"
