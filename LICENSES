@@ -1,7 +1,8 @@
-o jp2a is distributed under the GNU General Public License v2 or later.
-  See the file COPYING for that license.
+o jp2a is distributed under the GNU General Public License v2.
+  See the file COPYING for a copy of that license, and how you can
+  apply that license to make derivative works.
 
-  Although I do make use of other libraries, the source distribution does
+O Although I do make use of other libraries, the source distribution does
   not include any source-code from these.  However, the win32 version comes
   with precompiled library files, so I copy the licenses here.
 
