@@ -1,7 +1,7 @@
 CHANGES SINCE 0.9.22
 - License changed from "GPL v2 or later" to "GPL v2".  This is just because
   I want to review the v3 license before deciding to apply it to jp2a, as it
-  may require me to add certain stuff to the code.
+  might require me to add things to the program.
 
 CHANGES SINCE 0.9.21 (rev. 412)
 - Text color output is a bit more colorful.
