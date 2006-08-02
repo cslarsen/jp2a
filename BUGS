@@ -1,4 +1,7 @@
 TODO
+- What about making a Windows installer?
+- What about making a small GUI for windows?  If run, open a file browser, then convert and display
+  result in notepad, or internet explorer.
 - About process_scanline, it might be much better (clearer, faster) to pass a function pointer to the
   read pixels algorithm, so we don't have to do all those "if"s in the innerloop.  Might also be slower, though,
   because of the increased stack pushing and popping.
