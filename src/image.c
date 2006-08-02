@@ -301,12 +301,16 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 	red = green = blue = NULL;
 
 	if ( usecolors ) {
-		red   = &i->red  [lasty * i->width];
-		green = &i->green[lasty * i->width];
-		blue  = &i->blue [lasty * i->width];
+		int offset = lasty * i->width;
+		red   = &i->red  [offset];
+		green = &i->green[offset];
+		blue  = &i->blue [offset];
 	}
 
 	while ( lasty <= y ) {
+
+		const int components = jpg->out_color_components;
+		const int readcolors = usecolors;
 
 		int x;
 		for ( x=0; x < i->width; ++x ) {
@@ -319,25 +323,26 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 			v = r = g = b = 0.0f;
 
 			while ( src <= src_end ) {
-				v += jpg->out_color_components==3 ?
-					  RED  [src[0]]
-					+ GREEN[src[1]]
-					+ BLUE [src[2]]
-					: GRAY [src[0]];
 
-				if ( usecolors==1 && jpg->out_color_components==3 ) {
-					r += (float)src[0]/255.0f;
-					g += (float)src[1]/255.0f;
-					b += (float)src[2]/255.0f;
+				if ( components != 3 )
+					v += GRAY[src[0]];
+				else {
+					v += RED[src[0]] + GREEN[src[1]] + BLUE[src[2]];
+
+					if ( readcolors ) {
+						r += (float) src[0]/255.0f;
+						g += (float) src[1]/255.0f;
+						b += (float) src[2]/255.0f;
+					}
 				}
 
 				++adds;
-				src += jpg->out_color_components;
+				src += components;
 			}
 
 			pixel[x] += adds>1 ? v / (float) adds : v;
 
-			if ( usecolors ) {
+			if ( readcolors ) {
 				red  [x] += adds>1 ? r / (float) adds : r;
 				green[x] += adds>1 ? g / (float) adds : g;
 				blue [x] += adds>1 ? b / (float) adds : b;
@@ -348,7 +353,7 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 
 		pixel += i->width;
 
-		if ( usecolors ) {
+		if ( readcolors ) {
 			red   += i->width;
 			green += i->width;
 			blue  += i->width;

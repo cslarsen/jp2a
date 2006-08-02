@@ -1,4 +1,7 @@
 TODO
+- About process_scanline, it might be much better (clearer, faster) to pass a function pointer to the
+  read pixels algorithm, so we don't have to do all those "if"s in the innerloop.  Might also be slower, though,
+  because of the increased stack pushing and popping.
 - Check j2pa --color ~/tmp/cola.jpg, should not get blue color there, because we are using grayscale colors!
 - Consider using Bresenham scaling (search for "Image scanling with Bresenham" on DDJ.com)
 - Consider using other libs for image conversions, e.g. would be nice to read GIF and PNG.  (See libpng, gdlib.)
