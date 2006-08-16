@@ -4,6 +4,7 @@ CHANGES SINCE 0.9.22
   might require me to add things to the program.
 - Minor code changes (in image.c)
 - Distribution now also contains HTML manual pages for systems that do not support UNIX man.
+- Version bumped to 1.0.0 (stable)
 
 CHANGES SINCE 0.9.21 (rev. 412)
 - Text color output is a bit more colorful.
