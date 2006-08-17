@@ -36,7 +36,7 @@ function test_ok() {
 function test_failed() {
 	print_intense "FAILED"
 	RESULT_FAILED=$((RESULT_FAILED + 1))
-	FAILED_STR="${FAILED_STR}\n${2} | diff -u --strip-trailing-cr - ${1}"
+	FAILED_STR="${FAILED_STR}\n${2} | diff -u - ${1}"
 }
 
 function test_jp2a() {
@@ -47,7 +47,7 @@ function test_jp2a() {
 		print_intense "(missing ${3}) "
 		test_failed ${3} "${CMD}"
 	else
-		eval ${CMD} | diff --brief --strip-trailing-cr - ${3} 1>/dev/null && test_ok || test_failed ${3} "${CMD}"
+		eval ${CMD} | diff --brief - ${3} 1>/dev/null && test_ok || test_failed ${3} "${CMD}"
 	fi
 
 	echo ""
