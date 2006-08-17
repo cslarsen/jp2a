@@ -1,3 +1,8 @@
+Things to do:
+- Add --html-title="..."
+- Add --html-imageonly, which gives JUST the image data, so you can embed the image and format
+  the page in your own style.
+
 TODO
 - What about making a Windows installer?
 - What about making a small GUI for windows?  If run, open a file browser, then convert and display
