@@ -52,6 +52,8 @@ int flipy = 0;
 int html = 0;
 int html_nobgcol = 1;
 int html_fontsize = 8;
+const char* html_title = "jp2a converted image";
+int html_rawoutput = 0;
 int debug = 0;
 int clearscr = 0;
 int term_width = 0;
@@ -127,6 +129,8 @@ void help() {
 "      --html-fontsize=N   Set fontsize to N pt, default is 4.\n"
 "      --html-fill   When used with --color and --html, color each character's\n"
 "                    background color.\n"
+"      --html-raw    Output raw HTML codes, i.e. without the <head> section etc.\n"
+"      --html-title=...  Set HTML output title\n"
 "  -i, --invert      Invert output image.  Use if your display has a dark\n"
 "                    background.\n"
 "      --background=dark   These are just mnemonics whether to use --invert\n"
@@ -184,6 +188,7 @@ void parse_options(int argc, char** argv) {
 		IF_OPTS("--color", "--colors")      { usecolors = 1; continue; }
 		IF_OPT ("--html")                   { html = 1; continue; }
 		IF_OPT ("--html-fill")              { html_nobgcol = 0; continue; }
+		IF_OPT ("--html-raw")               { html = 1; html_rawoutput = 1; continue; }
 		IF_OPTS("-b", "--border")           { use_border = 1; continue; }
 		IF_OPTS("-i", "--invert")           { invert = !invert; continue; }
 		IF_OPT("--background=dark")         { invert = 1; continue; }
@@ -212,6 +217,11 @@ void parse_options(int argc, char** argv) {
 
 		if ( !strncmp(s, "--output=", 9) ) {
 			fileout = s+9;
+			continue;
+		}
+
+		if ( !strncmp(s, "--html-title=", 13) ) {
+			html_title = s + 13;
 			continue;
 		}
 

@@ -111,6 +111,8 @@ test_jp2a "color, html, dark" "grind.jpg --color --background=dark --width=60 --
 test_jp2a "color, html, dark fill" "grind.jpg --color --html-fill --background=dark --width=60 --html --html-fontsize=8" grind-color-dark-fill.html
 test_jp2a "color, html, light" "grind.jpg --color --html-fill --background=light --width=60 --html --html-fontsize=8" grind-color.html
 test_jp2a "color, html, grayscale" "dalsnuten-640x480-gray-low.jpg --color --width=78 --html --background=light --html-fill --html-fontsize=8" dalsnuten-color.html
+test_jp2a "html-title, html" "--width=10 --html --html-title='just testing' jp2a.jpg" html-title.txt
+test_jp2a "color, html-raw" "--width=10 --color --html-raw jp2a.jpg" html-raw.txt
 test_jp2a "color" "grind.jpg --color --width=60" grind-color.txt
 test_jp2a "color, grayscale" "dalsnuten-640x480-gray-low.jpg --color --width=78" dalsnuten-color.txt
 test_jp2a "standard input, width" " 2>/dev/null ; cat jp2a.jpg | ${JP} --width=78 -" normal.txt

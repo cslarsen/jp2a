@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'  'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml' lang='en' xml:lang='en'>
+<head>
+<title>just testing</title>
+<style type='text/css'>
+body {
+background-color: black;
+}
+.ascii {
+   font-family: Courier New;
+   color: white;
+   font-size:8pt;
+}
+</style>
+</head>
+<body>
+<div class='ascii'>
+<pre>
+XNMMWk0MMM
+ol'c0x:Oco
+0X0MMMMMMM
+</pre>
+</div>
+</body>
+</html>

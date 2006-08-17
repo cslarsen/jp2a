@@ -462,13 +462,13 @@ void decompress(FILE *fp, FILE *fout) {
 		fprintf(fout, "%c[0;0H", 27); // move to upper left
 	}
 
-	if ( html ) print_html_start(html_fontsize, fout);
+	if ( html && !html_rawoutput ) print_html_start(html_fontsize, fout);
 	if ( use_border ) print_border(image.width);
 
 	(!usecolors? print_image : print_image_colors) (&image, (int) strlen(ascii_palette) - 1, fout);
 
 	if ( use_border ) print_border(image.width);
-	if ( html ) print_html_end(fout);
+	if ( html && !html_rawoutput ) print_html_end(fout);
 
 	free_image(&image);
 

@@ -1,4 +1,4 @@
-.TH jp2a 1  "August 16, 2006" "version 1.0" "USER COMMANDS"
+.TH jp2a 1  "August 17, 2006" "version 1.0" "USER COMMANDS"
 .SH NAME
 jp2a \- convert JPEG images to ASCII
 .SH SYNOPSIS
@@ -75,8 +75,15 @@ jp2a --color --html --html-fill --background=dark somefile.jpg --output=light.ht
 
 The default is to have fill disabled.
 .TP
+.B \-\-html\-raw
+Output only the image in HTML codes, leaving out the rest of the webpage, so you can construct
+your own.
+.TP
 .BI \-\-html\-fontsize= N
 Set fontsize when using \-\-html output.  Default is 4.
+.TP
+.BI \-\-html\-title= ...
+Set HTML output title.
 .TP
 .BI \-\-output=...
 Write ASCII output to given filename.  To explicitly specify standard output, use \-\-output=\-.

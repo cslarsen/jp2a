@@ -1,5 +1,6 @@
 CHANGES SINCE 1.0.0 (svnversion 421)
-- None yet.
+- Added option --html-title=...
+- Added option --html-raw
 
 CHANGES SINCE 0.9.22
 - License changed from "GPL v2 or later" to "GPL v2".  This is just because

@@ -20,6 +20,8 @@ extern int flipy;
 extern int html;
 extern int html_fontsize;
 extern int html_nobgcol;
+extern const char *html_title;
+extern int html_rawoutput;
 extern int debug;
 extern int clearscr;
 extern char ascii_palette[];
