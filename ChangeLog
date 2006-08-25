@@ -1,5 +1,5 @@
 CHANGES SINCE 1.0.1 (svnversion 427)
-- Removed --strip-trailing-cr from diff in tests (not supported on some platforms).
+- Using span- instead of b-tags in HTML output.
 
 CHANGES SINCE 1.0.0 (svnversion 421)
 - Added option --html-title=...

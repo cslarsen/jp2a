@@ -33,7 +33,8 @@ void print_html_start(const int fontsize, FILE *f) {
 		"   color: black;\n" : "   color: white;\n", f);
 	fprintf(f,
 		"   font-size:%dpt;\n", fontsize);
-	fputs(   "}\n"
+	fputs( 	"   font-weight: bold;\n"
+		"}\n"
 		"</style>\n"
 		"</head>\n"
 		"<body>\n"
@@ -67,12 +68,12 @@ void print_html_char(FILE *f, const char ch,
 	const int r_bg, const int g_bg, const int b_bg)
 {
 	if ( !html_nobgcol ) {
-		fprintf(f, "<b style='color:#%02x%02x%02x; background-color:#%02x%02x%02x;'>%s</b>",
+		fprintf(f, "<span style='color:#%02x%02x%02x; background-color:#%02x%02x%02x;'>%s</span>",
 			r_fg, g_fg, b_fg,
 			r_bg, g_bg, b_bg,
 			html_entity(ch));
 	} else
-		fprintf(f, "<b style='color:#%02x%02x%02x;'>%s</b>",
+		fprintf(f, "<span style='color:#%02x%02x%02x;'>%s</span>",
 			r_fg, g_fg, b_fg, html_entity(ch));
 }
 
