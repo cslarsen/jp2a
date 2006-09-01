@@ -1,3 +1,6 @@
+CHANGES SINCE 1.0.3 (svnversion 440)
+- None yet.
+
 CHANGES SINCE 1.0.2 (svnversion 432)
 - Added option --html-no-bold to set non-bold output.
 - Added option to --fill ANSI background colors.
