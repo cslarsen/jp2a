@@ -1,5 +1,5 @@
 <!-- Creator     : groff version 1.19.1 -->
-<!-- CreationDate: Fri Aug 25 17:39:01 2006 -->
+<!-- CreationDate: Fri Sep  1 12:47:06 2006 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -228,6 +228,41 @@ image aspect ratio.</p>
 <p>Use terminal display width and height.</p>
 </td>
 </table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="4" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+<p><b>&minus;&minus;fill</b></p>
+</td>
+<td width="2%"></td>
+<td width="78%">
+
+<p>When used with &minus;&minus;html and
+&minus;&minus;color, then color each output
+character&rsquo;s background color. For instance, if you
+want to use fill-output on a light background, do</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+<p>jp2a --color --html --html-fill --background=light
+somefile.jpg --output=dark.html</p>
+<!-- INDENTATION -->
+<p>To do the same on a light background:</p>
+<!-- INDENTATION -->
+<p>jp2a --color --html --html-fill --background=dark
+somefile.jpg --output=light.html</p>
+<!-- INDENTATION -->
+<p>The default is to have fill disabled.</p>
+</td>
+</table>
 <!-- INDENTATION -->
 <table width="100%" border=0 rules="none" frame="void"
        cols="2" cellspacing="0" cellpadding="0">
@@ -298,6 +333,24 @@ images aspect ratio.</p>
 <p>Display a short help text</p>
 </td>
 </table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+<p><b>&minus;&minus;grayscale</b></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="78%">
+<p>Converts image to grayscale when using &minus;&minus;html
+or &minus;&minus;colors.</p>
+</td>
+</table>
 <!-- TABS -->
 <table width="100%" border=0 rules="none" frame="void"
        cols="4" cellspacing="0" cellpadding="0">
@@ -330,20 +383,25 @@ with small font.</p>
 <tr valign="top" align="left">
 <td width="22%"></td>
 <td width="78%">
-<p>When used with &minus;&minus;html and
-&minus;&minus;color, then color each output
-character&rsquo;s background color. For instance, if you
-want to use fill-output on a light background, do</p>
+<p>Same as &minus;&minus;fill. You should use that option
+instead.</p>
+</td>
+</table>
 <!-- INDENTATION -->
-<p>jp2a --color --html --html-fill --background=light
-somefile.jpg --output=dark.html</p>
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+<p><b>&minus;&minus;html&minus;no&minus;bold</b></p></td>
+</table>
 <!-- INDENTATION -->
-<p>To do the same on a light background:</p>
-<!-- INDENTATION -->
-<p>jp2a --color --html --html-fill --background=dark
-somefile.jpg --output=light.html</p>
-<!-- INDENTATION -->
-<p>The default is to have fill disabled.</p>
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="78%">
+<p>Do not use bold text for HTML output.</p>
 </td>
 </table>
 <!-- INDENTATION -->
