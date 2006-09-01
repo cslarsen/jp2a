@@ -153,9 +153,9 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 					if ( !highl ) fprintf(f, "%c", ch);
 					else          fprintf(f, "%c[1m%c%c[0m", 27, ch, 27);
 				} else {
-					if ( colorfill ) colr += 10; // set to ANSI background color
+					if ( colorfill ) colr += 10;          // set to ANSI background color
 					fprintf(f, "%c[%dm%c", 27, colr, ch); // ANSI color
-					fprintf(f, "%c[0m", 27); // ANSI reset
+					fprintf(f, "%c[0m", 27);              // ANSI reset
 				}
 
 			} else {  // HTML output
