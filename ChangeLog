@@ -1,5 +1,5 @@
 CHANGES SINCE 1.0.3 (svnversion 440)
-- None yet.
+- HTML output will no longer uses the &apos; entity.
 
 CHANGES SINCE 1.0.2 (svnversion 432)
 - Added option --html-no-bold to set non-bold output.

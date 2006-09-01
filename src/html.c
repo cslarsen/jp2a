@@ -56,7 +56,6 @@ const char* html_entity(const char ch) {
 	case '<': return "&lt;"; break;
 	case '>': return "&gt;"; break;
 	case '&': return "&amp;"; break;
-	case '\'': return "&apos;"; break;
 	default:
 		s[0]=ch; s[1]=0; return s; break;
 	}

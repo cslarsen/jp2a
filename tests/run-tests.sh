@@ -14,9 +14,14 @@
 ## PATH TO EXECUTABLE jp2a
 JP=../src/jp2a
 UNAME=`uname -a`
+UPDATE=no
 
 if test "`echo ${UNAME} | cut -c1-6`" == "CYGWIN" ; then
 	JP=../src/jp2a.exe
+fi
+
+if test "${1}" == "update" ; then
+	UPDATE=yes
 fi
 
 ## INITIALIZE VARS
@@ -47,7 +52,12 @@ function test_jp2a() {
 		print_intense "(missing ${3}) "
 		test_failed ${3} "${CMD}"
 	else
-		eval ${CMD} | diff --strip-trailing-cr --brief - ${3} 1>/dev/null && test_ok || test_failed ${3} "${CMD}"
+		if test "${UPDATE}" == "no" ; then
+			eval ${CMD} | diff --strip-trailing-cr --brief - ${3} 1>/dev/null && test_ok || test_failed ${3} "${CMD}"
+		else
+			eval ${CMD} > ${3}
+			test_ok
+		fi
 	fi
 
 	echo ""
