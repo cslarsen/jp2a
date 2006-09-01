@@ -50,7 +50,8 @@ int invert = 1;
 int flipx = 0;
 int flipy = 0;
 int html = 0;
-int html_nobgcol = 1;
+int colorfill = 0;
+int convert_grayscale = 0;
 int html_fontsize = 8;
 const char* html_title = "jp2a converted image";
 int html_rawoutput = 0;
@@ -113,6 +114,8 @@ void help() {
 "      --clear       Clears screen before drawing each output image.\n"
 "      --colors      Use ANSI colors in output.\n"
 "  -d, --debug       Print additional debug information.\n"
+"      --fill        When used with --color and/or --html, color each character's\n"
+"                    background color.\n"
 "  -x, --flipx       Flip image in X direction.\n"
 "  -y, --flipy       Flip image in Y direction.\n"
 #ifdef FEAT_TERMLIB
@@ -122,20 +125,20 @@ void help() {
 "      --term-width  Use terminal display width.\n"
 "  -z, --term-zoom   Use terminal display dimension for output.\n"
 #endif
+"      --grayscale   Convert to grayscale when using --html or --colors\n"
 "      --green=N.N   Set RGB to grayscale conversion weight, default is 0.5866\n"
 "      --height=N    Set output height, calculate width from aspect ratio.\n"
 "  -h, --help        Print program help.\n"
 "      --html        Produce strict XHTML 1.0 output.\n"
+"      --html-fill   Same as --fill (will be phased out)\n"
 "      --html-fontsize=N   Set fontsize to N pt, default is 4.\n"
-"      --html-fill   When used with --color and --html, color each character's\n"
-"                    background color.\n"
 "      --html-raw    Output raw HTML codes, i.e. without the <head> section etc.\n"
 "      --html-title=...  Set HTML output title\n"
 "  -i, --invert      Invert output image.  Use if your display has a dark\n"
 "                    background.\n"
 "      --background=dark   These are just mnemonics whether to use --invert\n"
 "      --background=light  or not.  If your console has light characters on\n"
-"                          a dark background, use --backgorund=dark.\n"
+"                    a dark background, use --backgorund=dark.\n"
 "      --output=...  Write output to file.\n"
 "      --red=N.N     Set RGB to grayscale conversion weight, default 0.2989f.\n"
 "      --size=WxH    Set output width and height.\n"
@@ -186,8 +189,10 @@ void parse_options(int argc, char** argv) {
 		IF_OPTS("-d", "--debug")            { debug = 1; continue; }
 		IF_OPT ("--clear")                  { clearscr = 1; continue; }
 		IF_OPTS("--color", "--colors")      { usecolors = 1; continue; }
+		IF_OPT ("--fill")                   { colorfill = 1; continue; }
+		IF_OPT ("--grayscale")              { convert_grayscale = 1; continue; }
 		IF_OPT ("--html")                   { html = 1; continue; }
-		IF_OPT ("--html-fill")              { html_nobgcol = 0; continue; }
+		IF_OPT ("--html-fill")              { colorfill = 1; fputs("warning: --html-fill has changed to --fill\n", stderr); continue; } // TODO: phase out
 		IF_OPT ("--html-raw")               { html = 1; html_rawoutput = 1; continue; }
 		IF_OPTS("-b", "--border")           { use_border = 1; continue; }
 		IF_OPTS("-i", "--invert")           { invert = !invert; continue; }

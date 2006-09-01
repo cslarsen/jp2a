@@ -108,9 +108,9 @@ test_jp2a "size, color, html, flipxy" "--size=80x50 --html --color --html-fontsi
 test_jp2a "width, html, gray, dark" "dalsnuten-640x480-gray-low.jpg --width=128 --html --html-fontsize=8" dalsnuten-256.html
 test_jp2a "width, html, gray, light" "dalsnuten-640x480-gray-low.jpg --width=128 --background=light --html --html-fontsize=8" dalsnuten-256-light.html
 test_jp2a "color, html, dark" "grind.jpg --color --background=dark --width=60 --html --html-fontsize=8" grind-color-dark.html
-test_jp2a "color, html, dark fill" "grind.jpg --color --html-fill --background=dark --width=60 --html --html-fontsize=8" grind-color-dark-fill.html
-test_jp2a "color, html, light" "grind.jpg --color --html-fill --background=light --width=60 --html --html-fontsize=8" grind-color.html
-test_jp2a "color, html, grayscale" "dalsnuten-640x480-gray-low.jpg --color --width=78 --html --background=light --html-fill --html-fontsize=8" dalsnuten-color.html
+test_jp2a "color, html, dark fill" "grind.jpg --color --fill --background=dark --width=60 --html --html-fontsize=8" grind-color-dark-fill.html
+test_jp2a "color, html, light" "grind.jpg --color --fill --background=light --width=60 --html --html-fontsize=8" grind-color.html
+test_jp2a "color, html, grayscale" "dalsnuten-640x480-gray-low.jpg --color --width=78 --html --background=light --fill --html-fontsize=8" dalsnuten-color.html
 test_jp2a "html-title, html" "--width=10 --html --html-title='just testing' jp2a.jpg" html-title.txt
 test_jp2a "color, html-raw" "--width=10 --color --html-raw jp2a.jpg" html-raw.txt
 test_jp2a "color" "grind.jpg --color --width=60" grind-color.txt

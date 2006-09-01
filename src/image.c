@@ -139,27 +139,32 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 				// ANSI highlite, only use in grayscale
 			        if ( Y>=0.95f && R<min && G<min && B<min ) highl = 1; // ANSI highlite
 
-				     if ( R-t>G && R-t>B )          colr = 31; // red
-				else if ( G-t>R && G-t>B )          colr = 32; // green
-				else if ( R-t>B && G-t>B && R+G>i ) colr = 33; // yellow
-				else if ( B-t>R && B-t>G && Y<0.95f )          colr = 34; // blue
-				else if ( R-t>G && B-t>G && R+B>i ) colr = 35; // magenta
-				else if ( G-t>R && B-t>R && B+G>i ) colr = 36; // cyan
-				else if ( R+G+B>=3.0f*Y )           colr = 37; // white
-					
+				if ( !convert_grayscale ) {
+				     if ( R-t>G && R-t>B )            colr = 31; // red
+				else if ( G-t>R && G-t>B )            colr = 32; // green
+				else if ( R-t>B && G-t>B && R+G>i )   colr = 33; // yellow
+				else if ( B-t>R && B-t>G && Y<0.95f ) colr = 34; // blue
+				else if ( R-t>G && B-t>G && R+B>i )   colr = 35; // magenta
+				else if ( G-t>R && B-t>R && B+G>i )   colr = 36; // cyan
+				else if ( R+G+B>=3.0f*Y )             colr = 37; // white
+				}
+				
 				if ( !colr ) {
 					if ( !highl ) fprintf(f, "%c", ch);
 					else          fprintf(f, "%c[1m%c%c[0m", 27, ch, 27);
 				} else {
+					if ( colorfill ) colr += 10; // set to ANSI background color
 					fprintf(f, "%c[%dm%c", 27, colr, ch); // ANSI color
 					fprintf(f, "%c[0m", 27); // ANSI reset
 				}
 
 			} else {  // HTML output
-				
-				if ( R<min && G<min && B<min && Y>min ) {
+			
+				// either --grayscale is specified (convert_grayscale)
+				// or we can see that the image is inherently a grayscale image	
+				if ( convert_grayscale || (R<min && G<min && B<min && Y>min) ) {
 					// Grayscale image
-					if ( !html_nobgcol )
+					if ( colorfill )
 						print_html_char(f, ch,
 							ROUND(255.0f*Y*0.5f), ROUND(255.0f*Y*0.5f), ROUND(255.0f*Y*0.5f),
 							ROUND(255.0f*Y),      ROUND(255.0f*Y),      ROUND(255.0f*Y));
@@ -168,7 +173,7 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 							ROUND(255.0f*Y), ROUND(255.0f*Y), ROUND(255.0f*Y),
 							255, 255, 255);
 				} else {
-					if ( !html_nobgcol )
+					if ( colorfill )
 						print_html_char(f, ch,
 							ROUND(255.0f*Y*R), ROUND(255.0f*Y*G), ROUND(255.0f*Y*B),
 							ROUND(255.0f*R),   ROUND(255.0f*G),   ROUND(255.0f*B));

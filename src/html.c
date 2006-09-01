@@ -67,7 +67,7 @@ void print_html_char(FILE *f, const char ch,
 	const int r_fg, const int g_fg, const int b_fg,
 	const int r_bg, const int g_bg, const int b_bg)
 {
-	if ( !html_nobgcol ) {
+	if ( colorfill ) {
 		fprintf(f, "<span style='color:#%02x%02x%02x; background-color:#%02x%02x%02x;'>%s</span>",
 			r_fg, g_fg, b_fg,
 			r_bg, g_bg, b_bg,
