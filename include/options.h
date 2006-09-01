@@ -23,6 +23,7 @@ extern int colorfill;
 extern int convert_grayscale;
 extern const char *html_title;
 extern int html_rawoutput;
+extern int html_bold;
 extern int debug;
 extern int clearscr;
 extern char ascii_palette[];

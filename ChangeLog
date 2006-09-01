@@ -1,6 +1,9 @@
 CHANGES SINCE 1.0.2 (svnversion 432)
-- Added option to --fill ANSI background colors
-- Option --html-fill is now same as --fill and will be phased out
+- Added option --html-no-bold to set non-bold output.
+- Added option to --fill ANSI background colors.
+- Option --html-fill is now same as --fill and will be phased out.
+- Default HTML font changed from courier new to courier.
+- HTML output always uses <pre> tag.
 
 CHANGES SINCE 1.0.1 (svnversion 427)
 - Using span- instead of b-tags in HTML output.

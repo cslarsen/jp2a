@@ -27,27 +27,26 @@ void print_html_start(const int fontsize, FILE *f) {
 		"   background-color: white;\n" : "background-color: black;\n", f);
 	fputs(  "}\n"
 		".ascii {\n"
-		"   font-family: Courier New;\n", f); // should be a monospaced font
+		"   font-family: Courier;\n", f); // should be a monospaced font
 	if ( !usecolors )
 	fputs(!invert?
 		"   color: black;\n" : "   color: white;\n", f);
 	fprintf(f,
 		"   font-size:%dpt;\n", fontsize);
-	fputs( 	"   font-weight: bold;\n"
+	if ( html_bold )
+	fputs( 	"   font-weight: bold;\n", f);
+	else
+	fputs(  "   font-weight: normal;\n", f);
+	fputs(
 		"}\n"
 		"</style>\n"
 		"</head>\n"
 		"<body>\n"
-		"<div class='ascii'>\n", f);
-	if ( !usecolors )
-	fputs(  "<pre>\n", f);
+		"<div class='ascii'><pre>\n", f);
 }
 
 void print_html_end(FILE *f) {
-	if ( !usecolors )
-		fputs("</pre>", f);
-
-	fputs("\n</div>\n</body>\n</html>\n", f);
+	fputs("</pre>\n</div>\n</body>\n</html>\n", f);
 }
 
 const char* html_entity(const char ch) {

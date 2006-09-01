@@ -111,6 +111,11 @@ test_jp2a "color, html, dark" "grind.jpg --color --background=dark --width=60 --
 test_jp2a "color, html, dark fill" "grind.jpg --color --fill --background=dark --width=60 --html --html-fontsize=8" grind-color-dark-fill.html
 test_jp2a "color, html, light" "grind.jpg --color --fill --background=light --width=60 --html --html-fontsize=8" grind-color.html
 test_jp2a "color, html, grayscale" "dalsnuten-640x480-gray-low.jpg --color --width=78 --html --background=light --fill --html-fontsize=8" dalsnuten-color.html
+test_jp2a "color, html, --grayscale" "grind.jpg --color --width=78 --html --grayscale" grind-2grayscale.html
+test_jp2a "color, html, --grayscale, fill" "grind.jpg --color --width=78 --html --grayscale --fill" grind-2grayscale-fill.html
+test_jp2a "color, fill" "grind.jpg --colors --fill --width=78" grind-fill.txt
+test_jp2a "color, fill, --grayscale" "grind.jpg --colors --fill --grayscale --width=78" grind-2grayscale-fill.txt
+test_jp2a "color, html, no-bold" "grind.jpg --colors --html --html-no-bold --width=78" grind-nobold.html
 test_jp2a "html-title, html" "--width=10 --html --html-title='just testing' jp2a.jpg" html-title.txt
 test_jp2a "color, html-raw" "--width=10 --color --html-raw jp2a.jpg" html-raw.txt
 test_jp2a "color" "grind.jpg --color --width=60" grind-color.txt

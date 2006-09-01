@@ -147,8 +147,10 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 				else if ( R-t>G && B-t>G && R+B>i )   colr = 35; // magenta
 				else if ( G-t>R && B-t>R && B+G>i )   colr = 36; // cyan
 				else if ( R+G+B>=3.0f*Y )             colr = 37; // white
+				} else {
+					if ( Y>=0.7f ) { highl=1; colr = 37; }
 				}
-				
+
 				if ( !colr ) {
 					if ( !highl ) fprintf(f, "%c", ch);
 					else          fprintf(f, "%c[1m%c%c[0m", 27, ch, 27);
