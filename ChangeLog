@@ -1,3 +1,6 @@
+CHANGES SINCE 1.0.5 (svnversion 452)
+- None yet.
+
 CHANGES SINCE 1.0.4 (svnversion 445)
 - Fixed problem with --invert / --background=light / --background=dark with HTML output.
 - Updated configure script from autoconf 2.59 to 2.60
