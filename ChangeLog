@@ -1,5 +1,6 @@
 CHANGES SINCE 1.0.4 (svnversion 445)
 - Fixed problem with --invert / --background=light / --background=dark with HTML output.
+- Updated configure script from autoconf 2.59 to 2.60
 
 CHANGES SINCE 1.0.3 (svnversion 440)
 - HTML output no longer uses the &apos; entity.
