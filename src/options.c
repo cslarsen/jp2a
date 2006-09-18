@@ -61,7 +61,6 @@ int clearscr = 0;
 int term_width = 0;
 int term_height = 0;
 int usecolors = 0;
-int output_bitmap = 0;
 
 int termfit =
 #ifdef FEAT_TERMLIB
@@ -108,7 +107,6 @@ void help() {
 #endif
 "OPTIONS\n"
 "  -                 Read images from standard input.\n"
-"      --bitmap      Output text image is drawn on a bitmap image.\n"
 "      --blue=N.N    Set RGB to grayscale conversion weight, default is 0.1145\n"
 "  -b, --border      Print a border around the output image.\n"
 "      --chars=...   Select character palette used to paint the image.\n"
@@ -201,7 +199,6 @@ void parse_options(int argc, char** argv) {
 		IF_OPT ("--html-raw")               { html = 1; html_rawoutput = 1; continue; }
 		IF_OPTS("-b", "--border")           { use_border = 1; continue; }
 		IF_OPTS("-i", "--invert")           { invert = !invert; continue; }
-		IF_OPT ("--output-bitmap")          { output_bitmap = 1; continue; }
 		IF_OPT("--background=dark")         { invert = 1; continue; }
 		IF_OPT("--background=light")        { invert = 0; continue; }
 		IF_OPTS("-x", "--flipx")            { flipx = 1; continue; }

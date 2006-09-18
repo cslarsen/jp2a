@@ -21,7 +21,6 @@ extern int html;
 extern int html_fontsize;
 extern int colorfill;
 extern int convert_grayscale;
-extern int output_bitmap;
 extern const char *html_title;
 extern int html_rawoutput;
 extern int html_bold;
