@@ -1,5 +1,5 @@
 CHANGES SINCE 1.0.4 (svnversion 445)
-- None yet.
+- Fixed problem with --invert / --background=light / --background=dark with HTML output.
 
 CHANGES SINCE 1.0.3 (svnversion 440)
 - HTML output no longer uses the &apos; entity.
