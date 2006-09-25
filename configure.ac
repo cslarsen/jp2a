@@ -17,36 +17,34 @@ LDFLAGS="$LDFLAGS -Wall -W"
 
 # Checks for libraries.
 AC_ARG_WITH([jpeg-include],
-	[  --with-jpeg-include=PATH   to directory containing jpeglib.h (http://www.ijg.org/)],
+	AC_HELP_STRING([--with-jpeg-include=PATH], [specify path to directory containing jpeglib.h -- http://www.ijg.org/]),
 	[CPPFLAGS="$CPPFLAGS -I$withval"])
 
 AC_ARG_WITH([jpeg-lib],
-	[  --with-jpeg-lib=PATH       to directory containing jpeglib lib file (http://www.ijg.org/)],
+	AC_HELP_STRING([--with-jpeg-lib=PATH], [specify path to directory containing jpeglib lib file -- http://www.ijg.org/]),
 	[LDFLAGS="$LDFLAGS -L$withval"])
 
 AC_ARG_WITH([jpeg-prefix],
-	[  --with-jpeg-prefix=PATH    is the same as --with-jpeg-include=PATH/include and --with-jpeg-lib=PATH/lib],
+	AC_HELP_STRING([--with-jpeg-prefix=PATH], [this is the same as --with-jpeg-include=PATH/include and --with-jpeg-lib=PATH/lib]),
 	[CPPFLAGS="$CPPFLAGS -I$withval/include" LDFLAGS="$LDFLAGS -L$withval/lib"])
 
 AC_ARG_WITH([curl-config],
-	[  --with-curl-config=PATH    path to curl-config],
+	AC_HELP_STRING([--with-curl-config=PATH], [specify path to curl-config]),
 	[curl_config_path="$withval" enable_curl="yes"],
 	[curl_config_path="$PATH"])
 
 AC_CHECK_LIB([jpeg],
 	[jpeg_start_decompress],
 	[LIBS="$LIBS -ljpeg"],
-	[
-	  AC_MSG_ERROR([I need a working jpeglib; please specify --with-jpeg-lib=PATH or see --help for more explicit options])
-	])
+	AC_MSG_ERROR([I need a working jpeglib; please specify --with-jpeg-lib=PATH or see --help for more explicit options]))
 
 AC_ARG_ENABLE([curl],
-	[  --enable-curl to be able to use libcurl (http://curl.haxx.se) to download images from the net (default: yes)],
+	AC_HELP_STRING([--enable-curl], [enable to be to use libcurl (http://curl.haxx.se) to download images from the net (default: yes)]),
 	[enable_curl=$enableval],
 	[enable_curl="yes"])
 
 AC_ARG_ENABLE([termlib],
-	[  --enable-termlib to use term/curses for detecting terminal dimensions (default: yes)],
+	AC_HELP_STRING([--enable-termlib], [enable to use term/curses for detecting terminal dimensions (default: yes)]),
 	[enable_termlib=$enableval],
 	[enable_termlib="yes"])
 
