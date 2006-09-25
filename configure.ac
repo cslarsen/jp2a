@@ -30,14 +30,14 @@ AC_ARG_WITH([curl-config],
 	[curl_config_path="$withval" enable_curl="yes"],
 	[curl_config_path="$PATH"])
 
-AC_CHECK_LIB([jpeg],
-	[jpeg_start_decompress],
-	[LIBS="$LIBS -ljpeg"],
-	[
+AC_CHECK_LIB([jpeg], [jpeg_start_decompress], [LIBS="$LIBS -ljpeg"])
+
+if test "x$ac_cv_lib_jpeg_jpeg_start_decompress" != "xyes" ; then
 	AC_MSG_ERROR([I need a working jpeglib; please specify --with-jpeg-lib=PATH or see --help for more explicit options.
 
-Many systems have this file installed in /usr/local/lib/, so you can try --with-jpeg-prefix=/usr/local/])
-	])
+On many systems, this is installed in /usr/local/lib/ so you can try --with-jpeg-prefix=/usr/local/
+])
+fi
 
 AC_ARG_ENABLE([curl],
 	AC_HELP_STRING([--enable-curl], [enable to be to use libcurl (http://curl.haxx.se) to download images from the net (default: yes)]),
