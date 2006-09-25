@@ -177,7 +177,8 @@ void parse_options(int argc, char** argv) {
 	#define IF_VARS(format, v1, v2) if ( sscanf(s, format, v1, v2) == 2 )
 	#define IF_VAR(format, v1)      if ( sscanf(s, format, v1) == 1 )
 
-	int n, files;
+	int n, files, fit_to_use;
+
 	for ( n=1, files=0; n<argc; ++n ) {
 		const char *s = argv[n];
 
@@ -281,7 +282,7 @@ void parse_options(int argc, char** argv) {
 	--term_width;
 #endif
 
-		int fit_to_use = termfit;
+		fit_to_use = termfit;
 
 		if ( termfit == TERM_FIT_AUTO ) {
 			// use the smallest of terminal width or height 

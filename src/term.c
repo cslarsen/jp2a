@@ -48,6 +48,10 @@
  */
 int get_termsize(int* _width, int* _height, char** err) {
 	static char errstr[1024];
+	char *termtype = getenv("TERM");
+	char term_buffer[2048];
+	int i;
+
 	errstr[0] = 0;
 
 	if ( err != NULL )
@@ -66,15 +70,12 @@ int get_termsize(int* _width, int* _height, char** err) {
 	return 1;
 #else
 
-	char *termtype = getenv("TERM");
-	char term_buffer[2048];
-
 	if ( !termtype ) {
 		strcpy(errstr, "Environment variable TERM not set.");
 		return -2;
 	}
 
-	int i = tgetent(term_buffer, termtype);
+	i = tgetent(term_buffer, termtype);
 
 	// There seems to be some confusion regarding the tgetent return
 	// values.  The following two values should be swapped, according

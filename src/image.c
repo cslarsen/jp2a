@@ -100,13 +100,15 @@ void print_border(const int width) {
 void print_image_colors(const Image* const i, const int chars, FILE* f) {
 
 	int x, y;
+	int xstart, xend, xincr;
+
 	for ( y=0;  y < i->height; ++y ) {
 
 		if ( use_border ) fprintf(f, "|");
 
-		int xstart=0;
-		int xend=i->width;
-		int xincr = 1;
+		xstart = 0;
+		xend   = i->width;
+		xincr  = 1;
 
 		if ( flipx ) {
 			xstart = i->width - 1;
@@ -196,6 +198,8 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 }
 
 void print_image(const Image* const i, const int chars, FILE *f) {
+	int x, y;
+
 	#ifdef WIN32
 	char *line = (char*) malloc(i->width + 1);
 	#else
@@ -204,7 +208,6 @@ void print_image(const Image* const i, const int chars, FILE *f) {
 
 	line[i->width] = 0;
 
-	int x, y;
 	for ( y=0; y < i->height; ++y ) {
 
 		for ( x=0; x < i->width; ++x ) {
@@ -270,13 +273,15 @@ void normalize(Image* i) {
 }
 
 void print_progress(const struct jpeg_decompress_struct* jpg) {
+	float progress;
+	int pos;
 	#define BARLEN 56
 
 	static char s[BARLEN];
 	s[BARLEN-1] = 0;
 
- 	float progress = (float) (jpg->output_scanline + 1.0f) / (float) jpg->output_height;
-	int pos = ROUND( (float) (BARLEN-2) * progress );
+ 	progress = (float) (jpg->output_scanline + 1.0f) / (float) jpg->output_height;
+	pos = ROUND( (float) (BARLEN-2) * progress );
 
 	memset(s, '.', BARLEN-2);
 	memset(s, '#', pos);
@@ -407,10 +412,11 @@ void malloc_image(Image* i) {
 }
 
 void init_image(Image *i, const struct jpeg_decompress_struct *jpg) {
+	int dst_x;
+
 	i->resize_y = (float) (i->height - 1) / (float) (jpg->output_height - 1);
 	i->resize_x = (float) (jpg->output_width - 1) / (float) (i->width );
 
-	int dst_x;
 	for ( dst_x=0; dst_x <= i->width; ++dst_x ) {
 		i->lookup_resx[dst_x] = ROUND( (float) dst_x * i->resize_x );
 		i->lookup_resx[dst_x] *= jpg->out_color_components;
@@ -418,8 +424,11 @@ void init_image(Image *i, const struct jpeg_decompress_struct *jpg) {
 }
 
 void decompress(FILE *fp, FILE *fout) {
+	int row_stride;
 	struct jpeg_error_mgr jerr;
 	struct jpeg_decompress_struct jpg;
+	JSAMPARRAY buffer;
+	Image image;
 
 	jpg.err = jpeg_std_error(&jerr);
 	jpeg_create_decompress(&jpg);
@@ -434,14 +443,12 @@ void decompress(FILE *fp, FILE *fout) {
 		exit(1);
 	}
 
-	int row_stride = jpg.output_width * jpg.output_components;
+	row_stride = jpg.output_width * jpg.output_components;
 
-	JSAMPARRAY buffer = (*jpg.mem->alloc_sarray)
-		((j_common_ptr) &jpg, JPOOL_IMAGE, row_stride, 1);
+	buffer = (*jpg.mem->alloc_sarray)((j_common_ptr) &jpg, JPOOL_IMAGE, row_stride, 1);
 
 	aspect_ratio(jpg.output_width, jpg.output_height);
 
-	Image image;
 	malloc_image(&image);
 	clear(&image);
 

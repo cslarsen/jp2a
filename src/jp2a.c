@@ -33,14 +33,21 @@
 #endif
 
 int main(int argc, char** argv) {
+	int store_width, store_height, store_autow, store_autoh;
+	FILE *fout = stdout;
+#ifdef FEAT_CURL
+	FILE *fr;
+	int fd;
+#endif
+	FILE *fp;
+	int n;
+
 	parse_options(argc, argv);
 
-	int store_width = width;
-	int store_height = height;
-	int store_autow = auto_width;
-	int store_autoh = auto_height;
-
-	FILE *fout = stdout;
+	store_width = width;
+	store_height = height;
+	store_autow = auto_width;
+	store_autoh = auto_height;
 
 	if ( strcmp(fileout, "-") ) {
 		if ( (fout = fopen(fileout, "wb")) == NULL ) {
@@ -49,7 +56,6 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	int n;
 	for ( n=1; n<argc; ++n ) {
 
 		width = store_width;
@@ -78,11 +84,9 @@ int main(int argc, char** argv) {
 			if ( verbose )
 				fprintf(stderr, "URL: %s\n", argv[n]);
 
-			int fd = curl_download(argv[n], debug);
+			fd = curl_download(argv[n], debug);
 
-			FILE *fr = fdopen(fd, "rb");
-
-			if ( !fr ) {
+			if ( (fr = fdopen(fd, "rb")) == NULL ) {
 				fputs("Could not fdopen read pipe\n", stderr);
 				return 1;
 			}
@@ -96,9 +100,7 @@ int main(int argc, char** argv) {
 		#endif
 
 		// read files
-		FILE *fp = fopen(argv[n], "rb");
-
-		if ( fp ) {
+		if ( (fp = fopen(argv[n], "rb")) != NULL ) {
 			if ( verbose )
 				fprintf(stderr, "File: %s\n", argv[n]);
 

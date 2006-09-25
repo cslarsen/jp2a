@@ -70,20 +70,20 @@ void curl_download_child()
 void curl_download_child(void*)
 #endif
 {
+	FILE *fw;
+	CURL *curl;
 #ifndef WIN32
 	close(fd[0]); // close read-end
 #endif
 
-	FILE *fw = fdopen(fd[1], "wb");
-
-	if ( fw == NULL ) {
+	if ( (fw = fdopen(fd[1], "wb")) == NULL ) {
 		fputs("Could not open pipe for writing.\n", stderr);
 		exit(1);
 	}
 
 	curl_global_init(CURL_GLOBAL_ALL);
 
-	CURL *curl = curl_easy_init();
+	curl = curl_easy_init();
 	curl_easy_setopt(curl, CURLOPT_URL, URL);
 
 	if ( debugopt )
@@ -111,6 +111,9 @@ void curl_download_child(void*)
 
 // Return read-only file-descriptor that must be closed.
 int curl_download(const char* url, const int debug) {
+#ifndef WIN32
+	int pid;
+#endif
 
 	URL = url;
 	debugopt = debug;
@@ -121,7 +124,6 @@ int curl_download(const char* url, const int debug) {
 	}
 
 #ifndef WIN32
-	int pid;
 
 	if ( (pid = fork()) == 0 ) {
 		// CHILD process
