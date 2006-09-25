@@ -12,9 +12,6 @@ AC_CONFIG_FILES([Makefile src/Makefile])
 # Checks for programs.
 AC_PROG_CC
 
-CPPFLAGS="$CPPFLAGS -Wall -W"
-LDFLAGS="$LDFLAGS -Wall -W"
-
 # Checks for libraries.
 AC_ARG_WITH([jpeg-include],
 	AC_HELP_STRING([--with-jpeg-include=PATH], [specify path to directory containing jpeglib.h -- http://www.ijg.org/]),
