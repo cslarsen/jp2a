@@ -48,9 +48,12 @@
  */
 int get_termsize(int* _width, int* _height, char** err) {
 	static char errstr[1024];
+
+	#ifndef WIN32
 	char *termtype = getenv("TERM");
 	char term_buffer[2048];
 	int i;
+	#endif
 
 	errstr[0] = 0;
 
@@ -60,13 +63,13 @@ int get_termsize(int* _width, int* _height, char** err) {
 #ifdef FEAT_TERMLIB
 
 #ifdef WIN32
-	CONSOLE_SCREEN_BUFFER_INFO i;
-	if ( !GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &i) ) {
+	CONSOLE_SCREEN_BUFFER_INFO io;
+	if ( !GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &io) ) {
 		strcpy(errstr, "Could not determine console window size.");
 		return -1;
 	}
-	*_width = i.srWindow.Right - i.srWindow.Left;
-	*_height = i.srWindow.Bottom - i.srWindow.Top;
+	*_width = io.srWindow.Right - io.srWindow.Left;
+	*_height = io.srWindow.Bottom - io.srWindow.Top;
 	return 1;
 #else
 
