@@ -81,13 +81,22 @@ void aspect_ratio(const int jpeg_width, const int jpeg_height) {
 }
 
 void print_border(const int width) {
+	#ifndef HAVE_MEMSET
+	int n;
+	#endif
+
 	#ifdef WIN32
 	char *bord = (char*) malloc(width+3);
 	#else
 	char bord[width + 3];
 	#endif
 
+	#ifdef HAVE_MEMSET
 	memset(bord, '-', width+2);
+	#else
+	for ( n=0; n<width+2; ++n ) bord[n] = '-';
+	#endif
+
 	bord[0] = bord[width+1] = '+';
 	bord[width+2] = 0;
 	puts(bord);
