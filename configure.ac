@@ -33,7 +33,11 @@ AC_ARG_WITH([curl-config],
 AC_CHECK_LIB([jpeg],
 	[jpeg_start_decompress],
 	[LIBS="$LIBS -ljpeg"],
-	AC_MSG_ERROR([I need a working jpeglib; please specify --with-jpeg-lib=PATH or see --help for more explicit options]))
+	[
+	AC_MSG_ERROR([I need a working jpeglib; please specify --with-jpeg-lib=PATH or see --help for more explicit options.
+
+Many systems have this file installed in /usr/local/lib/, so you can try --with-jpeg-prefix=/usr/local/])
+	])
 
 AC_ARG_ENABLE([curl],
 	AC_HELP_STRING([--enable-curl], [enable to be to use libcurl (http://curl.haxx.se) to download images from the net (default: yes)]),
