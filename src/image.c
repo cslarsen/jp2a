@@ -36,13 +36,13 @@ typedef struct rgby_t_ {
 } rgby_t;
 
 typedef struct Image_ {
-	int width;
-	int height;
-	rgby_t *pixels;
-	int *yadds;
-	float resize_y;
 	float resize_x;
+	float resize_y;
 	int *lookup_resx;
+	int *yadds;
+	int height;
+	int width;
+	rgby_t *pixels;
 } Image;
 
 // Calculate width or height, but not both
@@ -87,21 +87,13 @@ void aspect_ratio(const int jpeg_width, const int jpeg_height) {
 }
 
 void print_border(const int width) {
-	#ifndef HAVE_MEMSET
-	int n;
-	#endif
-
 	#ifdef WIN32
 	char *bord = (char*) malloc(width+3);
 	#else
 	char bord[width + 3];
 	#endif
 
-	#ifdef HAVE_MEMSET
 	memset(bord, '-', width+2);
-	#else
-	for ( n=0; n<width+2; ++n ) bord[n] = '-';
-	#endif
 
 	bord[0] = bord[width+1] = '+';
 	bord[width+2] = 0;
@@ -113,6 +105,10 @@ void print_border(const int width) {
 }
 
 void print_image_colors(const Image* const i, const int chars, FILE* f) {
+
+	const float threshold = 0.1f;
+	const float threshold_inv = 1.0f - threshold;
+	const float min = 1.0f / 255.0f;
 
 	int x, y;
 	int xstart, xend, xincr;
@@ -133,19 +129,14 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 
 		for ( x=xstart; x != xend; x += xincr ) {
 
-			rgby_t pix = i->pixels[x + (flipy? i->height - y - 1 : y ) * i->width];
-			float Y_inv = 1.0f - pix.y;
+			rgby_t *pix = &i->pixels[x + (flipy? i->height - y - 1 : y ) * i->width];
+			float Y_inv = 1.0f - pix->y;
 			
-			const int pos = ROUND((float)chars * (!invert? Y_inv : pix.y));
+			const int pos = ROUND((float)chars * (!invert? Y_inv : pix->y));
 			char ch = ascii_palette[pos];
 
-			const float min = 1.0f / 255.0f;
-
 			if ( !html ) {
-				const float threshold = 0.1f;
-				const float threshold_inv = 1.0f - threshold;
-
-				rgby_t T = pix;
+				rgby_t T = *pix;
 				T.r -= threshold;
 				T.g -= threshold;
 				T.b -= threshold;
@@ -154,18 +145,18 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 				int highl = 0;
 
 				// ANSI highlite, only use in grayscale
-			        if ( pix.y>=0.95f && pix.r < min && pix.g < min && pix.b < min ) highl = 1; // ANSI highlite
+			        if ( pix->y>=0.95f && pix->r < min && pix->g < min && pix->b < min ) highl = 1; // ANSI highlite
 
 				if ( !convert_grayscale ) {
-				     if ( T.r > pix.g && T.r > pix.b )                          colr = 31; // red
-				else if ( T.g > pix.r && T.g > pix.b )                          colr = 32; // green
-				else if ( T.r > pix.b && T.g > pix.b && pix.r + pix.g > threshold_inv )   colr = 33; // yellow
-				else if ( T.b > pix.r && T.b > pix.g && pix.y < 0.95f )             colr = 34; // blue
-				else if ( T.r > pix.g && T.b > pix.g && pix.r + pix.b > threshold_inv )   colr = 35; // magenta
-				else if ( T.g > pix.r && T.b > pix.r && pix.b + pix.g > threshold_inv )   colr = 36; // cyan
-				else if ( pix.r + pix.g + pix.b >= 3.0f*pix.y )                    colr = 37; // white
+				     if ( T.r > pix->g && T.r > pix->b )                          colr = 31; // red
+				else if ( T.g > pix->r && T.g > pix->b )                          colr = 32; // green
+				else if ( T.r > pix->b && T.g > pix->b && pix->r + pix->g > threshold_inv )   colr = 33; // yellow
+				else if ( T.b > pix->r && T.b > pix->g && pix->y < 0.95f )        colr = 34; // blue
+				else if ( T.r > pix->g && T.b > pix->g && pix->r + pix->b > threshold_inv )   colr = 35; // magenta
+				else if ( T.g > pix->r && T.b > pix->r && pix->b + pix->g > threshold_inv )   colr = 36; // cyan
+				else if ( pix->r + pix->g + pix->b >= 3.0f*pix->y )               colr = 37; // white
 				} else {
-					if ( pix.y>=0.7f ) {
+					if ( pix->y>=0.7f ) {
 						highl = 1;
 						colr = 37; // white
 					}
@@ -184,24 +175,24 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 			
 				// either --grayscale is specified (convert_grayscale)
 				// or we can see that the image is inherently a grayscale image	
-				if ( convert_grayscale || (pix.r<min && pix.g<min && pix.b<min && pix.y>min) ) {
+				if ( convert_grayscale || (pix->r<min && pix->g<min && pix->b<min && pix->y>min) ) {
 					// Grayscale image
 					if ( colorfill )
 						print_html_char(f, ch,
-							ROUND(255.0f*pix.y*0.5f), ROUND(255.0f*pix.y*0.5f), ROUND(255.0f*pix.y*0.5f),
-							ROUND(255.0f*pix.y),      ROUND(255.0f*pix.y),      ROUND(255.0f*pix.y));
+							ROUND(255.0f*pix->y*0.5f), ROUND(255.0f*pix->y*0.5f), ROUND(255.0f*pix->y*0.5f),
+							ROUND(255.0f*pix->y),      ROUND(255.0f*pix->y),      ROUND(255.0f*pix->y));
 					else
 						print_html_char(f, ch,
-							ROUND(255.0f*pix.y), ROUND(255.0f*pix.y), ROUND(255.0f*pix.y),
+							ROUND(255.0f*pix->y), ROUND(255.0f*pix->y), ROUND(255.0f*pix->y),
 							255, 255, 255);
 				} else {
 					if ( colorfill )
 						print_html_char(f, ch,
-							ROUND(255.0f*pix.y*pix.r), ROUND(255.0f*pix.y*pix.g), ROUND(255.0f*pix.y*pix.b),
-							ROUND(255.0f*pix.r),   ROUND(255.0f*pix.g),   ROUND(255.0f*pix.b));
+							ROUND(255.0f*pix->y*pix->r), ROUND(255.0f*pix->y*pix->g), ROUND(255.0f*pix->y*pix->b),
+							ROUND(255.0f*pix->r),   ROUND(255.0f*pix->g),   ROUND(255.0f*pix->b));
 					else
 						print_html_char(f, ch,
-							ROUND(255.0f*pix.r), ROUND(255.0f*pix.g), ROUND(255.0f*pix.b),
+							ROUND(255.0f*pix->r), ROUND(255.0f*pix->g), ROUND(255.0f*pix->b),
 							255, 255, 255);
 				}
 			}
