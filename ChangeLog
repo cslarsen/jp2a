@@ -1,5 +1,5 @@
 CHANGES SINCE 1.0.6 (svnversion 460)
-- None yet.
+- Using struct rgby_t for better code.
 
 CHANGES SINCE 1.0.5 (svnversion 452)
 - Support for GCC 2.95.4 (old C compilers in general)

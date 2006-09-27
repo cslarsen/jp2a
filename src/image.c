@@ -28,11 +28,17 @@
 
 #define ROUND(x) (int) ( 0.5f + x )
 
+typedef struct rgby_t_ {
+	float r;
+	float g;
+	float b;
+	float y;
+} rgby_t;
+
 typedef struct Image_ {
 	int width;
 	int height;
-	float *pixel; // luminosity
-	float *red, *green, *blue;
+	rgby_t *pixels;
 	int *yadds;
 	float resize_y;
 	float resize_x;
@@ -127,37 +133,42 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 
 		for ( x=xstart; x != xend; x += xincr ) {
 
-			float Y = i->pixel[x + (flipy? i->height - y - 1 : y ) * i->width];
-			float Y_inv = 1.0f - Y;
-			float R = i->red  [x + (flipy? i->height - y - 1 : y ) * i->width];
-			float G = i->green[x + (flipy? i->height - y - 1 : y ) * i->width];
-			float B = i->blue [x + (flipy? i->height - y - 1 : y ) * i->width];
-
-			const int pos = ROUND((float)chars * (!invert? Y_inv : Y));
+			rgby_t pix = i->pixels[x + (flipy? i->height - y - 1 : y ) * i->width];
+			float Y_inv = 1.0f - pix.y;
+			
+			const int pos = ROUND((float)chars * (!invert? Y_inv : pix.y));
 			char ch = ascii_palette[pos];
 
 			const float min = 1.0f / 255.0f;
 
 			if ( !html ) {
-				const float t = 0.1f; // threshold
-				const float i = 1.0f - t;
+				const float threshold = 0.1f;
+				const float threshold_inv = 1.0f - threshold;
+
+				rgby_t T = pix;
+				T.r -= threshold;
+				T.g -= threshold;
+				T.b -= threshold;
 
 				int colr = 0;
 				int highl = 0;
 
 				// ANSI highlite, only use in grayscale
-			        if ( Y>=0.95f && R<min && G<min && B<min ) highl = 1; // ANSI highlite
+			        if ( pix.y>=0.95f && pix.r < min && pix.g < min && pix.b < min ) highl = 1; // ANSI highlite
 
 				if ( !convert_grayscale ) {
-				     if ( R-t>G && R-t>B )            colr = 31; // red
-				else if ( G-t>R && G-t>B )            colr = 32; // green
-				else if ( R-t>B && G-t>B && R+G>i )   colr = 33; // yellow
-				else if ( B-t>R && B-t>G && Y<0.95f ) colr = 34; // blue
-				else if ( R-t>G && B-t>G && R+B>i )   colr = 35; // magenta
-				else if ( G-t>R && B-t>R && B+G>i )   colr = 36; // cyan
-				else if ( R+G+B>=3.0f*Y )             colr = 37; // white
+				     if ( T.r > pix.g && T.r > pix.b )                          colr = 31; // red
+				else if ( T.g > pix.r && T.g > pix.b )                          colr = 32; // green
+				else if ( T.r > pix.b && T.g > pix.b && pix.r + pix.g > threshold_inv )   colr = 33; // yellow
+				else if ( T.b > pix.r && T.b > pix.g && pix.y < 0.95f )             colr = 34; // blue
+				else if ( T.r > pix.g && T.b > pix.g && pix.r + pix.b > threshold_inv )   colr = 35; // magenta
+				else if ( T.g > pix.r && T.b > pix.r && pix.b + pix.g > threshold_inv )   colr = 36; // cyan
+				else if ( pix.r + pix.g + pix.b >= 3.0f*pix.y )                    colr = 37; // white
 				} else {
-					if ( Y>=0.7f ) { highl=1; colr = 37; }
+					if ( pix.y>=0.7f ) {
+						highl = 1;
+						colr = 37; // white
+					}
 				}
 
 				if ( !colr ) {
@@ -173,24 +184,24 @@ void print_image_colors(const Image* const i, const int chars, FILE* f) {
 			
 				// either --grayscale is specified (convert_grayscale)
 				// or we can see that the image is inherently a grayscale image	
-				if ( convert_grayscale || (R<min && G<min && B<min && Y>min) ) {
+				if ( convert_grayscale || (pix.r<min && pix.g<min && pix.b<min && pix.y>min) ) {
 					// Grayscale image
 					if ( colorfill )
 						print_html_char(f, ch,
-							ROUND(255.0f*Y*0.5f), ROUND(255.0f*Y*0.5f), ROUND(255.0f*Y*0.5f),
-							ROUND(255.0f*Y),      ROUND(255.0f*Y),      ROUND(255.0f*Y));
+							ROUND(255.0f*pix.y*0.5f), ROUND(255.0f*pix.y*0.5f), ROUND(255.0f*pix.y*0.5f),
+							ROUND(255.0f*pix.y),      ROUND(255.0f*pix.y),      ROUND(255.0f*pix.y));
 					else
 						print_html_char(f, ch,
-							ROUND(255.0f*Y), ROUND(255.0f*Y), ROUND(255.0f*Y),
+							ROUND(255.0f*pix.y), ROUND(255.0f*pix.y), ROUND(255.0f*pix.y),
 							255, 255, 255);
 				} else {
 					if ( colorfill )
 						print_html_char(f, ch,
-							ROUND(255.0f*Y*R), ROUND(255.0f*Y*G), ROUND(255.0f*Y*B),
-							ROUND(255.0f*R),   ROUND(255.0f*G),   ROUND(255.0f*B));
+							ROUND(255.0f*pix.y*pix.r), ROUND(255.0f*pix.y*pix.g), ROUND(255.0f*pix.y*pix.b),
+							ROUND(255.0f*pix.r),   ROUND(255.0f*pix.g),   ROUND(255.0f*pix.b));
 					else
 						print_html_char(f, ch,
-							ROUND(255.0f*R), ROUND(255.0f*G), ROUND(255.0f*B),
+							ROUND(255.0f*pix.r), ROUND(255.0f*pix.g), ROUND(255.0f*pix.b),
 							255, 255, 255);
 				}
 			}
@@ -221,7 +232,7 @@ void print_image(const Image* const i, const int chars, FILE *f) {
 
 		for ( x=0; x < i->width; ++x ) {
 
-			const float lum = i->pixel[x + (flipy? i->height - y - 1 : y) * i->width];
+			const float lum = i->pixels[x + (flipy? i->height - y - 1 : y) * i->width].y;
 			const int pos = ROUND((float)chars * lum);
 
 			line[flipx? i->width - x - 1 : x] = ascii_palette[invert? pos : chars - pos];
@@ -237,22 +248,13 @@ void print_image(const Image* const i, const int chars, FILE *f) {
 
 void clear(Image* i) {
 	memset(i->yadds, 0, i->height * sizeof(int) );
-	memset(i->pixel, 0, i->width * i->height * sizeof(float));
+	memset(i->pixels, 0, i->width * i->height * sizeof(rgby_t));
 	memset(i->lookup_resx, 0, (1 + i->width) * sizeof(int) );
-
-	if ( usecolors ) {
-		memset(i->red,   0, i->width * i->height * sizeof(float));
-		memset(i->green, 0, i->width * i->height * sizeof(float));
-		memset(i->blue,  0, i->width * i->height * sizeof(float));
-	}
 }
 
 void normalize(Image* i) {
 
-	float *pixel = i->pixel;
-	float *red   = i->red;
-	float *green = i->green;
-	float *blue  = i->blue;
+	rgby_t *pix = i->pixels;
 
 	int x, y;
 
@@ -261,23 +263,16 @@ void normalize(Image* i) {
 		if ( i->yadds[y] > 1 ) {
 
 			for ( x=0; x < i->width; ++x ) {
-				pixel[x] /= i->yadds[y];
-
 				if ( usecolors ) {
-					red  [x] /= i->yadds[y];
-					green[x] /= i->yadds[y];
-					blue [x] /= i->yadds[y];
+					pix[x].r /= i->yadds[y];
+					pix[x].g /= i->yadds[y];
+					pix[x].b /= i->yadds[y];
 				}
+				pix[x].y /= i->yadds[y];
 			}
 		}
 
-		pixel += i->width;
-
-		if ( usecolors ) {
-			red   += i->width;
-			green += i->width;
-			blue  += i->width;
-		}
+		pix += i->width;
 	}
 }
 
@@ -314,17 +309,7 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 
 	// include all scanlines since last call
 
-	float *pixel, *red, *green, *blue;
-
-	pixel  = &i->pixel[lasty * i->width];
-	red = green = blue = NULL;
-
-	if ( usecolors ) {
-		int offset = lasty * i->width;
-		red   = &i->red  [offset];
-		green = &i->green[offset];
-		blue  = &i->blue [offset];
-	}
+	rgby_t *colr = &i->pixels[lasty * i->width];
 
 	while ( lasty <= y ) {
 
@@ -359,40 +344,30 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 				src += components;
 			}
 
-			pixel[x] += adds>1 ? v / (float) adds : v;
+			colr[x].y += adds>1 ? v / (float) adds : v;
 
 			if ( readcolors ) {
-				red  [x] += adds>1 ? r / (float) adds : r;
-				green[x] += adds>1 ? g / (float) adds : g;
-				blue [x] += adds>1 ? b / (float) adds : b;
+				colr[x].r += adds>1 ? r / (float) adds : r;
+				colr[x].g += adds>1 ? g / (float) adds : g;
+				colr[x].b += adds>1 ? b / (float) adds : b;
 			}
 		}
 
 		++i->yadds[lasty++];
-
-		pixel += i->width;
-
-		if ( readcolors ) {
-			red   += i->width;
-			green += i->width;
-			blue  += i->width;
-		}
+		colr += i->width;
 	}
 
 	lasty = y;
 }
 
 void free_image(Image* i) {
-	if ( i->pixel ) free(i->pixel);
-	if ( i->red ) free(i->red);
-	if ( i->green ) free(i->green);
-	if ( i->blue ) free(i->blue);
+	if ( i->pixels ) free(i->pixels);
 	if ( i->yadds ) free(i->yadds);
 	if ( i->lookup_resx ) free(i->lookup_resx);
 }
 
 void malloc_image(Image* i) {
-	i->pixel = i->red = i->green = i->blue = NULL;
+	i->pixels = NULL;
 	i->yadds = NULL;
 	i->lookup_resx = NULL;
 
@@ -400,20 +375,12 @@ void malloc_image(Image* i) {
 	i->height = height;
 
 	i->yadds = (int*) malloc(height * sizeof(int));
-	i->pixel = (float*) malloc(width*height*sizeof(float));
-
-	if ( usecolors ) {
-		i->red   = (float*) malloc(width*height*sizeof(float));
-		i->green = (float*) malloc(width*height*sizeof(float));
-		i->blue  = (float*) malloc(width*height*sizeof(float));
-	}
+	i->pixels = (rgby_t*) malloc(width*height*sizeof(rgby_t));
 
 	// we allocate one extra pixel for resx because of the src .. src_end stuff in process_scanline
 	i->lookup_resx = (int*) malloc( (1 + width) * sizeof(int));
 
-	if ( !(i->pixel && i->yadds && i->lookup_resx) ||
-	     (usecolors && !(i->red && i->green && i->blue)) )
-	{
+	if ( !(i->pixels && i->yadds && i->lookup_resx) ) {
 		fprintf(stderr, "Not enough memory for given output dimension\n");
 		free_image(i);
 		exit(1);
