@@ -253,15 +253,12 @@ void clear(Image* i) {
 }
 
 void normalize(Image* i) {
-
 	rgby_t *pix = i->pixels;
-
 	int x, y;
 
 	for ( y=0; y < i->height; ++y ) {
 
 		if ( i->yadds[y] > 1 ) {
-
 			for ( x=0; x < i->width; ++x ) {
 				if ( usecolors ) {
 					pix[x].r /= i->yadds[y];
@@ -309,15 +306,15 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 
 	// include all scanlines since last call
 
-	rgby_t *colr = &i->pixels[lasty * i->width];
-
-	while ( lasty <= y ) {
+	rgby_t *pline;
+	for ( pline = &i->pixels[lasty*i->width]; lasty <= y; pline += i->width ) {
 
 		const int components = jpg->out_color_components;
 		const int readcolors = usecolors;
 
 		int x;
-		for ( x=0; x < i->width; ++x ) {
+		rgby_t *pix = pline;
+		for ( x=0; x < i->width; ++x, ++pix ) {
 			const JSAMPLE *src     = &scanline[i->lookup_resx[x]];
 			const JSAMPLE *src_end = &scanline[i->lookup_resx[x+1]];
 
@@ -344,17 +341,26 @@ void process_scanline(const struct jpeg_decompress_struct *jpg, const JSAMPLE* s
 				src += components;
 			}
 
-			colr[x].y += adds>1 ? v / (float) adds : v;
+			if ( adds > 1 ) {
+				pix->y += v / (float) adds;
 
-			if ( readcolors ) {
-				colr[x].r += adds>1 ? r / (float) adds : r;
-				colr[x].g += adds>1 ? g / (float) adds : g;
-				colr[x].b += adds>1 ? b / (float) adds : b;
+				if ( readcolors ) {
+					pix->r += r / (float) adds;
+					pix->g += g / (float) adds;
+					pix->b += b / (float) adds;
+				}
+			} else {
+				pix->y += v;
+
+				if ( readcolors ) {
+					pix->r += r;
+					pix->g += g;
+					pix->b += b;
+				}
 			}
 		}
 
 		++i->yadds[lasty++];
-		colr += i->width;
 	}
 
 	lasty = y;
