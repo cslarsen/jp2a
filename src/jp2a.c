@@ -15,6 +15,11 @@
 #include <unistd.h>
 #endif
 
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#undef HAVE_STDLIB_H
+#endif
+
 #include <stdio.h>
 
 #ifdef HAVE_STRING_H
@@ -23,6 +28,7 @@
 
 #include "jp2a.h"
 #include "options.h"
+#include "image.h"
 
 #ifdef WIN32
 #ifdef FEAT_CURL
@@ -69,12 +75,19 @@ int main(int argc, char** argv) {
 
 		// read from stdin
 		if ( argv[n][0]=='-' && !argv[n][1] ) {
+
 			#ifdef _WIN32
-			// Good news, everyone!
-			_setmode( _fileno( stdin ), _O_BINARY );
+			_setmode(_fileno(stdin), _O_BINARY);
 			#endif
 
-			decompress(stdin, fout);
+			image_t *i = image_read(stdin);
+			image_t *s = image_new(width, height);
+			image_clear(s);
+			image_resize(i, s);
+			image_print(s, fout);
+
+			image_destroy(i);
+			image_destroy(s);
 			continue;
 		}
 
@@ -91,10 +104,16 @@ int main(int argc, char** argv) {
 				return 1;
 			}
 
-			decompress(fr, fout);
+			image_t *i = image_read(fr);
 			fclose(fr);
 			close(fd);
-			
+			image_t *s = image_new(width, height);
+			image_clear(s);
+			image_resize(i, s);
+			image_print(s, fout);
+
+			image_destroy(i);
+			image_destroy(s);
 			continue;
 		}
 		#endif
@@ -104,9 +123,15 @@ int main(int argc, char** argv) {
 			if ( verbose )
 				fprintf(stderr, "File: %s\n", argv[n]);
 
-			decompress(fp, fout);
+			image_t *i = image_read(fp);
 			fclose(fp);
+			image_t *s = image_new(width, height);
+			image_clear(s);
+			image_resize(i, s);
+			image_print(s, fout);
 
+			image_destroy(i);
+			image_destroy(s);
 			continue;
 
 		} else {
