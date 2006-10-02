@@ -74,8 +74,7 @@ void image_resize_nearest_neighbour(const image_t * const source, const image_t 
 	const float dy = source->h / dest->h;
 
 	const rgb_t * sourcepix = source->pixels;
-	rgb_t * destpix = dest->pixels;
-
+	rgb_t *destpix = dest->pixels;
 	const int offsadd = (int)(dy * (float)source->w);
 
 	int lookupx[dest->w];
@@ -85,9 +84,9 @@ void image_resize_nearest_neighbour(const image_t * const source, const image_t 
 	for ( y=0; y < dest->h; ++y ) {
 		for ( x=0; x < dest->w; ++x )
 			destpix[x] = sourcepix[lookupx[x]];
-
-		sourcepix += offsadd;
+	
 		destpix += dest->w;
+		sourcepix += offsadd;
 	}
 }
 
