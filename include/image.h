@@ -4,7 +4,7 @@
  *
  * Project homepage on http://jp2a.sf.net
  *
- * $Id: image.c 464 2006-09-27 13:44:07Z csl $
+ * $Id$
  */
 
 #ifdef HAVE_CONFIG_H
