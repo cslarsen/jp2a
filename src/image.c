@@ -20,7 +20,7 @@
 #include "options.h"
 #include "round.h"
 
-typedef void (*image_resize_ptrfun)(const image_t * const, const image_t * const);
+typedef void (*image_resize_ptrfun)(image_t *, image_t *);
 image_resize_ptrfun global_image_resize_fun = NULL;
 
 //void image_set_resize_function(
@@ -39,7 +39,6 @@ image_t* image_new(int width, int height) {
 
 	p->w = width;
 	p->h = height;
-	
 	return p;
 }
 
@@ -62,12 +61,14 @@ void image_resize(image_t *s, image_t *d) {
 		fputs("jp2a: image_resize function not set\n", stderr);
 		exit(1);
 	}
-	int n;
-	for ( n=0; n < 100000; ++n )
+
+//	int n;
+//	for ( n=0; n < 100000; ++n )
+
 	global_image_resize_fun(s, d);
 }
 
-void image_resize_nearest_neighbour(const image_t * const source, const image_t * const dest) {
+void image_resize_nearest_neighbour(image_t *source, image_t *dest) {
 	register int x, y;
 
 	const float dx = source->w / dest->w;
@@ -90,19 +91,61 @@ void image_resize_nearest_neighbour(const image_t * const source, const image_t 
 	}
 }
 
+void image_resize_interpolation(image_t *source, image_t* dest) {
+	int dx, dy, sx, sy;
+	int lsx, lsy;
+	int offsetd;
+	long int r, g, b;
+	long int adds;
+
+	float xrat = (float)source->w / (float)dest->w;
+	float yrat = (float)source->h / (float)dest->h;
+
+	rgb_t *destpix = dest->pixels;
+
+	for ( sy=0, dy=0; dy < dest->h; ++dy ) {
+
+		sy = (float)dy * yrat;
+
+		for ( sx=0, dx=0; dx < dest->w; ++dx, ++destpix ) {
+
+			// sample pixels in area (lsx, lsy) to (sx, sy)
+
+			lsx = sx;
+			sx = (float)dx * xrat;
+			adds = r = g = b = 0;
+		
+			rgb_t *sample = &source->pixels[sy*source->w];
+
+			for ( lsy=sy; lsy <= sy; ++lsy ) {
+				while ( lsx <= sx ) {
+					r += sample[lsx].r;
+					g += sample[lsx].g;
+					b += sample[lsx].b;
+					++lsx;
+					++adds;
+				}
+				sample += source->w;
+			}
+
+			destpix->r = r/adds;
+			destpix->g = g/adds;
+			destpix->b = b/adds;
+		}
+	}
+}
+
 void print_border(FILE *f, int width) {
 	fputc('+', f);
-	while ( width-- )
-		fputc('-', f);
+	while ( width-- ) fputc('-', f);
 	fprintf(f, "+\n");
 }
 
 void print_progress(const float percent) {
 	static char str[64] = "Decompressing image [....................]\r";
-	int num = ROUND((float)20 * percent);
 	int n;
 
-	for ( n=0; n < num; ++n )
+	for ( n=0; n < ROUND(20.0f*percent); ++n )
 		str[21 + n] = '#';
 
 	fputs(str, stderr);
@@ -125,7 +168,8 @@ image_t* image_read(FILE *fp) {
 	struct jpeg_error_mgr jerr;
 	image_t *p;
 
-	global_image_resize_fun = image_resize_nearest_neighbour;
+//	global_image_resize_fun = image_resize_nearest_neighbour;
+	global_image_resize_fun = image_resize_interpolation;
 
 	jpg.err = jpeg_std_error(&jerr);
 
