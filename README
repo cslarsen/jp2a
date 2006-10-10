@@ -21,7 +21,7 @@
 
     ./configure
     make
-    make test     # optional
+    make check     # optional
     make install
 
     If configure doesn't find jpeglib.h and you know where
@@ -124,7 +124,7 @@
     cross-compile:
 
     ./configure --host=i386-mingw32
-    make test
+    make check
 
     I currently use MS Visual C++ to compile the Win32 binaries for jp2a,
     but I am going to swith to using mingw32.

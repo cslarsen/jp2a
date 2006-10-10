@@ -1,5 +1,6 @@
 CHANGES SINCE 1.0.6 (svnversion 460)
 - Internal code changes for resizing.
+- Renamed `make test' to `make check'
 
 CHANGES SINCE 1.0.5 (svnversion 452)
 - Support for GCC 2.95.4 (old C compilers in general)

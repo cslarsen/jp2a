@@ -1,4 +1,4 @@
 # $Id$
 
-test:
+check:
 	./run-tests.sh
