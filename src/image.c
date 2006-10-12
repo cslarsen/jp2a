@@ -75,12 +75,11 @@ static void image_resize_nearest_neighbour(const image_t* source, image_t* dest)
 	register const rgb_t* restrict sourcepix = source->pixels;
 	register rgb_t* restrict destpix = dest->pixels;
 
-	const float dx = (float)source->w / (float)dest->w;
 	const unsigned int sourceadd = source->w * (source->h / dest->h);
 
 	unsigned int lookupx[dest->w];
 	for ( x=0; x < dest->w; ++x )
-		lookupx[x] = (int)((float)x*dx + 0.5f);
+		lookupx[x] = (int)( (float)x * (float)source->w / (float)dest->w + 0.5f /* round */);
 
 	for ( y=0; y < dest->h; ++y ) {
 
@@ -93,18 +92,39 @@ static void image_resize_nearest_neighbour(const image_t* source, image_t* dest)
 }
 
 void image_resize_interpolation(const image_t* source, image_t* dest) {
-	int x, y, ix, iy;
-	float fx, fy;
+	int x, y;
+	int sx, sy;
 
 	float xrat = (float)source->w / (float)dest->w;
 	float yrat = (float)source->h / (float)dest->h;
 
-	for ( y=0; y < (dest->h-1); ++y ) {
-		for ( x=0; x < (dest->w-1); ++x ) {
+	printf("xrat=%f, yrat=%f\n", xrat, yrat);
 
-			fx = (float)x * xrat;
-			fy = (float)y * yrat;
+	for ( y=0; y < dest->h; ++y ) {
+		for ( x=0; x < dest->w; ++x ) {
 
+			// sample all pixels in range (sx, sy) to (sx + xrat, sy + yrat)
+
+			sx = x*xrat;
+			sy = y*yrat;
+
+			float r, g, b;
+			r = g = b = 0.0f;
+			int adds = 0;
+
+			int cx, cy;
+	
+			for ( cy=sy; cy < yrat*(y + 1); ++cy ) {
+				for ( cx=sx; cx < xrat*(x + 1); ++cx, ++adds ) {
+					r += source->pixels[cx + cy * source->w].r;
+					g += source->pixels[cx + cy * source->w].g;
+					b += source->pixels[cx + cy * source->w].b;
+				}
+			}
+
+			dest->pixels[x + y*dest->w].r = r/adds;
+			dest->pixels[x + y*dest->w].g = g/adds;
+			dest->pixels[x + y*dest->w].b = b/adds;
 		}
 	}
 }
@@ -142,8 +162,12 @@ image_t* image_read(FILE *fp) {
 	struct jpeg_error_mgr jerr;
 	image_t *p;
 
-	global_image_resize_fun = image_resize_nearest_neighbour;
-//	global_image_resize_fun = image_resize_interpolation;
+//	global_image_resize_fun = image_resize_nearest_neighbour;
+	global_image_resize_fun = image_resize_interpolation;
+
+	// TODO: can have jpeglib resize to halves/doubles if it has
+	// compiled-in support of that.. could first scale to nearest
+	// output-dimension and resize on that, probably faster.
 
 	jpg.err = jpeg_std_error(&jerr);
 
