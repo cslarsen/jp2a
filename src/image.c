@@ -92,37 +92,38 @@ static void image_resize_nearest_neighbour(const image_t* source, image_t* dest)
 }
 
 void image_resize_interpolation(const image_t* source, image_t* dest) {
-	unsigned int x, y;
-	register unsigned int cx, cy;
+	unsigned int y;
 	unsigned int r, g, b;
 
 	const float xrat = (float)source->w / (float)dest->w;
-	const float yrat = (float)source->h / (float)dest->h;
-	const unsigned int adds = (int)xrat * (int)yrat;
-	const int offs = source->w - (int)xrat;
+	const int ynrat = (int)((float)source->h / (float)dest->h);
 
-	for ( y=0; y < dest->h; ++y ) {
+	const int xnrat = (int)xrat;
 
-		rgb_t* pix = &dest->pixels[y*dest->w];
+	const unsigned int adds = xnrat * ynrat;
+	const int offs = source->w - xnrat;
 
-		unsigned int cy_start = y*yrat;
-		unsigned int cy_max = cy_start + yrat;
+	rgb_t* pix = dest->pixels;
+	rgb_t* pix_next = pix + dest->w;
 
-		const rgb_t* sample_start = &source->pixels[cy_start*source->w];
-		const rgb_t* sample_max   = &source->pixels[cy_max*source->w];
+	const rgb_t* sample_start = source->pixels;
+
+	for ( y=0; y < dest->h; ++y, pix_next += dest->w, sample_start += ynrat*source->w ) {
+
+		const rgb_t* sample_max = sample_start + ynrat*source->w;
 
 		unsigned int cx_start = 0;
-		register const rgb_t *samp;
-		register const rgb_t* samp_end;
+		const rgb_t *samp;
+		const rgb_t* samp_end;
 
-		for ( x=0; x < dest->w; ++x ) {
+		for ( ; pix < pix_next; ++pix, cx_start += xnrat ) {
 
 			// sample all pixels in range (x*xrat, y*yrat) to (x*xrat + xrat, y*yrat + yrat)
 
 			r = g = b = 0;
 
 			samp = &sample_start[cx_start];
-			samp_end = samp + (int)xrat;
+			samp_end = samp + xnrat;
 
 			while ( samp < sample_max ) {
 				while ( samp < samp_end ) {
@@ -136,11 +137,9 @@ void image_resize_interpolation(const image_t* source, image_t* dest) {
 				samp_end += source->w;
 			}
 
-			pix[x].r = r/adds;
-			pix[x].g = g/adds;
-			pix[x].b = b/adds;
-
-			cx_start += xrat;
+			pix->r = r/adds;
+			pix->g = g/adds;
+			pix->b = b/adds;
 		}
 	}
 
