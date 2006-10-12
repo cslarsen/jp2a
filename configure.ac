@@ -117,6 +117,8 @@ fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
+AC_C_INLINE
+AC_C_RESTRICT
 AC_TYPE_SIZE_T
 
 # Checks for library functions.
@@ -125,6 +127,5 @@ AC_CHECK_FUNCS([atexit])
 AC_FUNC_FORK
 AC_TYPE_PID_T
 
-AC_C_INLINE
 AC_FUNC_MALLOC
 AC_OUTPUT

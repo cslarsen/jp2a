@@ -19,8 +19,9 @@
 #include "jp2a.h"
 #include "options.h"
 #include "round.h"
+#include "aspect_ratio.h"
 
-typedef void (*image_resize_ptrfun)(image_t *, image_t *);
+typedef void (*image_resize_ptrfun)(const image_t* , image_t*);
 image_resize_ptrfun global_image_resize_fun = NULL;
 
 //void image_set_resize_function(
@@ -56,7 +57,7 @@ rgb_t* image_pixel(image_t *p, const int x, const int y) {
 	return &p->pixels[x + y*p->w];
 }
 
-void image_resize(image_t *s, image_t *d) {
+void image_resize(const image_t* s, image_t* d) {
 	if ( global_image_resize_fun == NULL ) {
 		fputs("jp2a: image_resize function not set\n", stderr);
 		exit(1);
@@ -68,69 +69,42 @@ void image_resize(image_t *s, image_t *d) {
 	global_image_resize_fun(s, d);
 }
 
-void image_resize_nearest_neighbour(image_t *source, image_t *dest) {
-	register int x, y;
+static void image_resize_nearest_neighbour(const image_t* source, image_t* dest) {
+	register unsigned int x, y;
 
-	const float dx = source->w / dest->w;
-	const float dy = source->h / dest->h;
+	register const rgb_t* restrict sourcepix = source->pixels;
+	register rgb_t* restrict destpix = dest->pixels;
 
-	const rgb_t * sourcepix = source->pixels;
-	rgb_t *destpix = dest->pixels;
-	const int offsadd = (int)(dy * (float)source->w);
+	const float dx = (float)source->w / (float)dest->w;
+	const unsigned int sourceadd = source->w * (source->h / dest->h);
 
-	int lookupx[dest->w];
+	unsigned int lookupx[dest->w];
 	for ( x=0; x < dest->w; ++x )
-		lookupx[x] = (int)((float)x * dx);
+		lookupx[x] = (int)((float)x*dx + 0.5f);
 
 	for ( y=0; y < dest->h; ++y ) {
+
 		for ( x=0; x < dest->w; ++x )
 			destpix[x] = sourcepix[lookupx[x]];
 	
-		destpix += dest->w;
-		sourcepix += offsadd;
+		destpix   += dest->w;
+		sourcepix += sourceadd;
 	}
 }
 
-void image_resize_interpolation(image_t *source, image_t* dest) {
-	int dx, dy, sx, sy;
-	int lsx, lsy;
-	int offsetd;
-	long int r, g, b;
-	long int adds;
+void image_resize_interpolation(const image_t* source, image_t* dest) {
+	int x, y, ix, iy;
+	float fx, fy;
 
 	float xrat = (float)source->w / (float)dest->w;
 	float yrat = (float)source->h / (float)dest->h;
 
-	rgb_t *destpix = dest->pixels;
+	for ( y=0; y < (dest->h-1); ++y ) {
+		for ( x=0; x < (dest->w-1); ++x ) {
 
-	for ( sy=0, dy=0; dy < dest->h; ++dy ) {
+			fx = (float)x * xrat;
+			fy = (float)y * yrat;
 
-		sy = (float)dy * yrat;
-
-		for ( sx=0, dx=0; dx < dest->w; ++dx, ++destpix ) {
-
-			// sample pixels in area (lsx, lsy) to (sx, sy)
-
-			lsx = sx;
-			sx = (float)dx * xrat;
-			adds = r = g = b = 0;
-		
-			rgb_t *sample = &source->pixels[sy*source->w];
-
-			for ( lsy=sy; lsy <= sy; ++lsy ) {
-				while ( lsx <= sx ) {
-					r += sample[lsx].r;
-					g += sample[lsx].g;
-					b += sample[lsx].b;
-					++lsx;
-					++adds;
-				}
-				sample += source->w;
-			}
-
-			destpix->r = r/adds;
-			destpix->g = g/adds;
-			destpix->b = b/adds;
 		}
 	}
 }
@@ -168,8 +142,8 @@ image_t* image_read(FILE *fp) {
 	struct jpeg_error_mgr jerr;
 	image_t *p;
 
-//	global_image_resize_fun = image_resize_nearest_neighbour;
-	global_image_resize_fun = image_resize_interpolation;
+	global_image_resize_fun = image_resize_nearest_neighbour;
+//	global_image_resize_fun = image_resize_interpolation;
 
 	jpg.err = jpeg_std_error(&jerr);
 
@@ -198,14 +172,12 @@ image_t* image_read(FILE *fp) {
 		if ( jpg.output_components == 3 ) {
 			memcpy(&p->pixels[(jpg.output_scanline-1)*p->w], &buffer[0][0], sizeof(rgb_t)*p->w);
 		} else {
-			rgb_t c;
 			int x;
-			int offset = (jpg.output_scanline-1) * p->w;
+			rgb_t *pixels = &p->pixels[(jpg.output_scanline-1) * p->w];
 
 			// grayscale
 			for ( x=0; x < jpg.output_width; ++x ) {
-				c.r = c.g = c.b = buffer[0][x];
-				p->pixels[x + offset] = c;
+				pixels[x].r = pixels[x].g = pixels[x].b = buffer[0][x];
 			}
 		}
 
