@@ -103,23 +103,25 @@ void image_resize_interpolation(const image_t* source, image_t* dest) {
 	rgb_t* pix = dest->pixels;
 	rgb_t* pix_next = pix + dest->w;
 
-	const rgb_t* sample_start = source->pixels;
-	const rgb_t* sample_completed = source->pixels + dest->h*yinc;
 	const rgb_t *samp;
 	const rgb_t* samp_end;
 
-	while ( sample_start < sample_completed ) {
+	const rgb_t* src = source->pixels;
+	const rgb_t* src_end = source->pixels + dest->h*yinc;
 
-		const rgb_t *samp_start = sample_start;
-		const rgb_t *sample_start_plus_yinc = sample_start + yinc;
+	while ( src < src_end ) {
 
+		const rgb_t *samp_start = src;
+		const rgb_t *sample_start_plus_yinc = src + yinc;
+
+		samp = src;
 		while ( pix < pix_next ) {
 
 			r = g = b = 0;
-			samp = samp_start;
 			samp_end = samp + xnrat;
 
 			while ( samp < sample_start_plus_yinc ) {
+
 				while ( samp < samp_end ) {
 					r += samp->r;
 					g += samp->g;
@@ -136,11 +138,12 @@ void image_resize_interpolation(const image_t* source, image_t* dest) {
 			pix->b = r/adds;
 
 			++pix;
-			samp_start += xnrat;
+			samp -= yinc - xnrat;
+			
 		}
 
 		pix_next += dest->w;
-		sample_start += yinc;
+		src += yinc;
 	}
 }
 
