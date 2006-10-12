@@ -92,40 +92,34 @@ static void image_resize_nearest_neighbour(const image_t* source, image_t* dest)
 }
 
 void image_resize_interpolation(const image_t* source, image_t* dest) {
-	unsigned int y;
 	unsigned int r, g, b;
 
-	const float xrat = (float)source->w / (float)dest->w;
 	const int ynrat = (int)((float)source->h / (float)dest->h);
+	const int xnrat = (int)((float)source->w / (float)dest->w);
 
-	const int xnrat = (int)xrat;
-
+	const int yinc = ynrat*source->w;
 	const unsigned int adds = xnrat * ynrat;
-	const int offs = source->w - xnrat;
 
 	rgb_t* pix = dest->pixels;
 	rgb_t* pix_next = pix + dest->w;
 
 	const rgb_t* sample_start = source->pixels;
+	const rgb_t* sample_completed = source->pixels + dest->h*yinc;
+	const rgb_t *samp;
+	const rgb_t* samp_end;
 
-	for ( y=0; y < dest->h; ++y, pix_next += dest->w, sample_start += ynrat*source->w ) {
+	while ( sample_start < sample_completed ) {
 
-		const rgb_t* sample_max = sample_start + ynrat*source->w;
+		const rgb_t *samp_start = sample_start;
+		const rgb_t *sample_start_plus_yinc = sample_start + yinc;
 
-		unsigned int cx_start = 0;
-		const rgb_t *samp;
-		const rgb_t* samp_end;
-
-		for ( ; pix < pix_next; ++pix, cx_start += xnrat ) {
-
-			// sample all pixels in range (x*xrat, y*yrat) to (x*xrat + xrat, y*yrat + yrat)
+		while ( pix < pix_next ) {
 
 			r = g = b = 0;
-
-			samp = &sample_start[cx_start];
+			samp = samp_start;
 			samp_end = samp + xnrat;
 
-			while ( samp < sample_max ) {
+			while ( samp < sample_start_plus_yinc ) {
 				while ( samp < samp_end ) {
 					r += samp->r;
 					g += samp->g;
@@ -133,16 +127,21 @@ void image_resize_interpolation(const image_t* source, image_t* dest) {
 					++samp;
 				}
 
-				samp += offs;
+				samp += source->w - xnrat;
 				samp_end += source->w;
 			}
 
 			pix->r = r/adds;
-			pix->g = g/adds;
-			pix->b = b/adds;
-		}
-	}
+			pix->g = r/adds;
+			pix->b = r/adds;
 
+			++pix;
+			samp_start += xnrat;
+		}
+
+		pix_next += dest->w;
+		sample_start += yinc;
+	}
 }
 
 void print_border(FILE *f, int width) {
