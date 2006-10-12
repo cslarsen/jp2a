@@ -92,13 +92,13 @@ static void image_resize_nearest_neighbour(const image_t* source, image_t* dest)
 }
 
 void image_resize_interpolation(const image_t* source, image_t* dest) {
-	int x, y;
-	int sx, sy;
-	int cx, cy;
-	int adds;
+	unsigned int x, y;
+	unsigned int cx, cy;
+	unsigned int adds;
+	unsigned int r, g, b;
+
 	float xrat = (float)source->w / (float)dest->w;
 	float yrat = (float)source->h / (float)dest->h;
-	float r, g, b;
 
 	for ( y=0; y < dest->h; ++y ) {
 		for ( x=0; x < dest->w; ++x ) {
