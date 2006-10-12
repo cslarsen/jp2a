@@ -94,28 +94,22 @@ static void image_resize_nearest_neighbour(const image_t* source, image_t* dest)
 void image_resize_interpolation(const image_t* source, image_t* dest) {
 	int x, y;
 	int sx, sy;
-
+	int cx, cy;
+	int adds;
 	float xrat = (float)source->w / (float)dest->w;
 	float yrat = (float)source->h / (float)dest->h;
-
-	printf("xrat=%f, yrat=%f\n", xrat, yrat);
+	float r, g, b;
 
 	for ( y=0; y < dest->h; ++y ) {
 		for ( x=0; x < dest->w; ++x ) {
 
-			// sample all pixels in range (sx, sy) to (sx + xrat, sy + yrat)
+			// sample all pixels in range (x*xrat, y*yrat) to (x*xrat + xrat, y*yrat + yrat)
 
-			sx = x*xrat;
-			sy = y*yrat;
-
-			float r, g, b;
 			r = g = b = 0.0f;
-			int adds = 0;
-
-			int cx, cy;
+			adds = 0;
 	
-			for ( cy=sy; cy < yrat*(y + 1); ++cy ) {
-				for ( cx=sx; cx < xrat*(x + 1); ++cx, ++adds ) {
+			for ( cy=y*yrat; cy < yrat*(y + 1); ++cy ) {
+				for ( cx=x*xrat; cx < xrat*(x + 1); ++cx, ++adds ) {
 					r += source->pixels[cx + cy * source->w].r;
 					g += source->pixels[cx + cy * source->w].g;
 					b += source->pixels[cx + cy * source->w].b;
