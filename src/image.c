@@ -93,34 +93,57 @@ static void image_resize_nearest_neighbour(const image_t* source, image_t* dest)
 
 void image_resize_interpolation(const image_t* source, image_t* dest) {
 	unsigned int x, y;
-	unsigned int cx, cy;
-	unsigned int adds;
+	register unsigned int cx, cy;
 	unsigned int r, g, b;
 
-	float xrat = (float)source->w / (float)dest->w;
-	float yrat = (float)source->h / (float)dest->h;
+	const float xrat = (float)source->w / (float)dest->w;
+	const float yrat = (float)source->h / (float)dest->h;
+	const unsigned int adds = (int)xrat * (int)yrat;
+	const int offs = source->w - (int)xrat;
 
 	for ( y=0; y < dest->h; ++y ) {
+
+		rgb_t* pix = &dest->pixels[y*dest->w];
+
+		unsigned int cy_start = y*yrat;
+		unsigned int cy_max = cy_start + yrat;
+
+		const rgb_t* sample_start = &source->pixels[cy_start*source->w];
+		const rgb_t* sample_max   = &source->pixels[cy_max*source->w];
+
 		for ( x=0; x < dest->w; ++x ) {
 
 			// sample all pixels in range (x*xrat, y*yrat) to (x*xrat + xrat, y*yrat + yrat)
 
-			r = g = b = 0.0f;
-			adds = 0;
-	
-			for ( cy=y*yrat; cy < yrat*(y + 1); ++cy ) {
-				for ( cx=x*xrat; cx < xrat*(x + 1); ++cx, ++adds ) {
-					r += source->pixels[cx + cy * source->w].r;
-					g += source->pixels[cx + cy * source->w].g;
-					b += source->pixels[cx + cy * source->w].b;
+			r = g = b = 0;
+			unsigned int cx_start = x*xrat;
+			unsigned int cx_max   = cx_start + xrat;
+
+			register const rgb_t *samp;
+			const rgb_t* samp_end;
+
+			samp = &sample_start[cx_start];
+			samp_end = &sample_start[cx_max];
+
+
+			while ( samp < sample_max ) {
+				while ( samp < samp_end ) {
+					r += samp->r;
+					g += samp->g;
+					b += samp->b;
+					++samp;
 				}
+
+				samp += offs;
+				samp_end += source->w;
 			}
 
-			dest->pixels[x + y*dest->w].r = r/adds;
-			dest->pixels[x + y*dest->w].g = g/adds;
-			dest->pixels[x + y*dest->w].b = b/adds;
+			pix[x].r = r/adds;
+			pix[x].g = g/adds;
+			pix[x].b = b/adds;
 		}
 	}
+
 }
 
 void print_border(FILE *f, int width) {
