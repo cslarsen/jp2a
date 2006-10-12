@@ -63,9 +63,6 @@ void image_resize(const image_t* s, image_t* d) {
 		exit(1);
 	}
 
-//	int n;
-//	for ( n=0; n < 100000; ++n )
-
 	global_image_resize_fun(s, d);
 }
 
@@ -92,21 +89,20 @@ static void image_resize_nearest_neighbour(const image_t* source, image_t* dest)
 }
 
 void image_resize_interpolation(const image_t* source, image_t* dest) {
-	unsigned int r, g, b;
+	register unsigned int r, g, b;
 
-	const int ynrat = (int)((float)source->h / (float)dest->h);
-	const int xnrat = (int)((float)source->w / (float)dest->w);
+	const int ynrat = (float)source->h / (float)dest->h;
+	const int xnrat = (float)source->w / (float)dest->w;
 
 	const int yinc = ynrat*source->w;
 	const unsigned int adds = xnrat * ynrat;
 
-	rgb_t* pix = dest->pixels;
-	rgb_t* pix_next = pix + dest->w;
+	register rgb_t* pix = dest->pixels;
+	register rgb_t* pix_next = pix + dest->w;
 
-	const rgb_t* samp_end;
-
-	const rgb_t* src = source->pixels;
-	const rgb_t* src_end = source->pixels + dest->h*yinc;
+	register const rgb_t* samp_end;
+	register const rgb_t* src = source->pixels;
+	register const rgb_t* src_end = source->pixels + dest->h*yinc;
 
 	while ( src < src_end ) {
 
@@ -214,9 +210,8 @@ image_t* image_read(FILE *fp) {
 			rgb_t *pixels = &p->pixels[(jpg.output_scanline-1) * p->w];
 
 			// grayscale
-			for ( x=0; x < jpg.output_width; ++x ) {
+			for ( x=0; x < jpg.output_width; ++x )
 				pixels[x].r = pixels[x].g = pixels[x].b = buffer[0][x];
-			}
 		}
 
 		if ( verbose )
@@ -244,13 +239,16 @@ void image_print(const image_t *p, FILE *fout) {
 	if ( use_border )
 		print_border(fout, width);
 
+	char lum_palette[256];
+	int n;
+	for ( n=0; n < 256; ++n )
+		lum_palette[n] = ascii_palette[ROUND( (float)len * (float)n / (float)MAXJSAMPLE )];
+
+	rgb_t* pix = p->pixels;
+
 	for ( y=0; y < p->h; ++y ) {
-		for ( x=0; x < p->w; ++x ) {
-			rgb_t *pix = &p->pixels[x + y*p->w];
-			float lum = redweight * pix->r + greenweight * pix->g + blueweight * pix->b;
-			char ch = ascii_palette[ROUND( (float)len * lum / (float)MAXJSAMPLE )];
-			line[x] = ch;
-		}
+		for ( x=0; x < p->w; ++x, ++pix )
+			line[flipx? p->w - x - 1: x] = lum_palette[RED[pix->r] + GREEN[pix->g] + BLUE[pix->b]];
 
 		fprintf(fout, use_border? "|%s|\n" : "%s\n", line);
 	}

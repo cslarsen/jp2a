@@ -28,7 +28,7 @@ extern int debug;
 extern int clearscr;
 extern char ascii_palette[];
 extern float redweight, greenweight, blueweight;
-extern float RED[256], GREEN[256], BLUE[256], GRAY[256];
+extern unsigned short int RED[256], GREEN[256], BLUE[256], GRAY[256];
 extern const char *fileout;
 extern int usecolors;
 extern int termfit;
