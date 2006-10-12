@@ -111,20 +111,18 @@ void image_resize_interpolation(const image_t* source, image_t* dest) {
 		const rgb_t* sample_start = &source->pixels[cy_start*source->w];
 		const rgb_t* sample_max   = &source->pixels[cy_max*source->w];
 
+		unsigned int cx_start = 0;
+		register const rgb_t *samp;
+		register const rgb_t* samp_end;
+
 		for ( x=0; x < dest->w; ++x ) {
 
 			// sample all pixels in range (x*xrat, y*yrat) to (x*xrat + xrat, y*yrat + yrat)
 
 			r = g = b = 0;
-			unsigned int cx_start = x*xrat;
-			unsigned int cx_max   = cx_start + xrat;
-
-			register const rgb_t *samp;
-			const rgb_t* samp_end;
 
 			samp = &sample_start[cx_start];
-			samp_end = &sample_start[cx_max];
-
+			samp_end = samp + (int)xrat;
 
 			while ( samp < sample_max ) {
 				while ( samp < samp_end ) {
@@ -141,6 +139,8 @@ void image_resize_interpolation(const image_t* source, image_t* dest) {
 			pix[x].r = r/adds;
 			pix[x].g = g/adds;
 			pix[x].b = b/adds;
+
+			cx_start += xrat;
 		}
 	}
 
