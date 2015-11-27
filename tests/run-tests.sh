@@ -16,13 +16,18 @@ if test "${1}" == "update" ; then
 	UPDATE=yes
 fi
 
+if [ ! -f ${JP} ]; then
+  echo "Error: Could not find: $JP"
+  exit 1
+fi
+
 ## INITIALIZE VARS
 RESULT_OK=0
 RESULT_FAILED=0
 FAILED_STR=""
 
 function print_intense() {
-	echo -e -n "\e[1m${1}\e[0m"
+	echo -e -n "${1}"
 }
 
 function test_ok() {
@@ -103,29 +108,10 @@ test_jp2a "width, grayscale" "--width=78 dalsnuten-640x480-gray-low.jpg" dalsnut
 test_jp2a "invert, width, grayscale" "--invert --width=78 dalsnuten-640x480-gray-low.jpg" dalsnuten-invert.txt
 test_jp2a "invert, size, grayscale" "--invert --size=80x49 dalsnuten-640x480-gray-low.jpg" dalsnuten-80x49-inv.txt
 test_jp2a "size, invert, border" "dalsnuten-640x480-gray-low.jpg --size=80x25 --invert --border --size=150x45" dalsnuten-640x480-gray-low.txt
-test_jp2a "size, html" "--size=80x50 --html --html-fontsize=7 jp2a.jpg" logo.html
-test_jp2a "size, color, html, flipx" "--size=80x50 --html --color --html-fontsize=8 --flipx grind.jpg" grind-flipx.html
-test_jp2a "size, color, html, flipy" "--size=80x50 --html --color --html-fontsize=8 --flipy grind.jpg" grind-flipy.html
-test_jp2a "size, color, html, flipxy" "--size=80x50 --html --color --html-fontsize=8 --flipx --flipy grind.jpg" grind-flipxy.html
-test_jp2a "width, html, gray, dark" "dalsnuten-640x480-gray-low.jpg --width=128 --html --html-fontsize=8" dalsnuten-256.html
-test_jp2a "width, html, gray, light" "dalsnuten-640x480-gray-low.jpg --width=128 --background=light --html --html-fontsize=8" dalsnuten-256-light.html
-test_jp2a "color, html, dark" "grind.jpg --color --background=dark --width=60 --html --html-fontsize=8" grind-color-dark.html
-test_jp2a "color, html, dark fill" "grind.jpg --color --fill --background=dark --width=60 --html --html-fontsize=8" grind-color-dark-fill.html
-test_jp2a "color, html, light" "grind.jpg --color --fill --background=light --width=60 --html --html-fontsize=8" grind-color.html
-test_jp2a "color, html, grayscale" "dalsnuten-640x480-gray-low.jpg --color --width=78 --html --background=light --fill --html-fontsize=8" dalsnuten-color.html
-test_jp2a "color, html, --grayscale" "grind.jpg --color --width=78 --html --grayscale" grind-2grayscale.html
-test_jp2a "color, html, --grayscale, fill" "grind.jpg --color --width=78 --html --grayscale --fill" grind-2grayscale-fill.html
-test_jp2a "color, fill" "grind.jpg --colors --fill --width=78" grind-fill.txt
-test_jp2a "color, fill, --grayscale" "grind.jpg --colors --fill --grayscale --width=78" grind-2grayscale-fill.txt
-test_jp2a "color, html, no-bold" "grind.jpg --colors --html --html-no-bold --width=78" grind-nobold.html
-test_jp2a "html-title, html" "--width=10 --html --html-title='just testing' jp2a.jpg" html-title.txt
-test_jp2a "color, html-raw" "--width=10 --color --html-raw jp2a.jpg" html-raw.txt
 test_jp2a "color" "grind.jpg --color --width=60" grind-color.txt
 test_jp2a "color, grayscale" "dalsnuten-640x480-gray-low.jpg --color --width=78" dalsnuten-color.txt
 test_jp2a "standard input, width" " 2>/dev/null ; cat jp2a.jpg | ${JP} --width=78 -" normal.txt
 test_jp2a "standard input, width, height" " 2>/dev/null ; cat jp2a.jpg | ${JP} - --width=40 --height=40" 40x40.txt
 test_jp2a "big size" "--size=2000x2000 dalsnuten-640x480-gray-low.jpg jp2a.jpg | tr -d '\r' | wc -c | tr -d ' '" dalsnuten-jp2a-2000x2000-md5.txt
-test_jp2a "size, curl download" "--size=454x207 http://jp2a.sourceforge.net/jp2a.jpg" normal-curl.txt
-test_jp2a "size, curl download" "--size=454x207 http://jp2a.sf.net/jp2a.jpg" normal-curl.txt
 
 test_results
