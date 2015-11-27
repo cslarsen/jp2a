@@ -1,10 +1,6 @@
 /*
- * Copyright (C) 2006 Christian Stigen Larsen, http://csl.sublevel3.org
+ * Copyright 2006, 2015 Christian Stigen Larsen
  * Distributed under the GNU General Public License (GPL) v2.
- *
- * Project homepage on http://jp2a.sf.net
- *
- * $Id$
  */
 
 #include "image.h"

@@ -1,7 +1,0 @@
-# $Id$
-sdesc: "converts JPEG images to ASCII"
-ldesc: "converts JPEG images to ASCII with given output options.  Accepts URLs, filenames or standard input."
-skip:
-category: Graphics Text
-requires: libjpeg6b curl-devel libncurses5 cygwin
-external-source: jp2a

@@ -1,10 +1,6 @@
 /*
- * Copyright (C) 2006 Christian Stigen Larsen, http://csl.sublevel3.org
+ * Copyright 2006, 2015 Christian Stigen Larsen
  * Distributed under the GNU General Public License (GPL) v2.
- *
- * Project homepage on http://jp2a.sf.net
- *
- * $Id$
  */
 
 #ifdef HAVE_CONFIG_H
@@ -83,9 +79,9 @@ unsigned short int RED[256], GREEN[256], BLUE[256], GRAY[256];
 const char *fileout = "-"; // stdout
 
 const char* version   = PACKAGE_STRING;
-const char* copyright = "Copyright (C) 2006 Christian Stigen Larsen";
+const char* copyright = "Copyright 2006, 2015 Christian Stigen Larsen";
 const char* license   = "Distributed under the GNU General Public License (GPL) v2.";
-const char* url       = "http://jp2a.sf.net";
+const char* url       = "https://github.com/cslarsen/jp2a";
 
 void print_version() {
 	fprintf(stderr, "%s\n%s\n%s\n", version, copyright, license);

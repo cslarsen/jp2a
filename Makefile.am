@@ -1,5 +1,3 @@
-# $Id$
-
 VERSION = @VERSION@
 SUBDIRS = src
 man_MANS = man/jp2a.1

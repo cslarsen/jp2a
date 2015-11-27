@@ -1,133 +1,76 @@
+jp2a
+====
 
+jp2a is a simple JPEG to ASCII converter.
 
-    ABOUT JP2A
+The source is available at <https://github.com/cslarsen/jp2a>. This project
+used to be hosted on SourceForge.
 
-    jp2a is a simple JPEG to ASCII viewer.
+License
+-------
 
+Copyright 2006, 2015 Christian Stigen Larsen
+Distributed under the GNU General Public License v2.
 
-    COPYRIGHT
+You can read the full license in the file COPYING.  jp2a also uses other
+libraries.  These licenses can be found in the file LICENSES.
 
-    jp2a is Copyright (c) 2006 Christian Stigen Larsen
-    Distributed under the GNU General Public License v2.
+Installation
+------------
 
-    You can read the full license in the file COPYING.  jp2a also
-    uses other libraries.  These licenses can be found in the file
-    LICENSES.
+Look in your system's package manager. I don't maintain Windows binaries
+anymore.
 
-    The latest version is available from http://jp2a.sf.net
+Building
+--------
 
+If you want to compile from source, you need autotools and automake. You may
+need to specify the path to jpeglib. I usually just do
 
-    QUICK INSTALL
+    autoreconf -vi
+    ./configure --with-jpeg-prefix=/usr/local \
+                --with-curl-config=`which curl-config`
+    make -j
 
-    ./configure
-    make
-    make check     # optional
-    make install
+Before installing, you may want to check that jp2a works by running `src/jp2a`
+on some `.jpg` files. The `check` target is currently broken, and won't help
+you. When you're ready to install,
 
-    If configure doesn't find jpeglib.h and you know where
-    it is, you specify with
+    make -j install
+
+jp2a depends on jpeglib. If configure can't automatically find it, specify with
 
     ./configure --with-jpeg-include=PATH --with-jpeg-lib=PATH
 
-    If you want to be able to download images from the net, you
-    must have libcurl installed (http://curl.haxx.se) and configure
-    for example like this:
+or you can just type the prefix
+
+    ./configure --with-jpeg-prefix=/usr/local/
+
+You can also compile jp2a with libcurl, so it can automatically download images
+from the net:
 
     ./configure --enable-curl
 
-    This will look for `curl-config' in $PATH, but you can specify
-    it directly with --with-curl-config=PATH if you need to.
+This will look for `curl-config' in $PATH, but you can specify it directly with
+--with-curl-config=PATH if you need to.
 
+Windows
+-------
 
-    PRE-REQUISITES
+You need a working jpeglib for Windows and set up include paths yourself.
+You will need to manually type out a `config.h` file. Example:
 
-    jp2a requires jpeglib.  If you don't have it, the source is
-    available from http://www.ijg.org/
-
-    If you want to be able to download images from the net, you
-    also need libcurl, from http://curl.haxx.se
-
-
-    BUILDING ON MAC OS X
-
-    jp2a is now part of darwin ports, so the easiest installation is:
-
-    sudo port install jp2a
-
-    If you do not have darwinports installed, go to http://www.opendarwin.org
-    and install it from there.
-
-    To build yourself, do this:
-
-    # USING FINK
-    fink install libjpeg curl
-    ./configure --with-jpeg-prefix=/sw --with-curl-config=/sw/bin
-
-    # USING DARWIN PORTS
-    sudo port install jpeg curl
-    ./configure --with-jpeg-prefix=/opt/local --with-curl-config=/opt/local/bin
-
-
-    BUILDING WITHOUT USING CONFIGURE
-
-    You need (at least) jpeglib.h and libjpeg, then you do this:
-
-    gcc -g -O2 \
-	-DPACKAGE_BUGREPORT='"csl@sublevel3.org"' \
-	-DPACKAGE_STRING='"jp2a 0.9.xx"' \
-	-I/opt/local/include/ -L/opt/local/lib -l jpeg jp2a.c -o jp2a
-
-
-    BUILDING ON WINDOWS (MS VISUAL STUDIO)
-    
-    Download a reasonable jpeglib version for Windows, e.g. from
-    
-    http://www.ece.sunysb.edu/~cvl/e358/f2001/jpeg-windows.html
-
-    (Don't use Gnuwin32's version, it completely broke on my system).
-    
-    Fire up MS Visual Studio, you should select C++ compilation, because
-    (at least with my MSVC version) the C compiler gave some strange
-    warnings and errors, probably due to the fact that i use some C99
-    code.
-    
-    Since config.h is not generated for MSVC, you need to add some
-    preprocessor definitions:
-   
     WIN32
     NDEBUG
     _CONSOLE
     PACKAGE_STRING=\"jp2a x.x.x-win32\"
-    PACKAGE_BUGREPORT=\"csl@sublevel3.org\"
+    PACKAGE_BUGREPORT=\"csl@csl.name\"
     HAVE_STRING_H
     HAVE_STDLIB_H
     FEAT_CURL
     HAVE_CURL_CURL_H
     CURL_STATICLIB
     FEAT_TERMLIB
-    
-    Add the jpeg.lib file provided by above URL in the search directory
-    and in the linker input, and then everything should compile without
-    any errors.  If you want CURL support, you can find a good win32
-    version for development from
 
-    http://my.guardpuppy.com/libcurl-7.15.1-msvc-win32-ssl-0.9.8a-zlib-1.2.3.zip
-
-    (that is, go to http://curl.haxx.se, select DOWNLOAD and look for the
-    MSVC SSL libcurl versions.)
-
-
-    BUILDING ON WINDOWS (MINGW32)
-
-    Using mingw32 is straight-forward if you have a working (non-MSVC)
-    jpeglib.  On Mac OS X, you do something along these lines to
-    cross-compile:
-
-    ./configure --host=i386-mingw32
-    make check
-
-    I currently use MS Visual C++ to compile the Win32 binaries for jp2a,
-    but I am going to swith to using mingw32.
-    
-
-$Id$
+You need to add jpeg.lib to the linker. If you want libcurl support, you need
+that as well. It should be available from http://curl.haxx.se

@@ -1,15 +1,7 @@
 #!/bin/bash
 
-#####
-#
-# $Id
-#
-# Copyright (C) 2006 Christian Stigen Larsen
-#
+# Copyright 2006, 2015 Christian Stigen Larsen
 # This is a small script to test if jp2a has been correctly built.
-# See http://jp2a.sf.net for project information.
-#
-#####
 
 ## PATH TO EXECUTABLE jp2a
 JP=../src/jp2a

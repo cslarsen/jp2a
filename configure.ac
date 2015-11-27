@@ -2,11 +2,10 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.60)
-AC_INIT([jp2a], [1.0.7], [csl@sublevel3.org])
+AC_INIT([jp2a], [1.0.7], [csl@csl.name])
 AM_INIT_AUTOMAKE(dist-bzip2)
 AC_CONFIG_SRCDIR(src/jp2a.c)
 AC_CONFIG_HEADER([config.h])
-AC_REVISION([$Id$])
 AC_CONFIG_FILES([Makefile src/Makefile])
 
 # Checks for programs.
