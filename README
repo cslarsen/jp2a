@@ -17,52 +17,52 @@ libraries.  These licenses can be found in the file LICENSES.
 
 Example: Oswald the lucky rabbit
 --------------------------------
-                                                                 ......         
-                                                         .:lOKMMMMMMMMMM0l      
-                                                    .;dOMMMMMMMMMMMMMMMMMMW.    
-                                                .ckWMMMMMMMMMMMMMMMMMMMMMMMO    
-                                             .dXMMMMMMMMMMMMMMMMMMMMMMMMMMO     
-                                          .xWMMMMMMMMMMMMMMMMMMMMMMMMMMO:.      
-                                        lXMMMMMMMMMMMMMMMMMMMMMWOOxc'           
-                    .;lxOOOOOxdl:.    cMMMMMMMMMMMMMMMMWKklc'..                 
-                'llc..   ..:oMMMMMMKxNMMMMMMMMMM0kl:'.                          
-              :0'             cMMMMMMMMMMMMWd'.                                 
-            .K:l0              .MMMMMMMMMMl.                                    
-           ,K    W              ,MMMMMMMMMMMMN0dl'                              
-           M.    M               MMMMMMMMMMMMMMMMMMKx:.                         
-          cMMK                   WMMMMMMMMMMMMMMMMMMMMMXd'                      
-          NMMM:                  MMMMMMMMMMMXWMMMMMMMMMMMMNd'                   
-          KMMMW                  MMMMMMMMMMM' ;XMMMMMMMMMMMMMWd'                
-           MMMM                 XMMMMMMMMMMM    dMMMMMMMMMMMMMMMNc              
-      ''   NMKWl'             .KMMMMMMMMMMM'     :MMMMMMMMMMMMMMMMMd            
-     KMWMKOk    '           ,lXMMMMMMMMMMM;       .KMMMMMMMMMMMMMMMM0           
-     KMMMMM.                    .cOMMMMMW'          kMMMMMMMMMMMMMMMMX          
-      cOXMNXl.            ......   .MWd. .0cc:'      .NMMMMMMMMMMMMMMMk         
-            .cololoxKWWWXWMMMMMMM:  M   c:. .l0ok      oMMMMMMMMMMMMMMM         
-                      .'Mo,MMMMNk:lO' :l  .OMMMMl       .OMMMMMMMMMMMMN         
-                       X0'OkxkxOK;.  :: ,.XMMMMMMO    :O   lXMMMMMMMMk          
-                        kc,,o0M0.:;c'N  ko;lMMMMMM:'xMMMNWKO,.clxdl:.           
-                       ;00xkM:d ,   ..     oMMMMMM cMMMMMMMMl                   
-                       c   N0l       .  .l:;;oKMMk  MMMMMMMMM0                  
-                       O   ,.ocOc..l..k'   .:c;'O   0MMMMMMMX.                  
-                      X     N..l  .c           K.   OMMMMMMM                    
-                     .'     c.     :           M .  OMMM0,.;                    
-                    :,   N.;W       ;          O...o .,.                        
-                    d    M  ;X'     :l             :                            
-                    d..':. lcKol,,,,'.:c,,'.cd;'o,'.                            
-                      . ;:,WMMMMMMXx,; M0XXNNWM.                                
-                           MMMMMMMM   .MMMMMMMM                                 
-                           MMMMMMMM   .MMMMMMMM.                                
-                          :ONMMMMMM0:':MMMMMMMMM:                               
-                ;c:,'',::lX'  '',''   .MMMMMMMMMMWK:c:                          
-               x.          .lloc;.',lxl..lKMMMMMKl   M                          
-              0           .;,;'......;::c'  ..     ;dl;l'                       
-             ;O:        .d'              .lkk::::;,     'k                      
-             N.'oc'.    M                   :            X                      
-              lo:. ',::xN:                             .x0'                     
-                .,lccccM .ll,.                . ;;:::;c'.0                      
-                       .kl.  .c::lcccccc:cc::;  .''clccl.                       
-                          'lcl:lc::,,'::cc:cc:c,..   
+                                                                 ......
+                                                         .:lOKMMMMMMMMMM0l
+                                                    .;dOMMMMMMMMMMMMMMMMMMW.
+                                                .ckWMMMMMMMMMMMMMMMMMMMMMMMO
+                                             .dXMMMMMMMMMMMMMMMMMMMMMMMMMMO
+                                          .xWMMMMMMMMMMMMMMMMMMMMMMMMMMO:.
+                                        lXMMMMMMMMMMMMMMMMMMMMMWOOxc'
+                    .;lxOOOOOxdl:.    cMMMMMMMMMMMMMMMMWKklc'..
+                'llc..   ..:oMMMMMMKxNMMMMMMMMMM0kl:'.
+              :0'             cMMMMMMMMMMMMWd'.
+            .K:l0              .MMMMMMMMMMl.
+           ,K    W              ,MMMMMMMMMMMMN0dl'
+           M.    M               MMMMMMMMMMMMMMMMMMKx:.
+          cMMK                   WMMMMMMMMMMMMMMMMMMMMMXd'
+          NMMM:                  MMMMMMMMMMMXWMMMMMMMMMMMMNd'
+          KMMMW                  MMMMMMMMMMM' ;XMMMMMMMMMMMMMWd'
+           MMMM                 XMMMMMMMMMMM    dMMMMMMMMMMMMMMMNc
+      ''   NMKWl'             .KMMMMMMMMMMM'     :MMMMMMMMMMMMMMMMMd
+     KMWMKOk    '           ,lXMMMMMMMMMMM;       .KMMMMMMMMMMMMMMMM0
+     KMMMMM.                    .cOMMMMMW'          kMMMMMMMMMMMMMMMMX
+      cOXMNXl.            ......   .MWd. .0cc:'      .NMMMMMMMMMMMMMMMk
+            .cololoxKWWWXWMMMMMMM:  M   c:. .l0ok      oMMMMMMMMMMMMMMM
+                      .'Mo,MMMMNk:lO' :l  .OMMMMl       .OMMMMMMMMMMMMN
+                       X0'OkxkxOK;.  :: ,.XMMMMMMO    :O   lXMMMMMMMMk
+                        kc,,o0M0.:;c'N  ko;lMMMMMM:'xMMMNWKO,.clxdl:.
+                       ;00xkM:d ,   ..     oMMMMMM cMMMMMMMMl
+                       c   N0l       .  .l:;;oKMMk  MMMMMMMMM0
+                       O   ,.ocOc..l..k'   .:c;'O   0MMMMMMMX.
+                      X     N..l  .c           K.   OMMMMMMM
+                     .'     c.     :           M .  OMMM0,.;
+                    :,   N.;W       ;          O...o .,.
+                    d    M  ;X'     :l             :
+                    d..':. lcKol,,,,'.:c,,'.cd;'o,'.
+                      . ;:,WMMMMMMXx,; M0XXNNWM.
+                           MMMMMMMM   .MMMMMMMM
+                           MMMMMMMM   .MMMMMMMM.
+                          :ONMMMMMM0:':MMMMMMMMM:
+                ;c:,'',::lX'  '',''   .MMMMMMMMMMWK:c:
+               x.          .lloc;.',lxl..lKMMMMMKl   M
+              0           .;,;'......;::c'  ..     ;dl;l'
+             ;O:        .d'              .lkk::::;,     'k
+             N.'oc'.    M                   :            X
+              lo:. ',::xN:                             .x0'
+                .,lccccM .ll,.                . ;;:::;c'.0
+                       .kl.  .c::lcccccc:cc::;  .''clccl.
+                          'lcl:lc::,,'::cc:cc:c,..
 
 The Oswald character is Copyright Walt Disney, and, unfortunately, not in the
 public domain.  However, I believe that I can use this picture under the fair
