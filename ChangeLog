@@ -1,3 +1,6 @@
+CHANGES SINCE 1.0.7
+- Moved repository over to GitHub and made some corresponding changes
+
 CHANGES SINCE 1.0.6 (svnversion 460)
 - Internal code changes for resizing.
 - Renamed `make test' to `make check'.
