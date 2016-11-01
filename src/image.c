@@ -21,7 +21,6 @@
 typedef void (*image_resize_ptrfun)(const image_t* , image_t*);
 image_resize_ptrfun global_image_resize_fun = NULL;
 
-//void image_set_resize_function(
 image_t* image_new(int width, int height) {
 	image_t *p;
 
@@ -253,8 +252,6 @@ void image_print(const image_t *p, FILE *fout) {
 
 		fprintf(fout, use_border? "|%s|\n" : "%s\n", line);
 	}
-
-	//(!usecolors? print_image : print_image_colors) (&image, (int) strlen(ascii_palette) - 1, fout);
 
 	if ( use_border )
 		print_border(fout, width);
