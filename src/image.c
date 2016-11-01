@@ -6,6 +6,7 @@
 #include "image.h"
 
 #include <stdio.h>
+#include <assert.h>
 
 #ifdef HAVE_STRING_H
 #include <string.h>
@@ -85,20 +86,24 @@ static void image_resize_nearest_neighbour(const image_t* source, image_t* dest)
 }
 
 void image_resize_interpolation(const image_t* source, image_t* dest) {
-	register unsigned int r, g, b;
+	unsigned int r, g, b;
 
 	const int ynrat = (float)source->h / (float)dest->h;
 	const int xnrat = (float)source->w / (float)dest->w;
+	assert(xnrat != 0);
+	assert(ynrat != 0);
 
 	const int yinc = ynrat*source->w;
 	const unsigned int adds = xnrat * ynrat;
+	assert(yinc != 0);
+	assert(adds != 0);
 
-	register rgb_t* pix = dest->pixels;
-	register rgb_t* pix_next = pix + dest->w;
+	rgb_t* pix = dest->pixels;
+	rgb_t* pix_next = pix + dest->w;
 
-	register const rgb_t* samp_end;
-	register const rgb_t* src = source->pixels;
-	register const rgb_t* src_end = source->pixels + dest->h*yinc;
+	const rgb_t* samp_end;
+	const rgb_t* src = source->pixels;
+	const rgb_t* src_end = source->pixels + dest->h*yinc;
 
 	while ( src < src_end ) {
 
