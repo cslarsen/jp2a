@@ -105,8 +105,8 @@ from the net:
 
     ./configure --enable-curl
 
-This will look for `curl-config' in $PATH, but you can specify it directly with
---with-curl-config=PATH if you need to.
+This will look for `curl-config` in $PATH, but you can specify it directly with
+`--with-curl-config=PATH` if you need to.
 
 Windows
 -------
