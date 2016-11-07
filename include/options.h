@@ -1,7 +1,9 @@
 /*
- * Copyright 2006, 2015 Christian Stigen Larsen
+ * Copyright 2006-2016 Christian Stigen Larsen
  * Distributed under the GNU General Public License (GPL) v2.
  */
+
+#ifndef INC_JP2A_OPTIONS_H
 
 // see options.c
 extern int verbose;
@@ -24,7 +26,7 @@ extern int debug;
 extern int clearscr;
 extern char ascii_palette[];
 extern float redweight, greenweight, blueweight;
-extern unsigned short int RED[256], GREEN[256], BLUE[256], GRAY[256];
+extern float RED[256], GREEN[256], BLUE[256], GRAY[256];
 extern const char *fileout;
 extern int usecolors;
 extern int termfit;
@@ -34,3 +36,5 @@ extern int term_height;
 #define TERM_FIT_WIDTH 2
 #define TERM_FIT_HEIGHT 3
 #define TERM_FIT_AUTO 4
+
+#endif

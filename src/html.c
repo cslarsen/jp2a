@@ -1,5 +1,5 @@
 /*
- * Copyright 2006, 2015 Christian Stigen Larsen
+ * Copyright 2006-2016 Christian Stigen Larsen
  * Distributed under the GNU General Public License (GPL) v2.
  */
 

@@ -1,7 +1,9 @@
 /*
- * Copyright 2006, 2015 Christian Stigen Larsen
+ * Copyright 2006-2016 Christian Stigen Larsen
  * Distributed under the GNU General Public License (GPL) v2.
  */
+
+#ifndef INC_JP2A_H
 
 #include <stdio.h>
 
@@ -27,3 +29,5 @@ void parse_options(int argc, char** argv);
 
 // term.c
 int get_termsize(int* width_, int* height_, char** error);
+
+#endif

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006, 2015 Christian Stigen Larsen
+ * Copyright 2006-2016 Christian Stigen Larsen
  * Distributed under the GNU General Public License (GPL) v2.
  */
 
@@ -11,11 +11,6 @@
 #include <unistd.h>
 #endif
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#undef HAVE_STDLIB_H
-#endif
-
 #include <stdio.h>
 
 #ifdef HAVE_STRING_H
@@ -24,7 +19,6 @@
 
 #include "jp2a.h"
 #include "options.h"
-#include "image.h"
 
 #ifdef WIN32
 #ifdef FEAT_CURL
@@ -71,19 +65,12 @@ int main(int argc, char** argv) {
 
 		// read from stdin
 		if ( argv[n][0]=='-' && !argv[n][1] ) {
-
 			#ifdef _WIN32
-			_setmode(_fileno(stdin), _O_BINARY);
+			// Good news, everyone!
+			_setmode( _fileno( stdin ), _O_BINARY );
 			#endif
 
-			image_t *i = image_read(stdin);
-			image_t *s = image_new(width, height);
-			image_clear(s);
-			image_resize(i, s);
-			image_print(s, fout);
-
-			image_destroy(i);
-			image_destroy(s);
+			decompress(stdin, fout);
 			continue;
 		}
 
@@ -100,16 +87,10 @@ int main(int argc, char** argv) {
 				return 1;
 			}
 
-			image_t *i = image_read(fr);
+			decompress(fr, fout);
 			fclose(fr);
 			close(fd);
-			image_t *s = image_new(width, height);
-			image_clear(s);
-			image_resize(i, s);
-			image_print(s, fout);
-
-			image_destroy(i);
-			image_destroy(s);
+			
 			continue;
 		}
 		#endif
@@ -119,15 +100,9 @@ int main(int argc, char** argv) {
 			if ( verbose )
 				fprintf(stderr, "File: %s\n", argv[n]);
 
-			image_t *i = image_read(fp);
+			decompress(fp, fout);
 			fclose(fp);
-			image_t *s = image_new(width, height);
-			image_clear(s);
-			image_resize(i, s);
-			image_print(s, fout);
 
-			image_destroy(i);
-			image_destroy(s);
 			continue;
 
 		} else {

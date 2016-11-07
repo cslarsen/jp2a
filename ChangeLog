@@ -1,5 +1,6 @@
 CHANGES SINCE 1.0.7
 - Moved repository over to GitHub and made some corresponding changes
+- Reverted code to version 1.0.6 because of unfinished changes that didn't work.
 
 CHANGES SINCE 1.0.6 (svnversion 460)
 - Internal code changes for resizing.

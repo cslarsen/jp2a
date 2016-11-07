@@ -1,8 +1,9 @@
 /*
- * Copyright 2006, 2015 Christian Stigen Larsen
+ * Copyright 2006-2016 Christian Stigen Larsen
  * Distributed under the GNU General Public License (GPL) v2.
- *
  */
+
+#ifndef INC_JP2A_IMAGE_H
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -32,3 +33,5 @@ void image_destroy(image_t *p);
 void image_clear(image_t *p);
 void image_print(const image_t *p, FILE *fout);
 void image_resize(const image_t* restrict s, image_t* restrict d);
+
+#endif

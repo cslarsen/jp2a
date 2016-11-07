@@ -1,5 +1,5 @@
 /*
- * Copyright 2006, 2015 Christian Stigen Larsen
+ * Copyright 2006-2016 Christian Stigen Larsen
  * Distributed under the GNU General Public License (GPL) v2.
  */
 
@@ -74,12 +74,12 @@ float greenweight = 0.5866f;
 float blueweight = 0.1145f;
 
 // calculated in parse_options
-unsigned short int RED[256], GREEN[256], BLUE[256], GRAY[256];
+float RED[256], GREEN[256], BLUE[256], GRAY[256];
 
 const char *fileout = "-"; // stdout
 
 const char* version   = PACKAGE_STRING;
-const char* copyright = "Copyright 2006, 2015 Christian Stigen Larsen";
+const char* copyright = "Copyright 2006-2016 Christian Stigen Larsen";
 const char* license   = "Distributed under the GNU General Public License (GPL) v2.";
 const char* url       = "https://github.com/cslarsen/jp2a";
 
@@ -159,10 +159,10 @@ void help() {
 void precalc_rgb(const float red, const float green, const float blue) {
 	int n;
 	for ( n=0; n<256; ++n ) {
-		RED[n]   = ((float) n) * red;
-		GREEN[n] = ((float) n) * green;
-		BLUE[n]  = ((float) n) * blue;
-		GRAY[n]  = ((float) n);
+		RED[n]   = ((float) n) * red / 255.0f;
+		GREEN[n] = ((float) n) * green / 255.0f;
+		BLUE[n]  = ((float) n) * blue / 255.0f;
+		GRAY[n]  = ((float) n) / 255.0f;
 	}
 }
 
