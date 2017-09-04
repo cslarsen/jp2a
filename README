@@ -92,7 +92,18 @@ you. When you're ready to install,
 
     make -j install
 
-jp2a depends on jpeglib. If configure can't automatically find it, specify with
+jp2a depends on jpeglib. In case configure fails beacuse jpeglib is not installed,
+it can be built and installed manually. Independent JPEG Group provides a UNIX format
+package in tar.gz format which can be downloaded from http://www.ijg.org/.
+
+Extract the archive and follow the instructions inside 'install.txt' to build and
+install it. For a default install, the corresponding `.so` (shared object) files
+will be present in `/usr/local/lib/`
+
+Next, run the command `ldconfig` (escalated privileges may be required) to configure dynamic linker run-time bindings. See
+its man page for more details. The configure command should work after that.
+
+If configure can't automatically find jpeglib, specify with
 
     ./configure --with-jpeg-include=PATH --with-jpeg-lib=PATH
 
